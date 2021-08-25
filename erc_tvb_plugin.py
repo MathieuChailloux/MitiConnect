@@ -21,16 +21,22 @@
  *                                                                         *
  ***************************************************************************/
 """
+import os.path
+
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+
+from qgis.core import QgsApplication
+from qgis.utils import qgis_excepthook
 
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .erc_tvb_plugin_dialog import ErcTvbPluginDialog
-import os.path
 
+from .algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
+from .graphab4qgis.GraphabPlugin import GraphabPlugin
 
 class ErcTvbPlugin:
     """QGIS Plugin Implementation."""
@@ -66,6 +72,10 @@ class ErcTvbPlugin:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        
+        # Intialize alg provider
+        self.graphabPlugin = GraphabPlugin(self.iface)
+        self.provider = ErcTvbAlgorithmsProvider(self)
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -169,6 +179,8 @@ class ErcTvbPlugin:
 
         # will be set False in run()
         self.first_start = True
+        # Add provider
+        QgsApplication.processingRegistry().addProvider(self.provider)
 
 
     def unload(self):
@@ -178,6 +190,8 @@ class ErcTvbPlugin:
                 self.tr(u'&ERC-TVB'),
                 action)
             self.iface.removeToolBarIcon(action)
+        if self.provider:
+            QgsApplication.processingRegistry().removeProvider(self.provider)
 
 
     def run(self):

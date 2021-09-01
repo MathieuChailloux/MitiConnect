@@ -28,14 +28,17 @@ from PyQt5.QtGui import QIcon
 from qgis.core import QgsApplication, QgsProcessingProvider
 
 from ..graphab4qgis.processing.CalculateCorridor import CalculateCorridor
+from ..graphab4qgis.processing.CreateProject import CreateProject
+from ..graphab4qgis.processing.GraphabProvider import GraphabProvider
 
 
-class ErcTvbAlgorithmsProvider(QgsProcessingProvider):
+class ErcTvbAlgorithmsProvider(GraphabProvider):
 
     def __init__(self,plugin):
-        super().__init__()
-        self.plugin = plugin
-        self.alglist = [CalculateCorridor(self.plugin.graphabPlugin)]
+        super().__init__(plugin.graphabPlugin)
+        self.alglist = [
+            CalculateCorridor(self.plugin),
+            CreateProject(self.plugin)]
         # for a in self.alglist:
             # self.addAlgorithm(a)
         

@@ -27,8 +27,12 @@ import os
 from PyQt5.QtGui import QIcon
 from qgis.core import QgsApplication, QgsProcessingProvider
 
-from ..graphab4qgis.processing.CalculateCorridor import CalculateCorridor
 from ..graphab4qgis.processing.CreateProject import CreateProject
+from ..graphab4qgis.processing.CreateLinkset import CreateLinkset
+from ..graphab4qgis.processing.CalculateCorridor import CalculateCorridor
+from ..graphab4qgis.processing.CreateGraph import CreateGraph
+from ..graphab4qgis.processing.CalculateLocalMetric import CalculateLocalMetric
+from ..graphab4qgis.processing.CalculateGlobalMetric import CalculateGlobalMetric
 from ..graphab4qgis.processing.GraphabProvider import GraphabProvider
 
 
@@ -37,8 +41,12 @@ class ErcTvbAlgorithmsProvider(GraphabProvider):
     def __init__(self,plugin):
         super().__init__(plugin.graphabPlugin)
         self.alglist = [
+            CreateLinkset(self.plugin),
+            CreateProject(self.plugin),
             CalculateCorridor(self.plugin),
-            CreateProject(self.plugin)]
+            CreateGraph(self.plugin),
+            CalculateLocalMetric(self.plugin),
+            CalculateGlobalMetric(self.plugin)]
         # for a in self.alglist:
             # self.addAlgorithm(a)
         

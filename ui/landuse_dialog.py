@@ -27,10 +27,89 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
+from .vector_data_dialog import VectorDataItem, VectorDataDialog
+from ..qgis_lib_mc.abstract_model import DictItem, DictModel, AbstractConnector
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'landuse_dialog.ui'))
 
+
+class ImportItem(DictItem):
+            
+    PATH = 'PATH'
+    MODE = 'MODE'
+    VALUE = 'VALUE'
+    STATUS = 'STATUS'
+    FIELDS = [ PATH, MODE, VALUE, STATUS ]
+    
+    PATH_IDX = 0
+    MODE_IDX = 1
+    VALUE_IDX = 2
+    STATUS_IDX = 3
+
+    def __init__(self, item, parent=None):
+        self.item = item
+        dict = { self.PATH : item.path,
+            self.MODE : type(item) is VectorDataItem,
+            self.VALUE : self.item.burn_val,
+            self.STATUS : False }
+        super().__init__(dict)
+        self.computed = False
+        self.item = item
+        
+    # def getNField(self,n):
+        # if n == self.PATH_IDX:
+            # return self.item[self.PATH]
+        # elif n == self.MODE_IDX:
+            # return 'V' if self.is_vector else 'R'
+        # elif n == self.VALUE_IDX:
+            # return self.item.burn_val
+        # elif n == self.STATUS_IDX
+            # return self.computed
+
+class ImportModel(DictModel):
+
+    PATH = 'PATH'
+    EXPRESSION = 'EXPRESSION'
+    BURN_MODE = 'BURN_MODE'
+    BURN_VAL = 'BURN_VAL'
+    ALL_TOUCH = 'ALL_TOUCH'
+    BUFFER_MODE = 'BUFFER_MODE'
+    BUFFER_EXPR = 'BUFFER_EXPR'
+    # FIELDS = []
+
+    def __init__(self, parent=None):
+        # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
+            # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
+        super().__init__(self,ImportItem.FIELDS)
+
+class ImportConnector(AbstractConnector):
+
+    def __init__(self,dlg,model):
+        self.dlg = dlg
+        self.onlySelection = False
+        super().__init__(model,self.dlg.importView,
+                         None,self.dlg.importDelete)
+
+    def connectComponents(self):
+        super().connectComponents()
+        self.dlg.importView.doubleClicked.connect(self.openImport)
+        self.dlg.importVector.clicked.connect(self.openImportVector)
+        #self.dlg.importAddRaster.clciked.connect(self.openImportRaster)
+    
+    def openImport(self,idx):
+        pass
+        
+    def openImportVector(self):
+        print("yes")
+        dlg = VectorDataDialog(self.dlg)
+        dlg.show()
+        dlg.exec_()
+        
+    def openImportRaster(self):
+        pass
+    
 
 class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
@@ -42,3 +121,4 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+

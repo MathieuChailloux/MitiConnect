@@ -27,6 +27,8 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
+from .landuse_dialog import ImportConnector, ImportModel
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'erc_tvb_plugin_dialog_base.ui'))
@@ -42,3 +44,6 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+        
+        self.importConnector = ImportConnector(self,ImportModel())
+        self.importConnector.connectComponents()

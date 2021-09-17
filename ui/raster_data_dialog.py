@@ -27,10 +27,20 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
+from ..qgis_lib_mc.abstract_model import DictItem
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'raster_data_dialog.ui'))
 
+
+class RasterDataItem(abstract_model.DictItem):
+
+    PATH = 'PATH'
+    ITEM_FIELDS = [ self.PATH ]
+
+    def __init__(self, parent=None):
+        super().__init__(self.ITEM_FIELDS)
 
 class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):

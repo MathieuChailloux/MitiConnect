@@ -27,10 +27,26 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
+from ..qgis_lib_mc.abstract_model import DictItem
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'vector_data_dialog.ui'))
 
+class VectorDataItem(DictItem):
+
+    PATH = 'PATH'
+    EXPRESSION = 'EXPRESSION'
+    BURN_MODE = 'BURN_MODE'
+    BURN_VAL = 'BURN_VAL'
+    ALL_TOUCH = 'ALL_TOUCH'
+    BUFFER_MODE = 'BUFFER_MODE'
+    BUFFER_EXPR = 'BUFFER_EXPR'
+    ITEM_FIELDS = [ PATH, EXPRESSION, BURN_MODE, BURN_VAL,
+            ALL_TOUCH, BUFFER_MODE, BUFFER_EXPR ]
+
+    def __init__(self, parent=None):
+        super().__init__(self.ITEM_FIELDS)
 
 class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
@@ -43,4 +59,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
 
-    def connectComponents(self):
+
+    def showDialog(self):
+        while self.exec_():
+            return None
+        
+        return None

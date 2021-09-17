@@ -74,6 +74,7 @@ class ErcTvbPlugin:
         self.first_start = None
         
         # Intialize alg provider
+        self.dlg = ErcTvbPluginDialog()
         self.graphabPlugin = GraphabPlugin(self.iface)
         self.provider = ErcTvbAlgorithmsProvider(self)
 

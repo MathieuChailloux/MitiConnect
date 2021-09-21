@@ -24,8 +24,8 @@
 
 import os
 
-from qgis.PyQt import uic
-from qgis.PyQt import QtWidgets
+from qgis.PyQt import uic, QtWidgets
+from qgis.PyQt.QtCore import Qt
 
 from .vector_data_dialog import VectorDataItem, VectorDataDialog
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, AbstractConnector
@@ -48,15 +48,25 @@ class ImportItem(DictItem):
     VALUE_IDX = 2
     STATUS_IDX = 3
 
-    def __init__(self, item, parent=None):
-        self.item = item
-        dict = { self.PATH : item.path,
-            self.MODE : type(item) is VectorDataItem,
-            self.VALUE : self.item.burn_val,
+    def __init__(self, data_item, parent=None):
+        self.updateFromDataItem(data_item)
+        super().__init__(self.dict)
+        
+    def updateFromDataItem(self,data_item):
+        self.is_vector = type(data_item) is VectorDataItem
+        if self.is_vector:
+            if data_item.getBurnMode():
+                val = data_item.getBurnField()
+            else:
+                val = data_item.getBurnVal()
+        else:
+            val = None
+        self.dict = { self.PATH : data_item.getLayerPath(),
+            self.MODE : self.is_vector,
+            self.VALUE : val,
             self.STATUS : False }
-        super().__init__(dict)
         self.computed = False
-        self.item = item
+        self.data_item = data_item
         
     # def getNField(self,n):
         # if n == self.PATH_IDX:
@@ -70,24 +80,19 @@ class ImportItem(DictItem):
 
 class ImportModel(DictModel):
 
-    PATH = 'PATH'
-    EXPRESSION = 'EXPRESSION'
-    BURN_MODE = 'BURN_MODE'
-    BURN_VAL = 'BURN_VAL'
-    ALL_TOUCH = 'ALL_TOUCH'
-    BUFFER_MODE = 'BUFFER_MODE'
-    BUFFER_EXPR = 'BUFFER_EXPR'
-    # FIELDS = []
-
-    def __init__(self, parent=None):
+    def __init__(self, feedback=None):
         # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
-        super().__init__(self,ImportItem.FIELDS)
+        super().__init__(self,ImportItem.FIELDS,feedback=feedback)
+        
+    def flags(self, index):
+        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
 
 class ImportConnector(AbstractConnector):
 
     def __init__(self,dlg,model):
         self.dlg = dlg
+        self.feedback = dlg.feedback
         self.onlySelection = False
         super().__init__(model,self.dlg.importView,
                          None,self.dlg.importDelete)
@@ -95,20 +100,34 @@ class ImportConnector(AbstractConnector):
     def connectComponents(self):
         super().connectComponents()
         self.dlg.importView.doubleClicked.connect(self.openImport)
-        self.dlg.importVector.clicked.connect(self.openImportVector)
+        self.dlg.importVector.clicked.connect(self.openImportVectorNew)
         #self.dlg.importAddRaster.clciked.connect(self.openImportRaster)
     
-    def openImport(self,idx):
-        pass
+    def openImport(self,index):
+        row = index.row()
+        item = self.model.getNItem(row)
+        self.feedback.pushDebugInfo("openImport item = " +str(item))
+        if item.is_vector:
+            data_item = self.openImportVector(item.data_item)
+        else:
+            data_item = self.openImportRaster(item.data_item)
+        item.updateFromDataItem(data_item)
+        self.model.layoutChanged.emit()
         
-    def openImportVector(self):
-        print("yes")
-        dlg = VectorDataDialog(self.dlg)
-        dlg.show()
-        dlg.exec_()
+    def openImportVectorNew(self,checked):
+        data_item = self.openImportVector(None)
+        item = ImportItem(data_item)
+        self.model.addItem(item)
+        self.model.layoutChanged.emit()
         
-    def openImportRaster(self):
-        pass
+    def openImportVector(self,data_item):
+        vector_data_dlg = VectorDataDialog(data_item,parent=self.dlg)
+        data_item = vector_data_dlg.showDialog()
+        return data_item
+        
+    def openImportRaster(self,data_item):
+        return None
+        
     
 
 class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):

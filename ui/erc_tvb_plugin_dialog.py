@@ -22,12 +22,15 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+import traceback
+from io import StringIO
 
 from .landuse_dialog import ImportConnector, ImportModel
+from ..qgis_lib_mc import feedbacks, log, utils
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -45,5 +48,33 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
         
-        self.importConnector = ImportConnector(self,ImportModel())
-        self.importConnector.connectComponents()
+        self.feedback =  feedbacks.TabProgressFeedback(self)
+        self.importConnector = ImportConnector(self,ImportModel(self.feedback))
+        self.connectors = [ self.feedback, self.importConnector ]
+        
+    def connectComponents(self):
+        for tab in self.connectors:
+            tab.connectComponents()
+        sys.excepthook = self.exceptionHook
+        
+        # Exception hook, i.e. function called when exception raised.
+    # Displays traceback and error message in log tab.
+    # Ignores CustomException : exception raised from erc_tvb and already displayed.
+    def exceptionHook(self,excType, excValue, tracebackobj):
+        self.feedback.pushDebugInfo("exceptionHook")
+        if excType == utils.CustomException:
+            self.feedback.pushDebugInfo("Ignoring custom exception : " + str(excValue))
+        else:
+            tbinfofile = StringIO()
+            traceback.print_tb(tracebackobj, None, tbinfofile)
+            tbinfofile.seek(0)
+            tbinfo = tbinfofile.read()
+            errmsg = str(excType.__name__) + " : " + str(excValue)
+            separator = '-' * 80
+            msg = separator + "\n" + errmsg + "\n" + separator
+            self.feedback.pushDebugInfo(str(msg))
+            self.feedback.pushWarning("Traceback : " + tbinfo)
+            self.feedback.error_msg(msg,prefix="Unexpected error")
+        self.mTabWidget.setCurrentWidget(self.logTab)
+        
+        

@@ -28,40 +28,132 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
 from ..qgis_lib_mc.abstract_model import DictItem
+from ..qgis_lib_mc import qgsUtils, abstract_model
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'vector_data_dialog.ui'))
 
-class VectorDataItem(DictItem):
+class VectorDataItem(abstract_model.DictItem):
 
     PATH = 'PATH'
     EXPRESSION = 'EXPRESSION'
     BURN_MODE = 'BURN_MODE'
+    BURN_FIELD = 'BURN_FIELD'
     BURN_VAL = 'BURN_VAL'
     ALL_TOUCH = 'ALL_TOUCH'
     BUFFER_MODE = 'BUFFER_MODE'
     BUFFER_EXPR = 'BUFFER_EXPR'
-    ITEM_FIELDS = [ PATH, EXPRESSION, BURN_MODE, BURN_VAL,
+    ITEM_FIELDS = [ PATH, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
             ALL_TOUCH, BUFFER_MODE, BUFFER_EXPR ]
 
-    def __init__(self, parent=None):
-        super().__init__(self.ITEM_FIELDS)
+    def __init__(self, dict, parent=None):
+        super().__init__(dict, self.ITEM_FIELDS)
+        
+    def getLayerPath(self):
+        return self.dict[self.PATH]
+    def getExpression(self):
+        return self.dict[self.EXPRESSION]
+    def getBurnMode(self):
+        return self.dict[self.BURN_MODE]    
+    def getBurnField(self):
+        return self.dict[self.BURN_FIELD]
+    def getBurnVal(self):
+        return self.dict[self.BURN_VAL]
+    def getAllTouch(self):
+        return self.dict[self.ALL_TOUCH]
+    def getBufferMode(self):
+        return self.dict[self.BUFFER_MODE]
+    def getBufferExpr(self):
+        return self.dict[self.BUFFER_EXPR]
 
+
+# TODO : idée : génération automatique XML depuis QDialog 
+# en fonction des widgets ??
 class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, vector_data_item, parent=None,feedback=None):
         """Constructor."""
-        super(VectorDataDialog, self).__init__(parent)
+        super(VectorDataDialog, self).__init__(None)
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
+        self.feedback=parent.feedback
+        self.data_item = vector_data_item
         self.setupUi(self)
+        self.layerComboDlg = qgsUtils.LayerComboDialog(self,
+            self.vectorLayerCombo,self.vectorLayerFile)
+        self.connectComponents()
+        self.updateUi()
 
+    # def mkItem(self):
+        # layer = self.vectorLayerFile.fileInfo()
+        
+    def connectComponents(self):
+        self.vectorLayerCombo.layerChanged.connect(self.setLayer)
+        self.vectorDefaultSetting.currentIndexChanged.connect(
+            self.setDefaultSetting)
+        self.vectorFieldMode.clicked.connect(self.setFieldMode)
+        self.vectorFixedMode.clicked.connect(self.setFixedMode)
+        self.vectorBufferMode.clicked.connect(self.setBufferMode)
+        
+    def updateUi(self):
+        if self.data_item:
+            self.layerComboDlg.setLayerPath(self.data_item.getLayerPath())
+            self.vectorSelectionExpression.setExpression(self.data_item.getExpression())
+            self.setBurnMode(self.data_item.getBurnMode())
+            self.vectorFieldCombo.setField(self.data_item.getBurnField())
+            self.vectorFixedValue.setValue(self.data_item.getBurnVal())
+            self.vectorAllTouch.setChecked(self.data_item.getAllTouch())
+            self.vectorBufferMode.setChecked(self.data_item.getBufferMode())
+            self.vectorBufferValue.setValue(self.data_item.getBufferExpr())
+        
+    def setLayer(self,layer):
+        self.vectorSelectionExpression.setLayer(layer)
+        self.vectorFieldCombo.setLayer(layer)
+        
+    def setDefaultSetting(self,idx):
+        if idx == 0:
+            pass
+        else:
+            pass
+
+    def setBurnMode(self,is_field_mode):
+        self.vectorFieldMode.setChecked(is_field_mode)
+        self.vectorFieldCombo.setEnabled(is_field_mode)
+        self.vectorFixedMode.setChecked(not is_field_mode)
+        self.vectorFixedValue.setEnabled(not is_field_mode)
+        
+    def setFieldMode(self,checked):
+        self.setBurnMode(checked)
+        
+    def setFixedMode(self,checked):
+        self.setBurnMode(not checked)
+        
+    def setBufferMode(self,checked):
+        self.vectorBufferValue.setEnabled(checked)
 
     def showDialog(self):
+        self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
-            return None
-        
+            dict = {}
+            layer = self.vectorLayerCombo.currentLayer()
+            if not layer:
+                self.feedback.user_error("No layer selected")
+            layer_path = qgsUtils.pathOfLayer(layer)
+            if not layer_path:
+                self.feedback.user_error("Could not load layer " + str(layer_path))
+            dict[VectorDataItem.PATH] = layer_path
+            dict[VectorDataItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
+            burn_field_mode = self.vectorFieldMode.isChecked()
+            dict[VectorDataItem.BURN_MODE] = burn_field_mode
+            dict[VectorDataItem.BURN_FIELD] = self.vectorFieldCombo.currentField()
+            dict[VectorDataItem.BURN_VAL] = self.vectorFixedValue.value()
+            dict[VectorDataItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
+            dict[VectorDataItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
+            dict[VectorDataItem.BUFFER_EXPR] = self.vectorBufferValue.value()
+            self.data_item = VectorDataItem(dict)
+            self.feedback.pushDebugInfo("dict = " + str(dict))
+            return self.data_item
         return None

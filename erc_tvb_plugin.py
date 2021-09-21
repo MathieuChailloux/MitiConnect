@@ -182,6 +182,8 @@ class ErcTvbPlugin:
         self.first_start = True
         # Add provider
         QgsApplication.processingRegistry().addProvider(self.provider)
+        # Connect components
+        #self.dlg.connectComponents()
 
 
     def unload(self):
@@ -203,7 +205,8 @@ class ErcTvbPlugin:
         if self.first_start == True:
             self.first_start = False
             self.dlg = ErcTvbPluginDialog()
-
+        
+        self.dlg.connectComponents()
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop

@@ -27,23 +27,41 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
-from ..qgis_lib_mc.abstract_model import DictItem
+from ..qgis_lib_mc import qgsUtils, abstract_model
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'raster_data_dialog.ui'))
 
+class ReclassItem(abstract_model.DictItem):
+    
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+    ITEM_FIELDS = [ INPUT, OUTPUT ]
+
+    def __init__(self, in_val,out_val):
+        super().__init__(self.ITEM_FIELDS)
+        
+        
+class ReclassModel(abstract_model.DictModel):
+    
+    def __init__(self, parent):
+        super().__init__(parent,ReclassItem.ITEM_FIELDS,
+            feedback=parent.feedback)
+    
+
 
 class RasterDataItem(abstract_model.DictItem):
 
     PATH = 'PATH'
-    ITEM_FIELDS = [ self.PATH ]
+    RECLASS = 'RECLASS'
+    ITEM_FIELDS = [ PATH, RECLASS ]
 
     def __init__(self, parent=None):
         super().__init__(self.ITEM_FIELDS)
 
 class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, raster_data_item, parent,class_model=None):
         """Constructor."""
         super(RasterDataDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
@@ -51,4 +69,39 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
+        self.feedback=parent.feedback
+        self.data_item = raster_data_item
+        self.class_model = class_model
+        self.reclass_model = ReclassModel(self)
         self.setupUi(self)
+        self.layerComboDlg = qgsUtils.LayerComboDialog(self,
+            self.rasterDataLayerCombo,self.rasterDataLayerOpen)
+        self.connectComponents()
+
+    def connectComponents(self):
+        self.rasterDataReclassTable.setModel(self.reclass_model)
+        self.rasterDataLayerCombo.layerChanged.connect(self.setLayer)
+        
+    def setLayer(self,layer):
+        vals = qgsUtils.getRasterValsBis(layer)
+        nb_vals = len(vals)
+        free_vals = self.class_model.getFreeVals(nb_vals)
+        self.reclass_model.items = [ReclassItem(in_val,out_val)
+            for (in_val, out_val) in zip(vals, free_vals)]
+        self.reclass_model.layoutChanged.emit() 
+        
+    def showDialog(self):
+        self.feedback.pushDebugInfo("showDialog")
+        while self.exec_():
+            dict = {}
+            layer = self.vectorLayerCombo.currentLayer()
+            if not layer:
+                self.feedback.user_error("No layer selected")
+            layer_path = qgsUtils.pathOfLayer(layer)
+            if not layer_path:
+                self.feedback.user_error("Could not load layer " + str(layer_path))
+            dict[RasterDataItem.PATH] = layer_path
+            dict[RasterDataItem.RECLASS] = self.reclass_model
+            self.data_item = RasterDataItem(dict)
+            return self.data_item
+        return None

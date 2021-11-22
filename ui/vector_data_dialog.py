@@ -27,7 +27,6 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
-from ..qgis_lib_mc.abstract_model import DictItem
 from ..qgis_lib_mc import qgsUtils, abstract_model
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -71,7 +70,7 @@ class VectorDataItem(abstract_model.DictItem):
 # TODO : idée : génération automatique XML depuis QDialog 
 # en fonction des widgets ??
 class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, vector_data_item, parent=None,feedback=None):
+    def __init__(self, vector_data_item, parent):
         """Constructor."""
         super(VectorDataDialog, self).__init__(None)
         # Set up the user interface from Designer through FORM_CLASS.

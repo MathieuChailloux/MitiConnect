@@ -28,6 +28,7 @@ from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
 from .vector_data_dialog import VectorDataItem, VectorDataDialog
+from .raster_data_dialog import RasterDataItem, RasterDataDialog
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, AbstractConnector
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -101,7 +102,7 @@ class ImportConnector(AbstractConnector):
         super().connectComponents()
         self.dlg.importView.doubleClicked.connect(self.openImport)
         self.dlg.importVector.clicked.connect(self.openImportVectorNew)
-        #self.dlg.importAddRaster.clciked.connect(self.openImportRaster)
+        self.dlg.importRaster.clicked.connect(self.openImportRasterNew)
     
     def openImport(self,index):
         row = index.row()
@@ -111,22 +112,33 @@ class ImportConnector(AbstractConnector):
             data_item = self.openImportVector(item.data_item)
         else:
             data_item = self.openImportRaster(item.data_item)
-        item.updateFromDataItem(data_item)
-        self.model.layoutChanged.emit()
+        if data_item:
+            item.updateFromDataItem(data_item)
+            self.model.layoutChanged.emit()
         
     def openImportVectorNew(self,checked):
         data_item = self.openImportVector(None)
-        item = ImportItem(data_item)
-        self.model.addItem(item)
-        self.model.layoutChanged.emit()
+        if data_item:
+            item = ImportItem(data_item)
+            self.model.addItem(item)
+            self.model.layoutChanged.emit()
         
     def openImportVector(self,data_item):
-        vector_data_dlg = VectorDataDialog(data_item,parent=self.dlg)
+        vector_data_dlg = VectorDataDialog(data_item,self.dlg)
         data_item = vector_data_dlg.showDialog()
         return data_item
         
+    def openImportRasterNew(self,checked):
+        data_item = self.openImportRaster(None)
+        if data_item:
+            item = ImportItem(data_item)
+            self.model.addItem(item)
+            self.model.layoutChanged.emit()
+            
     def openImportRaster(self,data_item):
-        return None
+        raster_data_dlg = RasterDataDialog(data_item,self.dlg)
+        data_item = raster_data_dlg.showDialog()
+        return data_item
         
     
 

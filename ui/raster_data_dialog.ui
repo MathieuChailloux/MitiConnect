@@ -49,7 +49,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox">
+       <widget class="QgsMapLayerComboBox" name="rasterDataLayerCombo">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -65,7 +65,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="landuseInputLayer">
+       <widget class="QToolButton" name="rasterDataLayerOpen">
         <property name="text">
          <string>...</string>
         </property>
@@ -85,7 +85,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="encodingTableWidget">
+    <widget class="QTableWidget" name="rasterDataReclassTable">
      <property name="enabled">
       <bool>false</bool>
      </property>

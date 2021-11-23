@@ -54,7 +54,7 @@ class VectorDataItem(abstract_model.DictItem):
     def getExpression(self):
         return self.dict[self.EXPRESSION]
     def getBurnMode(self):
-        return self.dict[self.BURN_MODE]    
+        return self.dict[self.BURN_MODE]
     def getBurnField(self):
         return self.dict[self.BURN_FIELD]
     def getBurnVal(self):

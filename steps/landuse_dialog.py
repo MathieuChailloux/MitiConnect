@@ -86,6 +86,19 @@ class ImportModel(DictModel):
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
         super().__init__(self,ImportItem.FIELDS,feedback=feedback)
         
+    def applyItemWithContext(self,item,context,feedback):
+        out_path = TODO
+        if item.is_vector:
+            selected = QgsProcessingUtils.generateTempFilename('selection.gpkg')
+            burn_val = item.getBurnVal()
+            res = rasterize
+            BioDispersal_algs.applyRasterizationFixAllTouch(
+                selected,grp_raster_path,extent,resolution,
+                                 field="Code",out_type=Qgis.Int16,all_touch=False,
+                                 context=context,feedback=step_feedback)
+        else:
+            res = rasterize
+        
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
 

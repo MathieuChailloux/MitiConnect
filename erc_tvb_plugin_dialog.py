@@ -31,6 +31,7 @@ from io import StringIO
 
 from .landuse_dialog import ImportConnector, ImportModel
 from ..qgis_lib_mc import feedbacks, log, utils
+from .steps import (params, data)#, species, friction, scenarios)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 PLUGIN_DIR = os.path.dirname(__file__)
@@ -39,6 +40,42 @@ STEPS_DIR = os.path.join(PLUGIN_DIR,'steps')
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     UI_DIR, 'ui/erc_tvb_plugin_dialog_base.ui'))
 
+
+class PluginModel:
+
+    def __init__(self,feedback):
+        self.parser_name = "PluginModel"
+        self.context = None
+        self.feedback = feedback
+        utils.debug("feedback bd = " + str(feedback))
+        self.paramsModel = params.ParamsModel(self)
+        self.importModel = data.ImportModel(self)
+        self.landuseModel = data.LanduseModel(self)
+        # self.speciesModel = species.SpeciesModel(self)
+        # self.frictionModel = friction.FrictionModel(self)
+        # self.scenarioModel = groups.ScenarioModel(self)
+        self.models = [ self.paramsModel, self.dataModel ]
+        
+    def getImportsDir(self):
+        return utils.createSubDir(self.paramsModel.workspace,"Imports")
+    def getScenarioDir(self,sc_name):
+        return utils.createSubDir(self.paramsModel.workspace,sc_name)
+        
+    def checkWorkspaceInit(self):
+        self.paramsModel.checkWorkspaceInit()
+    def normalizePath(self,path):
+        return self.paramsModel.normalizePath(path)
+    def getOrigPath(self,path):
+        return self.paramsModel.getOrigPath(path)
+    def mkOutputFile(self,name):
+        return self.paramsModel.mkOutputFile(name)
+    def getRasterParams(self):
+        crs = self.paramsModel.crs
+        extent = self.paramsModel.getExtentString()
+        resolution = self.paramsModel.getResolution()
+        return (crs, extent, resolution)
+
+    
 
 class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
@@ -52,7 +89,8 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         
         self.feedback =  feedbacks.TabProgressFeedback(self)
-        self.importConnector = ImportConnector(self,ImportModel(self.feedback))
+        self.pluginModel = PluginModel(feedback)
+        self.importConnector = ImportConnector(self,self.pluginModel.)
         self.connectors = [ self.feedback, self.importConnector ]
         
     def connectComponents(self):

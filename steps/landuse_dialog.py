@@ -27,133 +27,23 @@ import os
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from .vector_data_dialog import VectorDataItem, VectorDataDialog
-from .raster_data_dialog import RasterDataItem, RasterDataDialog
-from ..qgis_lib_mc.abstract_model import DictItem, DictModel, AbstractConnector
+from ..qgis_lib_mc import qgsTreatments, abstract_model
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'landuse_dialog.ui'))
+        
+class LanduseItem(abstract_model.DictModel):
 
-
-class ImportItem(DictItem):
-            
-    PATH = 'PATH'
-    MODE = 'MODE'
-    VALUE = 'VALUE'
-    STATUS = 'STATUS'
-    FIELDS = [ PATH, MODE, VALUE, STATUS ]
+    NAME = 'NAME'
+    ITEM_FIELDS = [ NAME ]
     
-    PATH_IDX = 0
-    MODE_IDX = 1
-    VALUE_IDX = 2
-    STATUS_IDX = 3
-
-    def __init__(self, data_item, parent=None):
-        self.updateFromDataItem(data_item)
-        super().__init__(self.dict)
+    def __init__(self, name, importModel, parent=None):
+        dict = { self.NAME : name }
+        super().__init__(dict, self.ITEM_FIELDS)
         
-    def updateFromDataItem(self,data_item):
-        self.is_vector = type(data_item) is VectorDataItem
-        if self.is_vector:
-            if data_item.getBurnMode():
-                val = data_item.getBurnField()
-            else:
-                val = data_item.getBurnVal()
-        else:
-            val = None
-        self.dict = { self.PATH : data_item.getLayerPath(),
-            self.MODE : self.is_vector,
-            self.VALUE : val,
-            self.STATUS : False }
-        self.computed = False
-        self.data_item = data_item
-        
-    # def getNField(self,n):
-        # if n == self.PATH_IDX:
-            # return self.item[self.PATH]
-        # elif n == self.MODE_IDX:
-            # return 'V' if self.is_vector else 'R'
-        # elif n == self.VALUE_IDX:
-            # return self.item.burn_val
-        # elif n == self.STATUS_IDX
-            # return self.computed
-
-class ImportModel(DictModel):
-
-    def __init__(self, feedback=None):
-        # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
-            # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
-        super().__init__(self,ImportItem.FIELDS,feedback=feedback)
-        
-    def applyItemWithContext(self,item,context,feedback):
-        out_path = TODO
-        if item.is_vector:
-            selected = QgsProcessingUtils.generateTempFilename('selection.gpkg')
-            burn_val = item.getBurnVal()
-            res = rasterize
-            BioDispersal_algs.applyRasterizationFixAllTouch(
-                selected,grp_raster_path,extent,resolution,
-                                 field="Code",out_type=Qgis.Int16,all_touch=False,
-                                 context=context,feedback=step_feedback)
-        else:
-            res = rasterize
-        
-    def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
-
-class ImportConnector(AbstractConnector):
-
-    def __init__(self,dlg,model):
-        self.dlg = dlg
-        self.feedback = dlg.feedback
-        self.onlySelection = False
-        super().__init__(model,self.dlg.importView,
-                         None,self.dlg.importDelete)
-
-    def connectComponents(self):
-        super().connectComponents()
-        self.dlg.importView.doubleClicked.connect(self.openImport)
-        self.dlg.importVector.clicked.connect(self.openImportVectorNew)
-        self.dlg.importRaster.clicked.connect(self.openImportRasterNew)
-    
-    def openImport(self,index):
-        row = index.row()
-        item = self.model.getNItem(row)
-        self.feedback.pushDebugInfo("openImport item = " +str(item))
-        if item.is_vector:
-            data_item = self.openImportVector(item.data_item)
-        else:
-            data_item = self.openImportRaster(item.data_item)
-        if data_item:
-            item.updateFromDataItem(data_item)
-            self.model.layoutChanged.emit()
-        
-    def openImportVectorNew(self,checked):
-        data_item = self.openImportVector(None)
-        if data_item:
-            item = ImportItem(data_item)
-            self.model.addItem(item)
-            self.model.layoutChanged.emit()
-        
-    def openImportVector(self,data_item):
-        vector_data_dlg = VectorDataDialog(data_item,self.dlg)
-        data_item = vector_data_dlg.showDialog()
-        return data_item
-        
-    def openImportRasterNew(self,checked):
-        data_item = self.openImportRaster(None)
-        if data_item:
-            item = ImportItem(data_item)
-            self.model.addItem(item)
-            self.model.layoutChanged.emit()
-            
-    def openImportRaster(self,data_item):
-        raster_data_dlg = RasterDataDialog(data_item,self.dlg)
-        data_item = raster_data_dlg.showDialog()
-        return data_item
-        
-    
+    def getName(self):
+        return self.dict[self.NAME]
 
 class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
@@ -166,3 +56,5 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
 
+
+    

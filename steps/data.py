@@ -27,13 +27,10 @@ import os
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from .vector_data_dialog import VectorDataItem, VectorDataDialog
-from .raster_data_dialog import RasterDataItem, RasterDataDialog
+from ..ui.vector_data_dialog import VectorDataItem, VectorDataDialog
+from ..ui.raster_data_dialog import RasterDataItem, RasterDataDialog
+from ..ui.landuse_dialog import LanduseDialog
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, AbstractConnector
-
-# This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'landuse_dialog.ui'))
 
 
 class ImportItem(DictItem):
@@ -150,6 +147,7 @@ class ImportConnector(AbstractConnector):
         self.dlg = dlg
         self.feedback = dlg.feedback
         self.onlySelection = False
+        self.importModel = ImportModel(self)
         super().__init__(model,self.dlg.importView,
                          None,self.dlg.importDelete)
 
@@ -196,33 +194,83 @@ class ImportConnector(AbstractConnector):
         return data_item
         
 
+class LanduseItem(DictItem):
 
+    NAME = 'NAME'
+    IMPORTS = 'IMPORTS'
+    FIELDS = [ NAME ]
+    
+    def __init__(self, name, imports, parent=None):
+        dict = { self.NAME : name, self.IMPORTS : imports }
+        super().__init__(dict, self.FIELDS)
         
-class LanduseModel(abstract_model.DictModel):
+    def getName(self):
+        return self.dict[self.NAME]
+    def getImports(self):
+        return self.dict[self.IMPORTS]
+    def setName(self,name):
+        self.dict[self.NAME] = name
+    def setImports(self,imports):
+        self.dict[self.IMPORTS] = imports
+        
+    def applyItemWithContext(self,context,feedback,indexes=None):
+        names = [i.getName() for n in self.items]
+        import_items = [self.pluginModel.importModel.getItemFromName(n) for n in names]
+        paths = [i.getItemOutPath() for i in import_items]
+        # out_path = 
+        qgsTreatments.applyMergeRaster(paths,out_path,
+            out_type=Qgis.Int16,context=context,feedback=feedback)
+        
+class LanduseModel(DictModel):
 
-    def __init__(self, parentModel):
-        self.parentModel = parentModel
-        super().__init__(self,LanduseItem.FIELDS,feedback=parentModel.feedback)
-        
+    def __init__(self, pluginModel):
+        self.pluginModel = pluginModel
+        self.currImportNames = []
+        super().__init__(self,LanduseItem.FIELDS,feedback=pluginModel.feedback)
+                    
     def updateImportName(self):
         pass
         
     def getOutPathOfItem(self,item):
         pass
         
+    def getImportNames(self,item):  
+        return 
+        
     def applyItemWithContext(self,context,feedback,indexes=None):
         names = [i.getName() for n in self.items]
-        import_items = [self.parentModel.importModel.getItemFromName(n) for n in names]
+        import_items = [self.pluginModel.importModel.getItemFromName(n) for n in names]
         paths = [i.getItemOutPath() for i in import_items]
-        out_path = 
+        # out_path = 
         qgsTreatments.applyMergeRaster(paths,out_path,
             out_type=Qgis.Int16,context=context,feedback=feedback)
         
 
-class DataConnector:
+class LanduseConnector(AbstractConnector):
 
-    def __init__(self,dlg):
-            pass
+    def __init__(self,dlg,landuseModel):
+        self.dlg = dlg
+        super().__init__(landuseModel,self.dlg.landuseView,
+                        None,self.dlg.landuseRemove)
     
+    def connectComponents(self):
+        super().connectComponents()
+        self.dlg.landuseView.doubleClicked.connect(self.opentLanduse)
+        self.dlg.landuseNew.clicked.connect(self.openLanduseNew)
     
-    
+    def openLanduseNew(self,checked):
+        lanudse_dlg = LanduseDialog(self.landuseModel.pluginModel)
+        (name, imports) = lanudse_dlg.showDialog()
+        item = LanduseItem(name,imports)
+        self.model.addItem(item)
+        
+    def opentLanduse(self,index):
+        row = index.row()
+        item = self.model.getNItem(row)
+        self.feedback.pushDebugInfo("openImport item = " +str(item))
+        lanudse_dlg = LanduseDialog(self.landuseModel.pluginModel,
+            name=item.getName(),imports=item.getImports())
+        (name, imports) = lanudse_dlg.showDialog()
+        item.setName(name)
+        item.setImports(imports)
+        self.model.layoutChanged.emit()

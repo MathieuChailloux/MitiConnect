@@ -33,7 +33,7 @@ from qgis.utils import qgis_excepthook
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
-from .ui.erc_tvb_plugin_dialog import ErcTvbPluginDialog
+from .erc_tvb_plugin_dialog import ErcTvbPluginDialog
 
 from .algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from .graphab4qgis.GraphabPlugin import GraphabPlugin

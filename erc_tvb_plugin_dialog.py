@@ -29,8 +29,7 @@ from qgis.PyQt import QtWidgets
 import traceback
 from io import StringIO
 
-from .landuse_dialog import ImportConnector, ImportModel
-from ..qgis_lib_mc import feedbacks, log, utils
+from .qgis_lib_mc import feedbacks, log, utils
 from .steps import (params, data)#, species, friction, scenarios)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -38,7 +37,7 @@ PLUGIN_DIR = os.path.dirname(__file__)
 UI_DIR = os.path.join(PLUGIN_DIR,'ui')
 STEPS_DIR = os.path.join(PLUGIN_DIR,'steps')
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    UI_DIR, 'ui/erc_tvb_plugin_dialog_base.ui'))
+    UI_DIR, 'erc_tvb_plugin_dialog_base.ui'))
 
 
 class PluginModel:
@@ -47,14 +46,23 @@ class PluginModel:
         self.parser_name = "PluginModel"
         self.context = None
         self.feedback = feedback
-        utils.debug("feedback bd = " + str(feedback))
+        self.feedback.pushDebugInfo("feedback bd = " + str(feedback))
         self.paramsModel = params.ParamsModel(self)
         self.importModel = data.ImportModel(self)
         self.landuseModel = data.LanduseModel(self)
         # self.speciesModel = species.SpeciesModel(self)
         # self.frictionModel = friction.FrictionModel(self)
         # self.scenarioModel = groups.ScenarioModel(self)
-        self.models = [ self.paramsModel, self.dataModel ]
+        self.models = [ self.paramsModel, self.importModel,
+            self.landuseModel ]
+            
+    def addImport(import_item):
+        #self.landuseModel.
+        self.frictionModel.addImport(import_item)
+    def removeImport(import_item):
+        #self.landuseModel.
+        # self.frictionModel.removeImport(import_item)
+        pass
         
     def getImportsDir(self):
         return utils.createSubDir(self.paramsModel.workspace,"Imports")
@@ -89,9 +97,11 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         
         self.feedback =  feedbacks.TabProgressFeedback(self)
-        self.pluginModel = PluginModel(feedback)
-        self.importConnector = ImportConnector(self,self.pluginModel.)
-        self.connectors = [ self.feedback, self.importConnector ]
+        self.pluginModel = PluginModel(self.feedback)
+        self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)
+        self.landuseConnector = data.LanduseConnector(self,self.pluginModel.landuseModel)
+        self.connectors = [ self.feedback, self.importConnector,
+            self.landuseConnector ]
         
     def connectComponents(self):
         for tab in self.connectors:

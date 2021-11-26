@@ -257,7 +257,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="paramsTab">
               <attribute name="title">
@@ -2280,8 +2280,6 @@ p, li { white-space: pre-wrap; }
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../BioDispersal/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

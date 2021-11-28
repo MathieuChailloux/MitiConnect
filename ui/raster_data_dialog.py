@@ -26,6 +26,7 @@ import os
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+# from qgis.core import QgsMapLayerProxyModel
 
 from ..qgis_lib_mc import qgsUtils, abstract_model
 
@@ -76,10 +77,11 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.rasterDataLayerCombo,self.rasterDataLayerOpen)
+        self.layerComboDlg.setRasterMode()
         self.connectComponents()
 
     def connectComponents(self):
-        self.rasterDataReclassTable.setModel(self.reclass_model)
+        self.rasterDataDialogView.setModel(self.reclass_model)
         self.rasterDataLayerCombo.layerChanged.connect(self.setLayer)
         
     def setLayer(self,layer):
@@ -94,7 +96,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
             dict = {}
-            layer = self.vectorLayerCombo.currentLayer()
+            layer = self.rasterDataLayerCombo.currentLayer()
             if not layer:
                 self.feedback.user_error("No layer selected")
             layer_path = qgsUtils.pathOfLayer(layer)

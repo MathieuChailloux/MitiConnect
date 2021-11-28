@@ -96,7 +96,7 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
         
-        self.feedback =  feedbacks.TabProgressFeedback(self)
+        self.feedback =  feedbacks.ProgressFeedback(self)
         self.pluginModel = PluginModel(self.feedback)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)
         self.landuseConnector = data.LanduseConnector(self,self.pluginModel.landuseModel)

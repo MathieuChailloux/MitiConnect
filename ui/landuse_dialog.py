@@ -52,48 +52,58 @@ class LanduseDialogModel(abstract_model.DictModel):
     ITEM_FIELDS = [ NAME ]
     
     def __init__(self, name, string_list):
-        super().__init__(dict, LanduseStringItem.ITEM_FIELDS)
+        super().__init__(dict, LanduseDialogItem.ITEM_FIELDS)
         self.setItemsFromList(string_list)
         
     def setItemsFromList(self,string_list):
         self.items = []
         for str in string_list:
-            string_item = LanduseStringItem(str)
+            string_item = LanduseDialogItem(str)
             self.addItem(string_item)
         
     def getName(self):
         return self.dict[self.NAME]
         
 
-class LanduseDialog(QtWidgets.QDialog, FORM_CLASS, abstract_model.AbstractConnector):
-    def __init__(self, pluginModel, name = "", string_list = []):
-        """Constructor."""
-        super(LanduseDialog, self).__init__(self)
-        self.feedback=parent.feedback
-        model = LanduseDialogModel(name,string_list)
-        super(abstract_model.AbstractConnector, self).__init__(model,self.landuseDialogView)
-        self.pluginModel = pluginModel
-        self.setupUi(self)
+class LanduseDialogConnector(abstract_model.AbstractConnector):
 
+    def __init__(self,dlg,landuseDialogModel):
+        self.dlg = dlg
+        self.feedback = landuseDialogModel.feedback
+        super().__init__(landuseDialogModel,self.dlg.landuseDialogView,
+                        None,self.dlg.landuseRemove)
+        self.connectComponents()
+                        
     def connectComponents(self):
-        super(abstract_model.AbstractConnector, self).connectComponents()
-        self.landuseDialogReload.clicked.connect(self.reloadNames)
-        self.landuseDialogUp.clicked.connect(self.upgradeItem)
-        self.landuseDialogDown.clicked.connect(self.downgradeItem)
-        
+        super().connectComponents()
+        self.dlg.landuseDialogReload.clicked.connect(self.reloadNames)
+        self.dlg.landuseDialogUp.clicked.connect(self.upgradeItem)
+        self.dlg.landuseDialogDown.clicked.connect(self.downgradeItem)
+                        
     def reloadNames(self):
         self.model.setItemsFromList(self.pluginModel.importModel.getImportNames())
 
-    def updateUi(self):
-        self.landuseDialogName.setText(self.model.getName())
-        self.model.layoutChanged.emit()
+
+class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractConnector):
+    def __init__(self, parent, pluginModel, name = "", string_list = []):
+        """Constructor."""
+        super(LanduseDialog, self).__init__(parent)
+        self.setupUi(self)
+        # super().__init__(parent)
+        self.feedback=parent.feedback
+        self.model = LanduseDialogModel(name,string_list)
+        self.connector = abstract_model.AbstractConnector(self,self.model)
+        
+    # def updateUi(self):
+        # self.landuseDialogName.setText(self.model.getName())
+        # self.model.layoutChanged.emit()
         
     def showDialog(self):
         self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
             name = self.landuseDialogName.text()
-            imports = [ i.getName() for i in self.items ]
+            imports = [ i.getName() for i in self.model.items ]
             return (name, imports)
-        return None
+        return (None, None)
             
             

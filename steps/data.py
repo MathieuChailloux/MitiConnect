@@ -189,7 +189,7 @@ class ImportConnector(AbstractConnector):
             self.model.layoutChanged.emit()
             
     def openImportRaster(self,data_item):
-        raster_data_dlg = RasterDataDialog(data_item,self.dlg)
+        raster_data_dlg = RasterDataDialog(data_item,self.dlg,class_model=self.model.frictionModel)
         data_item = raster_data_dlg.showDialog()
         return data_item
         
@@ -250,6 +250,7 @@ class LanduseConnector(AbstractConnector):
 
     def __init__(self,dlg,landuseModel):
         self.dlg = dlg
+        self.feedback = landuseModel.feedback
         super().__init__(landuseModel,self.dlg.landuseView,
                         None,self.dlg.landuseRemove)
     
@@ -259,18 +260,21 @@ class LanduseConnector(AbstractConnector):
         self.dlg.landuseNew.clicked.connect(self.openLanduseNew)
     
     def openLanduseNew(self,checked):
-        lanudse_dlg = LanduseDialog(self.landuseModel.pluginModel)
-        (name, imports) = lanudse_dlg.showDialog()
-        item = LanduseItem(name,imports)
-        self.model.addItem(item)
+        landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel)
+        (name, imports) = landuse_dlg.showDialog()
+        if name:
+            item = LanduseItem(name,imports)
+            self.model.addItem(item)
+            self.model.layoutChanged.emit()
         
     def opentLanduse(self,index):
         row = index.row()
         item = self.model.getNItem(row)
         self.feedback.pushDebugInfo("openImport item = " +str(item))
-        lanudse_dlg = LanduseDialog(self.landuseModel.pluginModel,
+        landuse_dlg = LanduseDialog(self,self.model.pluginModel,
             name=item.getName(),imports=item.getImports())
-        (name, imports) = lanudse_dlg.showDialog()
-        item.setName(name)
-        item.setImports(imports)
-        self.model.layoutChanged.emit()
+        (name, imports) = landuse_dlg.showDialog()
+        if name:
+            item.setName(name)
+            item.setImports(imports)
+            self.model.layoutChanged.emit()

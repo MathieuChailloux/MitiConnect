@@ -26,6 +26,7 @@ import os
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+# from qgis.core import QgsMapLayerProxyModel
 
 from ..qgis_lib_mc import utils, qgsUtils, abstract_model
 
@@ -78,11 +79,13 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.vectorLayerCombo,self.vectorLayerFile)
+        self.layerComboDlg.setVectorMode()
         self.connectComponents()
         self.updateUi()
 
     # def mkItem(self):
         # layer = self.vectorLayerFile.fileInfo()
+        
         
     def connectComponents(self):
         self.vectorLayerCombo.layerChanged.connect(self.setLayer)

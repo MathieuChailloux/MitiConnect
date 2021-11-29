@@ -95,7 +95,8 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
-        
+            
+    def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
         self.pluginModel = PluginModel(self.feedback)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)

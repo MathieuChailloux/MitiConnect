@@ -206,6 +206,7 @@ class ErcTvbPlugin:
             self.first_start = False
             self.dlg = ErcTvbPluginDialog()
         
+        self.dlg.initTabs()
         self.dlg.connectComponents()
         # show the dialog
         self.dlg.show()

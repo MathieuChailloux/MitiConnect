@@ -94,6 +94,10 @@ class ImportModel(DictModel):
         super().__init__(self,ImportItem.FIELDS,feedback=parentModel.feedback)
         self.parentModel = parentModel
         
+    def addItem(self,item):
+        super().addItem(item)
+        self.parentModel.addImport(item)
+        
     def applyItemWithContext(self,item,context,feedback):
         input_path = itme.getLayerPath()
         input = qgsUtils.loadLayer(input_path)
@@ -136,7 +140,10 @@ class ImportModel(DictModel):
         for i in self.items:
             if i.name == name:
                 return i
-        None
+        return None
+        
+    def getImportNames(self):
+        return [i.getBaseName() for i in self.items]
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -256,18 +263,21 @@ class LanduseConnector(AbstractConnector):
     
     def connectComponents(self):
         super().connectComponents()
-        self.dlg.landuseView.doubleClicked.connect(self.opentLanduse)
+        self.dlg.landuseView.doubleClicked.connect(self.openLanduse)
         self.dlg.landuseNew.clicked.connect(self.openLanduseNew)
     
     def openLanduseNew(self,checked):
-        landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel)
+        import_names = self.model.pluginModel.importModel.getImportNames()
+        self.feedback.pushDebugInfo("import names = " + str(import_names))
+        landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
+            string_list=import_names)
         (name, imports) = landuse_dlg.showDialog()
         if name:
             item = LanduseItem(name,imports)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
         
-    def opentLanduse(self,index):
+    def openLanduse(self,index):
         row = index.row()
         item = self.model.getNItem(row)
         self.feedback.pushDebugInfo("openImport item = " +str(item))

@@ -51,8 +51,10 @@ class LanduseDialogModel(abstract_model.DictModel):
     LIST = 'LIST'
     ITEM_FIELDS = [ NAME ]
     
-    def __init__(self, name, string_list):
+    def __init__(self, name, string_list,pluginModel):
         super().__init__(dict, LanduseDialogItem.ITEM_FIELDS)
+        self.pluginModel = pluginModel
+        self.feedback = pluginModel.feedback
         self.setItemsFromList(string_list)
         
     def setItemsFromList(self,string_list):
@@ -60,6 +62,9 @@ class LanduseDialogModel(abstract_model.DictModel):
         for str in string_list:
             string_item = LanduseDialogItem(str)
             self.addItem(string_item)
+            
+    def reloadNames(self):
+        self.setItemsFromList(self.pluginModel.importModel.getImportNames())
         
     def getName(self):
         return self.dict[self.NAME]
@@ -71,17 +76,14 @@ class LanduseDialogConnector(abstract_model.AbstractConnector):
         self.dlg = dlg
         self.feedback = landuseDialogModel.feedback
         super().__init__(landuseDialogModel,self.dlg.landuseDialogView,
-                        None,self.dlg.landuseRemove)
+                        None,self.dlg.landuseDialogRemove)
         self.connectComponents()
                         
     def connectComponents(self):
         super().connectComponents()
-        self.dlg.landuseDialogReload.clicked.connect(self.reloadNames)
+        self.dlg.landuseDialogReload.clicked.connect(self.model.reloadNames)
         self.dlg.landuseDialogUp.clicked.connect(self.upgradeItem)
         self.dlg.landuseDialogDown.clicked.connect(self.downgradeItem)
-                        
-    def reloadNames(self):
-        self.model.setItemsFromList(self.pluginModel.importModel.getImportNames())
 
 
 class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractConnector):
@@ -91,8 +93,9 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
         self.setupUi(self)
         # super().__init__(parent)
         self.feedback=parent.feedback
-        self.model = LanduseDialogModel(name,string_list)
-        self.connector = abstract_model.AbstractConnector(self,self.model)
+        self.model = LanduseDialogModel(name,string_list,pluginModel)
+        self.connector = LanduseDialogConnector(self,self.model)
+        self.connector.connectComponents()
         
     # def updateUi(self):
         # self.landuseDialogName.setText(self.model.getName())

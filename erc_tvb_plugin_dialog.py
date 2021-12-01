@@ -56,9 +56,10 @@ class PluginModel:
         self.models = [ self.paramsModel, self.importModel,
             self.landuseModel ]
             
-    def addImport(import_item):
-        #self.landuseModel.
-        self.frictionModel.addImport(import_item)
+    def addImport(self,import_item):
+        item_name = import_item.getBaseName()
+        # self.landuseModel.addItem()
+        # self.frictionModel.addImport(import_item)
     def removeImport(import_item):
         #self.landuseModel.
         # self.frictionModel.removeImport(import_item)

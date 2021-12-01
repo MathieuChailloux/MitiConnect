@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>349</width>
-    <height>302</height>
+    <width>373</width>
+    <height>319</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2" colspan="2">
+   <item row="0" column="2" colspan="3">
     <widget class="QLineEdit" name="landuseDialogName">
      <property name="minimumSize">
       <size>
@@ -78,7 +78,7 @@
     </widget>
    </item>
    <item row="2" column="1" rowspan="2" colspan="4">
-    <widget class="QListView" name="landuseDialogView">
+    <widget class="QTableView" name="landuseDialogView">
      <property name="minimumSize">
       <size>
        <width>300</width>
@@ -96,6 +96,12 @@
    </item>
    <item row="4" column="2" colspan="3">
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>25</height>
+      </size>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

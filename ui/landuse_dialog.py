@@ -65,6 +65,7 @@ class LanduseDialogModel(abstract_model.DictModel):
             
     def reloadNames(self):
         self.setItemsFromList(self.pluginModel.importModel.getImportNames())
+        self.layoutChanged.emit()
         
     def getName(self):
         return self.dict[self.NAME]
@@ -77,7 +78,6 @@ class LanduseDialogConnector(abstract_model.AbstractConnector):
         self.feedback = landuseDialogModel.feedback
         super().__init__(landuseDialogModel,self.dlg.landuseDialogView,
                         None,self.dlg.landuseDialogRemove)
-        self.connectComponents()
                         
     def connectComponents(self):
         super().connectComponents()

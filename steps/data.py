@@ -27,6 +27,7 @@ import os
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
+from ..qgis_lib_mc.utils import CustomException
 from ..ui.vector_data_dialog import VectorDataItem, VectorDataDialog
 from ..ui.raster_data_dialog import RasterDataItem, RasterDataDialog
 from ..ui.landuse_dialog import LanduseDialog
@@ -267,24 +268,37 @@ class LanduseConnector(AbstractConnector):
         self.dlg.landuseNew.clicked.connect(self.openLanduseNew)
     
     def openLanduseNew(self,checked):
+        self.feedback.pushDebugInfo("checked = " + str(checked))
         import_names = self.model.pluginModel.importModel.getImportNames()
         self.feedback.pushDebugInfo("import names = " + str(import_names))
         landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
             string_list=import_names)
-        (name, imports) = landuse_dlg.showDialog()
+        res = landuse_dlg.showDialog()
+        if not res:
+            return
+        (name, imports) = res
         if name:
             item = LanduseItem(name,imports)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
+        else:
+            self.feedback.user_error("No name given to landuse layers ranking")
         
     def openLanduse(self,index):
         row = index.row()
         item = self.model.getNItem(row)
         self.feedback.pushDebugInfo("openImport item = " +str(item))
-        landuse_dlg = LanduseDialog(self,self.model.pluginModel,
-            name=item.getName(),imports=item.getImports())
-        (name, imports) = landuse_dlg.showDialog()
+        landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
+            name=item.getName(),string_list=item.getImports())
+        res = landuse_dlg.showDialog()
+        if not res:
+            return
+        (name, imports) = res
+        self.feedback.pushDebugInfo("name = " +str(name))
+        self.feedback.pushDebugInfo("imports = " +str(imports))
         if name:
             item.setName(name)
             item.setImports(imports)
             self.model.layoutChanged.emit()
+        else:
+            self.feedback.user_error("No name given to landuse layers ranking")

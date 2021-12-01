@@ -55,6 +55,7 @@ class LanduseDialogModel(abstract_model.DictModel):
         super().__init__(dict, LanduseDialogItem.ITEM_FIELDS)
         self.pluginModel = pluginModel
         self.feedback = pluginModel.feedback
+        self.name = name
         self.setItemsFromList(string_list)
         
     def setItemsFromList(self,string_list):
@@ -68,7 +69,9 @@ class LanduseDialogModel(abstract_model.DictModel):
         self.layoutChanged.emit()
         
     def getName(self):
-        return self.dict[self.NAME]
+        return self.name
+    def setName(self,name):
+        self.name = name
         
 
 class LanduseDialogConnector(abstract_model.AbstractConnector):
@@ -84,6 +87,7 @@ class LanduseDialogConnector(abstract_model.AbstractConnector):
         self.dlg.landuseDialogReload.clicked.connect(self.model.reloadNames)
         self.dlg.landuseDialogUp.clicked.connect(self.upgradeItem)
         self.dlg.landuseDialogDown.clicked.connect(self.downgradeItem)
+        self.dlg.landuseDialogName.textChanged.connect(self.model.setName)
 
 
 class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractConnector):
@@ -96,10 +100,11 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
         self.model = LanduseDialogModel(name,string_list,pluginModel)
         self.connector = LanduseDialogConnector(self,self.model)
         self.connector.connectComponents()
+        self.updateUi()
         
-    # def updateUi(self):
-        # self.landuseDialogName.setText(self.model.getName())
-        # self.model.layoutChanged.emit()
+    def updateUi(self):
+        self.landuseDialogName.setText(self.model.getName())
+        self.model.layoutChanged.emit()
         
     def showDialog(self):
         self.feedback.pushDebugInfo("showDialog")
@@ -107,6 +112,6 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
             name = self.landuseDialogName.text()
             imports = [ i.getName() for i in self.model.items ]
             return (name, imports)
-        return (None, None)
+        return None
             
             

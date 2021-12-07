@@ -27,18 +27,67 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
+from ..qgis_lib_mc import abstract_model
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'species_dialog.ui'))
+    
+class SpeciesDialogItem(abstract_model.DictItem):
 
+    ID = 'ID'
+    FULL_NAME = 'FULL_NAME'
+    MAX_DISP = 'MAX_DISP'
+    LANDUSE = 'LANDUSE'
+    EXTENT_MODE = 'EXTENT_MODE'
+    EXTENT_VAL = 'EXTENT_VAL'
+    ITEM_FIELDS = [ NAME, FULL_NAME, MAX_DISP, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
+    
+    def __init__(self,name,full_name,max_disp,disp_unit,min_patch,
+                 patch_unit,landuse,extent_mode,extent_val):
+        dict = { self.ID : name,
+                 self.FULL_NAME : full_name,
+                 self.MAX_DISP : max_disp,
+                 self.LANDUSE : landuse,
+                 self.EXTENT_MODE : extent_mode,
+                 self.EXTENT_VAL : extent_val }
+        super().__init__(dict, self.ITEM_FIELDS)
+        
+    def getName(self):
+        return self.dict[self.ID]
+        
+class SpeciesDialogModel(abstract_model.DictModel):
+
+    def __init__(self,pluginModel,name,):
+        self.pluginModel = pluginModel
+        self.feedback = pluginModel.feedback
+        
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(SpeciesDialog, self).__init__(parent)
-        # Set up the user interface from Designer through FORM_CLASS.
-        # After self.setupUi() you can access any designer object by doing
-        # self.<objectname>, and you can use autoconnect slots - see
-        # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
-        # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+        
+    def showDialog(self):
+        self.feedback.pushDebugInfo("showDialog")
+        while self.exec_():
+            name = self.speciesID.text()
+            full_name = self.speciesFullName.text()
+            max_disp = self.speciesMaxDisp.value()
+            disp_unit = self.speciesDispUnit.currentIndex()
+            min_patch = self.speciesMinPatch.value()
+            patch_unit = self.speciesPatchUnit.currentIndex()
+            landuse = self.speciesLanduse.currentLayer()
+            # landuse = self.speciesLanduse.currentIndex()
+            # group = self.speciesGroup.currentIndex()
+            buffer_mode = self.speciesBufferMode.isChecked()
+            layer_mode = self.speciesLayerMode.isChecked()
+            extent_mode = buffer_mode
+            buffer_val = self.speciesExtentBuffer.value()
+            buffer_layer = self.speciesExtentLayer.currentLayer()
+            extent_val = buffer_val if buffer_mode else buffer_layer
+            item = SpeciesDialogItem(name,full_name,max_disp,disp_unit,
+                min_patch,patch_unit,landuse,extent_mode,extent_val)
+            return item
+        return None

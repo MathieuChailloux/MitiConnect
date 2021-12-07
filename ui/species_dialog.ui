@@ -61,7 +61,7 @@
        </widget>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="speciesID">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -90,7 +90,7 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="2">
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="speciesFullName">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -119,7 +119,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QgsDoubleSpinBox" name="mQgsDoubleSpinBox">
+       <widget class="QgsDoubleSpinBox" name="speciesMaxDisp">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -129,7 +129,7 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="speciesDispUnit">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -167,7 +167,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QgsDoubleSpinBox" name="mQgsDoubleSpinBox_2">
+       <widget class="QgsDoubleSpinBox" name="speciesMinPatch">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -177,7 +177,7 @@
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QComboBox" name="comboBox_2">
+       <widget class="QComboBox" name="speciesPatchUnit">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -215,7 +215,7 @@
        </widget>
       </item>
       <item row="4" column="1" colspan="2">
-       <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox">
+       <widget class="QgsMapLayerComboBox" name="speciesLanduse">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -244,7 +244,7 @@
        </widget>
       </item>
       <item row="5" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBox_3">
+       <widget class="QComboBox" name="speciesGroup">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -281,7 +281,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0" colspan="2">
-       <widget class="QRadioButton" name="fieldRadioButton_2">
+       <widget class="QRadioButton" name="speciesBufferMode">
         <property name="text">
          <string>Buffer</string>
         </property>
@@ -291,14 +291,14 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QRadioButton" name="valueRadioButton_2">
+       <widget class="QRadioButton" name="speciesLayerMode">
         <property name="text">
          <string>Layer</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QgsDoubleSpinBox" name="mQgsDoubleSpinBox_3">
+       <widget class="QgsDoubleSpinBox" name="speciesExtentBuffer">
         <property name="minimumSize">
          <size>
           <width>42</width>
@@ -336,7 +336,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox_2">
+       <widget class="QgsMapLayerComboBox" name="speciesExtentLayer">
         <property name="enabled">
          <bool>false</bool>
         </property>

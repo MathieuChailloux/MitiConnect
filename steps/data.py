@@ -28,10 +28,11 @@ from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
 from ..qgis_lib_mc.utils import CustomException
-from ..ui.vector_data_dialog import VectorDataItem, VectorDataDialog
-from ..ui.raster_data_dialog import RasterDataItem, RasterDataDialog
+from ..ui.vector_data_dialog import VectorDlgItem, VectorDataDialog
+from ..ui.raster_data_dialog import RasterDlgItem, RasterDataDialog
 from ..ui.landuse_dialog import LanduseDialog
-from ..qgis_lib_mc.abstract_model import DictItem, DictModel, AbstractConnector
+from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
+    AbstractConnector, TableToDialogConnector)
 
 
 class ImportItem(DictItem):
@@ -47,34 +48,34 @@ class ImportItem(DictItem):
     VALUE_IDX = 2
     STATUS_IDX = 3
 
-    def __init__(self, data_item, parent=None):
-        self.updateFromDataItem(data_item)
-        super().__init__(self.dict)
+    def __init__(self, dlg_item, parent=None, feedback=None):
+        self.updateFromDlgItem(dlg_item)
+        super().__init__(self.dict,feedback=feedback)
         
-    def updateFromDataItem(self,data_item):
-        self.is_vector = type(data_item) is VectorDataItem
+    def updateFromDlgItem(self,dlg_item):
+        self.is_vector = type(dlg_item) is VectorDlgItem
         if self.is_vector:
-            if data_item.getBurnMode():
-                val = data_item.getBurnField()
+            if dlg_item.getBurnMode():
+                val = dlg_item.getBurnField()
             else:
-                val = data_item.getBurnVal()
+                val = dlg_item.getBurnVal()
         else:
             val = None
-        self.dict = { self.PATH : data_item.getLayerPath(),
+        self.dict = { self.PATH : dlg_item.getLayerPath(),
             self.MODE : self.is_vector,
             self.VALUE : val,
             self.STATUS : False }
         self.computed = False
-        self.data_item = data_item
+        self.dlg_item = dlg_item
         self.name = self.getBaseName()
         
     def getBaseName(self):
-        layer_path = self.data_item.getLayerPath()
+        layer_path = self.dlg_item.getLayerPath()
         if not layer_path:
             raise utils.CustomException("No layer specified for vector import")
         res = os.path.basename(layer_path)
-        # if self.is_vector and self.data_item.getBurnMode():
-            # res += "_" + str(self.data_item.getBurnField())
+        # if self.is_vector and self.dlg_item.getBurnMode():
+            # res += "_" + str(self.dlg_item.getBurnField())
         return res
         
     # def getNField(self,n):
@@ -149,7 +150,7 @@ class ImportModel(DictModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
 
-class ImportConnector(AbstractConnector):
+class ImportConnector(TableToDialogConnector):
 
     def __init__(self,dlg,model):
         self.dlg = dlg
@@ -161,45 +162,61 @@ class ImportConnector(AbstractConnector):
 
     def connectComponents(self):
         super().connectComponents()
-        self.dlg.importView.doubleClicked.connect(self.openImport)
+        # self.dlg.importView.doubleClicked.connect(self.openImport)
         self.dlg.importVector.clicked.connect(self.openImportVectorNew)
         self.dlg.importRaster.clicked.connect(self.openImportRasterNew)
     
-    def openImport(self,index):
-        row = index.row()
-        item = self.model.getNItem(row)
-        self.feedback.pushDebugInfo("openImport item = " +str(item))
+    # def openImport(self,index):
+        # row = index.row()
+        # item = self.model.getNItem(row)
+        # self.feedback.pushDebugInfo("openImport item = " +str(item))
+        # if item.is_vector:
+            # dlg_item = self.openImportVector(item.dlg_item)
+        # else:
+            # dlg_item = self.openImportRaster(item.dlg_item)
+        # if dlg_item:
+            # item.updateFromDlgItem(dlg_item)
+            # self.model.layoutChanged.emit()
+            
+            
+    def openDialog(self,item):
         if item.is_vector:
-            data_item = self.openImportVector(item.data_item)
+            item_dlg = VectorDataDialog(item.dlg_item,self.dlg)
         else:
-            data_item = self.openImportRaster(item.data_item)
-        if data_item:
-            item.updateFromDataItem(data_item)
-            self.model.layoutChanged.emit()
+            item_dlg = RasterDataDialog(item.dlg_item,self.dlg,
+                class_model=self.model.frictionModel)
+        dlg_item = item_dlg.showDialog()
+        return dlg_item
         
     def openImportVectorNew(self,checked):
-        data_item = self.openImportVector(None)
-        if data_item:
-            item = ImportItem(data_item)
-            self.model.addItem(item)
-            self.model.layoutChanged.emit()
+        item_dlg = VectorDataDialog(None,self.dlg)
+        dlg_item = item_dlg.showDialog()
+        self.addDlgItem(dlg_item)
         
-    def openImportVector(self,data_item):
-        vector_data_dlg = VectorDataDialog(data_item,self.dlg)
-        data_item = vector_data_dlg.showDialog()
-        return data_item
+    # def openImportVector(self,dlg_item):
+        # vector_data_dlg = VectorDataDialog(dlg_item,self.dlg)
+        # dlg_item = vector_data_dlg.showDialog()
+        # return dlg_item
         
     def openImportRasterNew(self,checked):
-        data_item = self.openImportRaster(None)
-        if data_item:
-            item = ImportItem(data_item)
+        item_dlg = RasterDataDialog(None,self.dlg,
+            class_model=self.model.frictionModel)
+        dlg_item = item_dlg.showDialog()
+        self.addDlgItem(dlg_item)
+            
+    # def openImportRaster(self,dlg_item):
+        # raster_data_dlg = RasterDataDialog(dlg_item,self.dlg,class_model=self.model.frictionModel)
+        # dlg_item = raster_data_dlg.showDialog()
+        # return dlg_item
+        
+    def addDlgItem(self,dlg_item):
+        if dlg_item:
+            item = ImportItem(dlg_item)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
-            
-    def openImportRaster(self,data_item):
-        raster_data_dlg = RasterDataDialog(data_item,self.dlg,class_model=self.model.frictionModel)
-        data_item = raster_data_dlg.showDialog()
-        return data_item
+        
+    def updateItem(self,item,dlg_item): 
+        item.updateFromDlgItem(dlg_item)
         
 
 class LanduseItem(DictItem):
@@ -208,9 +225,9 @@ class LanduseItem(DictItem):
     IMPORTS = 'IMPORTS'
     FIELDS = [ NAME ]
     
-    def __init__(self, name, imports, parent=None):
+    def __init__(self, name, imports, parent=None, feedback=None):
         dict = { self.NAME : name, self.IMPORTS : imports }
-        super().__init__(dict, self.FIELDS)
+        super().__init__(dict, self.FIELDS, feedback=feedback)
         
     def getName(self):
         return self.dict[self.NAME]
@@ -278,7 +295,7 @@ class LanduseConnector(AbstractConnector):
             return
         (name, imports) = res
         if name:
-            item = LanduseItem(name,imports)
+            item = LanduseItem(name,imports,feedback=self.feedback)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
         else:

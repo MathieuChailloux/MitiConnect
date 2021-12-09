@@ -34,7 +34,7 @@ from ..qgis_lib_mc import utils, qgsUtils, abstract_model
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'vector_data_dialog.ui'))
 
-class VectorDataItem(abstract_model.DictItem):
+class VectorDlgItem(abstract_model.DictItem):
 
     PATH = 'PATH'
     EXPRESSION = 'EXPRESSION'
@@ -141,16 +141,16 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
                 self.feedback.user_error("Could not load layer " + str(layer_path))
-            dict[VectorDataItem.PATH] = layer_path
-            dict[VectorDataItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
+            dict[VectorDlgItem.PATH] = layer_path
+            dict[VectorDlgItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
             burn_field_mode = self.vectorFieldMode.isChecked()
-            dict[VectorDataItem.BURN_MODE] = burn_field_mode
-            dict[VectorDataItem.BURN_FIELD] = self.vectorFieldCombo.currentField()
-            dict[VectorDataItem.BURN_VAL] = self.vectorFixedValue.value()
-            dict[VectorDataItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
-            dict[VectorDataItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
-            dict[VectorDataItem.BUFFER_EXPR] = self.vectorBufferValue.value()
-            self.data_item = VectorDataItem(dict)
+            dict[VectorDlgItem.BURN_MODE] = burn_field_mode
+            dict[VectorDlgItem.BURN_FIELD] = self.vectorFieldCombo.currentField()
+            dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
+            dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
+            dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
+            dict[VectorDlgItem.BUFFER_EXPR] = self.vectorBufferValue.value()
+            self.data_item = VectorDlgItem(dict)
             self.feedback.pushDebugInfo("dict = " + str(dict))
             return self.data_item
         return None

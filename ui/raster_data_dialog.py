@@ -52,7 +52,7 @@ class ReclassModel(abstract_model.DictModel):
     
 
 
-class RasterDataItem(abstract_model.DictItem):
+class RasterDlgItem(abstract_model.DictItem):
 
     PATH = 'PATH'
     RECLASS = 'RECLASS'
@@ -102,8 +102,8 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
                 self.feedback.user_error("Could not load layer " + str(layer_path))
-            dict[RasterDataItem.PATH] = layer_path
-            dict[RasterDataItem.RECLASS] = self.reclass_model
-            self.data_item = RasterDataItem(dict)
+            dict[RasterDlgItem.PATH] = layer_path
+            dict[RasterDlgItem.RECLASS] = self.reclass_model
+            self.data_item = RasterDlgItem(dict)
             return self.data_item
         return None

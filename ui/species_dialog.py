@@ -41,7 +41,7 @@ class SpeciesDialogItem(abstract_model.DictItem):
     LANDUSE = 'LANDUSE'
     EXTENT_MODE = 'EXTENT_MODE'
     EXTENT_VAL = 'EXTENT_VAL'
-    ITEM_FIELDS = [ NAME, FULL_NAME, MAX_DISP, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
+    ITEM_FIELDS = [ ID, FULL_NAME, MAX_DISP, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
     
     def __init__(self,name,full_name,max_disp,disp_unit,min_patch,
                  patch_unit,landuse,extent_mode,extent_val):
@@ -64,13 +64,28 @@ class SpeciesDialogModel(abstract_model.DictModel):
         
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, parent, dlg_item):
         """Constructor."""
         super(SpeciesDialog, self).__init__(parent)
         self.setupUi(self)
+        self.updateUi(dlg_item)
+        
+    def connectComponents(self):
+        super().connectComponents()
+        self.speciesBufferMode.clicked.connect(self.switchBufferMode)
+        self.speciesLayerMode.clicked.connect(self.switchLayerMode)
+        
+    def switchMode(self,buffer_mode):
+        self.speciesBufferMode.setChecked(buffer_mode)
+        self.speciesLayerMode.setChecked(not buffer_mode)
+        self.speciesExtentBuffer.setEnabled(buffer_mode)
+        self.speciesExtentLayer.setEnabled(not buffer_mode)
+    def switchBufferMode(self):
+        self.switchMode(True)
+    def switchLayerMode(self):
+        self.switchMode(False)
         
     def showDialog(self):
-        self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
             name = self.speciesID.text()
             full_name = self.speciesFullName.text()
@@ -78,16 +93,33 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             disp_unit = self.speciesDispUnit.currentIndex()
             min_patch = self.speciesMinPatch.value()
             patch_unit = self.speciesPatchUnit.currentIndex()
-            landuse = self.speciesLanduse.currentLayer()
-            # landuse = self.speciesLanduse.currentIndex()
+            # landuse = self.speciesLanduse.currentLayer()
+            landuse = self.speciesLanduse.currentIndex()
             # group = self.speciesGroup.currentIndex()
             buffer_mode = self.speciesBufferMode.isChecked()
             layer_mode = self.speciesLayerMode.isChecked()
             extent_mode = buffer_mode
             buffer_val = self.speciesExtentBuffer.value()
-            buffer_layer = self.speciesExtentLayer.currentLayer()
+            buffer_layer = self.speciesExtentLayer.filePath()
             extent_val = buffer_val if buffer_mode else buffer_layer
             item = SpeciesDialogItem(name,full_name,max_disp,disp_unit,
                 min_patch,patch_unit,landuse,extent_mode,extent_val)
             return item
         return None
+        
+    def updateUi(self,dlg_item):
+        if dlg_item:
+            self.speciesID.setText(dlg_item.dict[SpeciesDialogItem.ID])
+            self.speciesFullName.setText(dlg_item.dict[SpeciesDialogItem.FULL_NAME])
+            self.speciesMaxDisp.setValue(dlg_item.dict[SpeciesDialogItem.MAX_DISP])
+            self.speciesDispUnit.setCurrentIndex(0)
+            self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesDialogItem.LANDUSE])
+            # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesDialogItem.GROUP])
+            extent_mode = dlg_item.dict[SpeciesDialogItem.EXTENT_MODE]
+            extent_val = dlg_item.dict[SpeciesDialogItem.EXTENT_VAL]
+            self.switchMode(extent_mode)
+            if extent_mode:
+                self.speciesExtentBuffer.setValue(extent_val)
+            else:
+                self.speciesExtentLayer.setFilePath(extent_val)
+            

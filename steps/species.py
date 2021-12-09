@@ -29,25 +29,25 @@ from qgis.PyQt.QtCore import Qt
 
 from ..qgis_lib_mc.utils import CustomException
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
-from ..ui.species_dialog import SpeciesDialogItem, SpeciesDialog
+from ..ui.species_dialog import SpeciesItem, SpeciesDialog
 
 
-class SpeciesItem(SpeciesDialogItem):
+# class SpeciesItem(SpeciesDialogItem):
 
-    FIELDS = [ SpeciesDialogItem.ID, SpeciesDialogItem.FULL_NAME ]
+    # FIELDS = [ SpeciesDialogItem.ID, SpeciesDialogItem.FULL_NAME ]
 
-    def __init__(self, dlg_item, parent=None, feedback=None):
-        self.updateFromDlgItem(dlg_item)
-        dict = dlg_item.dict if dlg_item else {}
-        DictItem.__init__(self,dlg_item.dict,fields=self.FIELDS,feedback=feedback)
+    # def __init__(self, dlg_item, parent=None, feedback=None):
+        # self.updateFromDlgItem(dlg_item)
+        # dict = dlg_item.dict if dlg_item else {}
+        # DictItem.__init__(self,dlg_item.dict,fields=self.FIELDS,feedback=feedback)
         
-    def updateFromDlgItem(self,dlg_item):
-        if dlg_item:
-            self.dict = { k : dlg_item.dict[k] for k in self.FIELDS if k in dlg_item.dict }
-            self.dlg_item = dlg_item
+    # def updateFromDlgItem(self,dlg_item):
+        # if dlg_item:
+            # self.dict = { k : dlg_item.dict[k] for k in self.FIELDS if k in dlg_item.dict }
+            # self.dlg_item = dlg_item
             
-    def getName(self):
-        return self.dict[self.ID]
+    # def getName(self):
+        # return self.dict[self.ID]
 
 class SpeciesModel(DictModel):
 
@@ -92,8 +92,8 @@ class SpeciesConnector(TableToDialogConnector):
     
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
-        dlg_item = item.dlg_item if item else None
-        species_dlg = SpeciesDialog(self.dlg,dlg_item)
+        # dlg_item = item.dlg_item if item else None
+        species_dlg = SpeciesDialog(self.dlg,item,feedback=self.feedback)
         return species_dlg 
     
     def updateFromDlgItem(self,item,dlg_item):

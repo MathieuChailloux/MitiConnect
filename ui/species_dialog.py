@@ -33,7 +33,7 @@ from ..qgis_lib_mc import abstract_model
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'species_dialog.ui'))
     
-class SpeciesDialogItem(abstract_model.DictItem):
+class SpeciesItem(abstract_model.DictItem):
 
     ID = 'ID'
     FULL_NAME = 'FULL_NAME'
@@ -41,34 +41,32 @@ class SpeciesDialogItem(abstract_model.DictItem):
     LANDUSE = 'LANDUSE'
     EXTENT_MODE = 'EXTENT_MODE'
     EXTENT_VAL = 'EXTENT_VAL'
-    ITEM_FIELDS = [ ID, FULL_NAME, MAX_DISP, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
+    FIELDS = [ ID, FULL_NAME, MAX_DISP, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
+    DISPLAY_FIELDS = [ ID, FULL_NAME ]
     
     def __init__(self,name,full_name,max_disp,disp_unit,min_patch,
-                 patch_unit,landuse,extent_mode,extent_val):
+                 patch_unit,landuse,extent_mode,extent_val,
+                 feedback=None):
         dict = { self.ID : name,
                  self.FULL_NAME : full_name,
                  self.MAX_DISP : max_disp,
                  self.LANDUSE : landuse,
                  self.EXTENT_MODE : extent_mode,
                  self.EXTENT_VAL : extent_val }
-        super().__init__(dict, self.ITEM_FIELDS)
+        super().__init__(dict,self.FIELDS,feedback=feedback,
+            display_fields=self.DISPLAY_FIELDS)
         
     def getName(self):
         return self.dict[self.ID]
-        
-class SpeciesDialogModel(abstract_model.DictModel):
-
-    def __init__(self,pluginModel,name,):
-        self.pluginModel = pluginModel
-        self.feedback = pluginModel.feedback
-        
+                
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent, dlg_item):
+    def __init__(self, parent, dlg_item,feedback=None):
         """Constructor."""
         super(SpeciesDialog, self).__init__(parent)
         self.setupUi(self)
         self.updateUi(dlg_item)
+        self.feedback=feedback
         
     def connectComponents(self):
         super().connectComponents()
@@ -102,21 +100,22 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             buffer_val = self.speciesExtentBuffer.value()
             buffer_layer = self.speciesExtentLayer.filePath()
             extent_val = buffer_val if buffer_mode else buffer_layer
-            item = SpeciesDialogItem(name,full_name,max_disp,disp_unit,
-                min_patch,patch_unit,landuse,extent_mode,extent_val)
+            item = SpeciesItem(name,full_name,max_disp,disp_unit,
+                min_patch,patch_unit,landuse,extent_mode,extent_val,
+                feedback=self.feedback)
             return item
         return None
         
     def updateUi(self,dlg_item):
         if dlg_item:
-            self.speciesID.setText(dlg_item.dict[SpeciesDialogItem.ID])
-            self.speciesFullName.setText(dlg_item.dict[SpeciesDialogItem.FULL_NAME])
-            self.speciesMaxDisp.setValue(dlg_item.dict[SpeciesDialogItem.MAX_DISP])
+            self.speciesID.setText(dlg_item.dict[SpeciesItem.ID])
+            self.speciesFullName.setText(dlg_item.dict[SpeciesItem.FULL_NAME])
+            self.speciesMaxDisp.setValue(dlg_item.dict[SpeciesItem.MAX_DISP])
             self.speciesDispUnit.setCurrentIndex(0)
-            self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesDialogItem.LANDUSE])
-            # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesDialogItem.GROUP])
-            extent_mode = dlg_item.dict[SpeciesDialogItem.EXTENT_MODE]
-            extent_val = dlg_item.dict[SpeciesDialogItem.EXTENT_VAL]
+            self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesItem.LANDUSE])
+            # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesItem.GROUP])
+            extent_mode = dlg_item.dict[SpeciesItem.EXTENT_MODE]
+            extent_val = dlg_item.dict[SpeciesItem.EXTENT_VAL]
             self.switchMode(extent_mode)
             if extent_mode:
                 self.speciesExtentBuffer.setValue(extent_val)

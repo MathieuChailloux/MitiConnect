@@ -185,8 +185,9 @@ class ImportConnector(TableToDialogConnector):
         else:
             item_dlg = RasterDataDialog(item.dlg_item,self.dlg,
                 class_model=self.model.frictionModel)
-        dlg_item = item_dlg.showDialog()
-        return dlg_item
+        return item_dlg
+        # dlg_item = item_dlg.showDialog()
+        # return dlg_item
         
     def openImportVectorNew(self,checked):
         item_dlg = VectorDataDialog(None,self.dlg)
@@ -223,7 +224,7 @@ class LanduseItem(DictItem):
 
     NAME = 'NAME'
     IMPORTS = 'IMPORTS'
-    FIELDS = [ NAME ]
+    FIELDS = [ NAME, IMPORTS ]
     
     def __init__(self, name, imports, parent=None, feedback=None):
         dict = { self.NAME : name, self.IMPORTS : imports }

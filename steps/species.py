@@ -72,6 +72,8 @@ class SpeciesModel(DictModel):
                 return i
         return None
         
+    def getNames(self):
+        return [i.getName() for i in self.items]
     def getImportNames(self):
         return [i.getBaseName() for i in self.items]
         

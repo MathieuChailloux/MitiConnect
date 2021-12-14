@@ -27,10 +27,35 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
+from ..qgis_lib_mc import abstract_model
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_dialog.ui'))
 
+class ScenarioReclassItem(abstract_model.DictItem):
+
+    VAL = 'VAL'
+    CLASS = 'CLASS'
+    FIELDS = [ VAL, CLASS ]
+    
+    def __init__(self, name, reclass=None):
+        dict = { self.NAME : name, reclass : reclass }
+        super().__init__(dict, self.ITEM_FIELDS)
+        
+class ScenarioReclassModel(abstract_model.DictModel):
+
+    def __init__(self, parentDlg):
+        pass
+        
+
+class ScenarioItem(abstract_model.DictItem):
+    
+    NAME = 'NAME'
+    BASE = 'BASE'
+    LAYER = 'LAYER'
+    
+    
 
 class ScenarioDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):

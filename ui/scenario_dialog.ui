@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
+    <width>484</width>
     <height>564</height>
    </rect>
   </property>
@@ -34,7 +34,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEdit">
+    <widget class="QLineEdit" name="scName">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -63,7 +63,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="scBase">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -104,7 +104,7 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox">
+        <widget class="QgsMapLayerComboBox" name="scLayer">
          <property name="geometry">
           <rect>
            <x>60</x>
@@ -148,7 +148,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="scShort">
         <property name="minimumSize">
          <size>
           <width>151</width>
@@ -167,7 +167,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="scPerField">
         <property name="minimumSize">
          <size>
           <width>151</width>
@@ -207,7 +207,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QRadioButton" name="fieldRadioButton_2">
+          <widget class="QRadioButton" name="scFieldMode">
            <property name="text">
             <string>Field</string>
            </property>
@@ -217,14 +217,14 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QRadioButton" name="valueRadioButton_2">
+          <widget class="QRadioButton" name="scFixeMode">
            <property name="text">
             <string>Fixed value</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QgsFieldComboBox" name="fieldComboBox_2">
+          <widget class="QgsFieldComboBox" name="scField">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -249,7 +249,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="valueLineEdit_2">
+          <widget class="QLineEdit" name="scBurnVal">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -259,7 +259,7 @@
           </widget>
          </item>
          <item row="2" column="0" colspan="2">
-          <widget class="QTableWidget" name="encodingTableWidget">
+          <widget class="QTableWidget" name="scTable">
            <property name="enabled">
             <bool>false</bool>
            </property>

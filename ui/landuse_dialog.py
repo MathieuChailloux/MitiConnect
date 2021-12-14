@@ -52,7 +52,7 @@ class LanduseDialogModel(abstract_model.DictModel):
     ITEM_FIELDS = [ NAME ]
     
     def __init__(self, name, string_list,pluginModel):
-        super().__init__(dict, LanduseDialogItem.ITEM_FIELDS)
+        super().__init__({self.NAME : name}, LanduseDialogItem.ITEM_FIELDS)
         self.pluginModel = pluginModel
         self.feedback = pluginModel.feedback
         self.name = name

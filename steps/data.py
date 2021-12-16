@@ -37,13 +37,13 @@ from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
 
 class ImportItem(DictItem):
             
-    PATH = 'PATH'
+    INPUT = 'INPUT'
     MODE = 'MODE'
     VALUE = 'VALUE'
     STATUS = 'STATUS'
-    FIELDS = [ PATH, MODE, VALUE, STATUS ]
+    FIELDS = [ INPUT, MODE, VALUE, STATUS ]
     
-    PATH_IDX = 0
+    INPUT_IDX = 0
     MODE_IDX = 1
     VALUE_IDX = 2
     STATUS_IDX = 3
@@ -61,7 +61,7 @@ class ImportItem(DictItem):
                 val = dlg_item.getBurnVal()
         else:
             val = None
-        self.dict = { self.PATH : dlg_item.getLayerPath(),
+        self.dict = { self.INPUT : dlg_item.dict[self.INPUT],
             self.MODE : self.is_vector,
             self.VALUE : val,
             self.STATUS : False }
@@ -70,7 +70,7 @@ class ImportItem(DictItem):
         self.name = self.getBaseName()
         
     def getBaseName(self):
-        layer_path = self.dlg_item.getLayerPath()
+        layer_path = self.dict[self.INPUT]
         if not layer_path:
             raise utils.CustomException("No layer specified for vector import")
         res = os.path.basename(layer_path)
@@ -79,8 +79,8 @@ class ImportItem(DictItem):
         return res
         
     # def getNField(self,n):
-        # if n == self.PATH_IDX:
-            # return self.item[self.PATH]
+        # if n == self.INPUT_IDX:
+            # return self.item[self.INPUT]
         # elif n == self.MODE_IDX:
             # return 'V' if self.is_vector else 'R'
         # elif n == self.VALUE_IDX:
@@ -91,7 +91,7 @@ class ImportItem(DictItem):
 class ImportModel(DictModel):
 
     def __init__(self, parentModel):
-        # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
+        # self.item_fields = [ self.INPUT, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
         super().__init__(self,ImportItem.FIELDS,feedback=parentModel.feedback)
         self.parentModel = parentModel
@@ -156,7 +156,7 @@ class ImportConnector(TableToDialogConnector):
         self.dlg = dlg
         self.feedback = dlg.feedback
         self.onlySelection = False
-        self.importModel = ImportModel(self)
+        # self.importModel = ImportModel(self)
         super().__init__(model,self.dlg.importView,
                          None,self.dlg.importDelete)
 
@@ -184,7 +184,7 @@ class ImportConnector(TableToDialogConnector):
             item_dlg = VectorDataDialog(item.dlg_item,self.dlg)
         else:
             item_dlg = RasterDataDialog(item.dlg_item,self.dlg,
-                class_model=self.model.frictionModel)
+                class_model=self.model.parentModel.frictionModel)
         return item_dlg
         # dlg_item = item_dlg.showDialog()
         # return dlg_item
@@ -201,7 +201,7 @@ class ImportConnector(TableToDialogConnector):
         
     def openImportRasterNew(self,checked):
         item_dlg = RasterDataDialog(None,self.dlg,
-            class_model=self.model.frictionModel)
+            class_model=self.model.parentModel.frictionModel)
         dlg_item = item_dlg.showDialog()
         self.addDlgItem(dlg_item)
             

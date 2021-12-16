@@ -41,7 +41,8 @@ class ReclassItem(abstract_model.DictItem):
     ITEM_FIELDS = [ INPUT, OUTPUT ]
 
     def __init__(self, in_val,out_val):
-        super().__init__(self.ITEM_FIELDS)
+        d = { self.INPUT : in_val, self.OUTPUT : out_val }
+        super().__init__(d,self.ITEM_FIELDS)
         
         
 class ReclassModel(abstract_model.DictModel):
@@ -54,12 +55,12 @@ class ReclassModel(abstract_model.DictModel):
 
 class RasterDlgItem(abstract_model.DictItem):
 
-    PATH = 'PATH'
+    INPUT = 'INPUT'
     RECLASS = 'RECLASS'
-    ITEM_FIELDS = [ PATH, RECLASS ]
+    ITEM_FIELDS = [ INPUT, RECLASS ]
 
-    def __init__(self, parent=None):
-        super().__init__(self.ITEM_FIELDS)
+    def __init__(self, dict, parent=None):
+        super().__init__(dict,self.ITEM_FIELDS)
 
 class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, raster_data_item, parent,class_model=None):
@@ -102,7 +103,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
                 self.feedback.user_error("Could not load layer " + str(layer_path))
-            dict[RasterDlgItem.PATH] = layer_path
+            dict[RasterDlgItem.INPUT] = layer_path
             dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict)
             return self.data_item

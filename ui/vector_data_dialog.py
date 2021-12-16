@@ -36,7 +36,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class VectorDlgItem(abstract_model.DictItem):
 
-    PATH = 'PATH'
+    INPUT = 'INPUT'
     EXPRESSION = 'EXPRESSION'
     BURN_MODE = 'BURN_MODE'
     BURN_FIELD = 'BURN_FIELD'
@@ -44,14 +44,14 @@ class VectorDlgItem(abstract_model.DictItem):
     ALL_TOUCH = 'ALL_TOUCH'
     BUFFER_MODE = 'BUFFER_MODE'
     BUFFER_EXPR = 'BUFFER_EXPR'
-    ITEM_FIELDS = [ PATH, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
+    ITEM_FIELDS = [ INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
             ALL_TOUCH, BUFFER_MODE, BUFFER_EXPR ]
 
     def __init__(self, dict, parent=None):
         super().__init__(dict, self.ITEM_FIELDS)
         
     def getLayerPath(self):
-        return self.dict[self.PATH]
+        return self.dict[self.INPUT]
     def getExpression(self):
         return self.dict[self.EXPRESSION]
     def getBurnMode(self):
@@ -141,7 +141,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
                 self.feedback.user_error("Could not load layer " + str(layer_path))
-            dict[VectorDlgItem.PATH] = layer_path
+            dict[VectorDlgItem.INPUT] = layer_path
             dict[VectorDlgItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
             burn_field_mode = self.vectorFieldMode.isChecked()
             dict[VectorDlgItem.BURN_MODE] = burn_field_mode

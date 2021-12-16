@@ -27,7 +27,7 @@ import os
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from ..qgis_lib_mc.utils import CustomException
+from ..qgis_lib_mc.utils import CustomException, getIntValues
 from ..qgis_lib_mc.abstract_model import DictItem, ExtensiveTableModel, AbstractConnector
 
 
@@ -39,6 +39,11 @@ class FrictionModel(ExtensiveTableModel):
         
     def reload(self):
         colNames = self.parentModel.speciesModel.getNames()
+        
+    def getFreeVals(self,nbVals):
+        codes = [ i.dict[self.ROW_CODE] for i in self.items ]
+        freeVals = getIntValues(nbVals)
+        return freeVals
         
         
           

@@ -61,6 +61,8 @@ class ScenarioItem(DictItem):
         
 class ScenarioModel(DictModel):
 
+    
+
     def __init__(self, parentModel):
         super().__init__(self,ScenarioItem.FIELDS,feedback=parentModel.feedback)
         self.parentModel = parentModel

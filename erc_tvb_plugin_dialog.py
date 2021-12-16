@@ -30,7 +30,7 @@ import traceback
 from io import StringIO
 
 from .qgis_lib_mc import feedbacks, log, utils
-from .steps import (params, data, species, friction)#, species, friction, scenarios)
+from .steps import (params, data, species, friction, scenario)#, species, friction, scenarios)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 PLUGIN_DIR = os.path.dirname(__file__)
@@ -52,9 +52,10 @@ class PluginModel:
         self.landuseModel = data.LanduseModel(self)
         self.speciesModel = species.SpeciesModel(self)
         self.frictionModel = friction.FrictionModel(self)
-        # self.scenarioModel = groups.ScenarioModel(self)
+        self.scenarioModel = scenario.ScenarioModel(self)
         self.models = [ self.paramsModel, self.importModel,
-            self.landuseModel, self.speciesModel, self.frictionModel ]
+            self.landuseModel, self.speciesModel, self.frictionModel,
+            self.scenarioModel ]
             
     def addImport(self,import_item):
         item_name = import_item.getBaseName()
@@ -109,8 +110,10 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.landuseConnector = data.LanduseConnector(self,self.pluginModel.landuseModel)
         self.speciesConnector = species.SpeciesConnector(self,self.pluginModel.speciesModel)
         self.frictionConnector = friction.FrictionConnector(self,self.pluginModel.frictionModel)
+        self.scenarioConnector = scenario.ScenarioConnector(self,self.pluginModel.scenarioModel)
         self.connectors = [ self.feedback, self.importConnector,
-            self.landuseConnector, self.speciesConnector, self.frictionConnector ]
+            self.landuseConnector, self.speciesConnector,
+            self.frictionConnector, self.scenarioConnector ]
         
     def connectComponents(self):
         for tab in self.connectors:

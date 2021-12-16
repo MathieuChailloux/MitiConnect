@@ -1573,7 +1573,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QToolButton" name="scenariosAdd">
+                      <widget class="QToolButton" name="scenarioAdd">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -1969,7 +1969,7 @@
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QTableView" name="scenariosView">
+                   <widget class="QTableView" name="scenarioView">
                     <property name="minimumSize">
                      <size>
                       <width>300</width>

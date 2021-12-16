@@ -27,7 +27,7 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
-from ..qgis_lib_mc import abstract_model
+from ..qgis_lib_mc import abstract_model, qgsUtils, feedbacks
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -40,25 +40,46 @@ class ScenarioReclassItem(abstract_model.DictItem):
     FIELDS = [ VAL, CLASS ]
     
     def __init__(self, name, reclass=None):
-        dict = { self.NAME : name, reclass : reclass }
-        super().__init__(dict, self.ITEM_FIELDS)
+        dict = { NAME : name, reclass : reclass }
+        super().__init__(dict, FIELDS)
         
 class ScenarioReclassModel(abstract_model.DictModel):
 
-    def __init__(self, parentDlg):
-        pass
+    def __init__(self,values=[]):
+        super().__init__(self,ScenarioReclassItem.FIELDS)
+        self.loadValues(values)
+            
+    def loadValues(self,values):
+        self.items=[]
+        for v in values:
+            i = ScenarioReclassItem(v)
+            self.addItem(i)
+        self.layoutChanged.emit()
         
 
-class ScenarioItem(abstract_model.DictItem):
+class ScenarioDialogItem(abstract_model.DictItem):
     
     NAME = 'NAME'
     BASE = 'BASE'
     LAYER = 'LAYER'
+    # True = Field mode, False = Fixed mode
+    RECLASS_MODE = 'RECLASS_MODE'
+    RECLASS_FIELD = 'RECLASS_FIELD'
+    RECLASS_VAL = 'RECLASS_VAL'
+    # DISPLAY_FIELDS = ['NAME','BASE']
+    FIELDS = ['NAME','BASE','LAYER','RECLASS_MODE','RECLASS_VAL']
+    
+    def __init__(self, name, base, layer, reclassMode=False,
+            reclassField=None, reclassVal=0):
+        dict = { NAME : name, base : base, LAYER : layer,
+            RECLASS_MODE : reclassMode, RECLASS_FIELD : reclassField, 
+            RECLASS_VAL : reclassVal }
+        super().__init__(dict, FIELDS,display_fields=DISPLAY_FIELDS)
     
     
 
 class ScenarioDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, parent, dlgItem, scenarioList, feedback=None):
         """Constructor."""
         super(ScenarioDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
@@ -66,4 +87,83 @@ class ScenarioDialog(QtWidgets.QDialog, FORM_CLASS):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
+        self.model = dlgItem.reclassModel if dlgItem else ScenarioReclassModel()
+        self.scenarioList = scenarioList
         self.setupUi(self)
+        self.updateUi(dlgItem)
+        self.connectComponents()
+        
+    def connectComponents(self):
+        self.scLayer.layerChanged.connect(self.changeLayer)
+        self.scFieldMode.clicked.connect(self.switchFieldMode)
+        self.scFixedMode.clicked.connect(self.switchFixedMode)
+        self.scField.fieldChanged.connect(self.changeField)
+        self.scDialogView.setModel(self.model)
+        
+    def switchBurnMode(self,fieldMode):
+        self.scField.setEnabled(fieldMode)
+        self.scDialogView.setEnabled(fieldMode)
+        self.scBurnVal.setEnabled(not fieldMode)
+    def switchFieldMode(self):
+        self.switchBurnMode(self,True)
+    def switchFixedMode(self):
+        self.switchBurnMode(self,False)
+        
+    def changeLayer(self,layer):
+        self.scField.setLayer(layer)
+        self.layer = layer
+    def changeField(self,fieldname):
+        values = qgsUtils.getLayerFieldUniqueValues(self.layer,fieldname)
+        self.model.loadValues(values)
+        
+    def errorDialog(self,msg):
+        feedbacks.launchDialog('ScenarioDialog',self.tr('Wrong parameter value'),msg)
+        
+    def showDialog(self):
+        while self.exec_():
+            name = self.scName.text()
+            if not name:
+                self.errorDialog(self.tr("Empty name"))
+                continue
+            base = self.scBase.currentIndex()
+            if not base:
+                self.errorDialog(self.tr("Empty base scenario"))
+                continue
+            layer = self.scLayer.currentLayer()
+            if not layer:
+                self.errorDialog(self.tr("Empty layer"))
+                continue
+            layerPath = qgsUtils.pathOfLayer(layer)
+            shortMode = self.scShort.isChecked()
+            scPerValueMode = self.scPerValue.isChecked()
+            burnFieldMode = self.scFieldMode.isChecked()
+            reclassField = self.scField.currentField()
+            if burnFieldMode:
+                reclassVal = self.scBurnVal
+            else:
+                if not reclassField:
+                    self.errorDialog(self.tr("Empty field"))
+                    continue
+                reclassVal = self.model
+                if not self.model.items:
+                    self.errorDialog(self.tr("Empty model"))
+                    continue
+            dlgItem = ScenarioDialogItem(name,base,layer,reclassMode=burnFieldMode,
+                reclassField=reclassField,reclassVal=reclassVal)
+            return dlgItem
+        return None
+
+    def updateUi(self,dlgItem):
+        self.scBase.addItems(self.scenarioList)
+        if dlgItem:
+            self.scName.setText(dlgItem.dict[ScenarioDialogItem.NAME])
+            self.scBase.setText(dlgItem.dict[ScenarioDialogItem.BASE])
+            self.scLayer.setLayer(dlgItem.dict[ScenarioDialogItem.LAYER])
+            reclassMode = dlgItem.dict[ScenarioDialogItem.RECLASS_MODE]
+            self.switchBurnMode(reclassMode)
+            if reclassMode:
+                self.scField.setField(dlgItem.dict[ScenarioDialogItem.RECLASS_FIELD])
+                self.model = dlgItem.model
+            else:
+                self.scBurnVal.setValue(dlgItem.dict[ScenarioDialogItem.RECLASS_VAL])
+                

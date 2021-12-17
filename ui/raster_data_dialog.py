@@ -51,6 +51,8 @@ class ReclassModel(abstract_model.DictModel):
         super().__init__(parent,ReclassItem.ITEM_FIELDS,
             feedback=parent.feedback)
     
+    def getCodes(self):
+        return [i.dict[ReclassItem.OUTPUT] for i in self.items]
 
 
 class RasterDlgItem(abstract_model.DictItem):
@@ -61,6 +63,8 @@ class RasterDlgItem(abstract_model.DictItem):
 
     def __init__(self, dict, parent=None):
         super().__init__(dict,self.ITEM_FIELDS)
+    def getReclassModel(self):
+        return self.dict[self.RECLASS]
 
 class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, raster_data_item, parent,class_model=None):

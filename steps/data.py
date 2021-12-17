@@ -76,7 +76,7 @@ class ImportItem(DictItem):
         res = os.path.basename(layer_path)
         # if self.is_vector and self.dlg_item.getBurnMode():
             # res += "_" + str(self.dlg_item.getBurnField())
-        return res
+        return res                
         
     # def getNField(self,n):
         # if n == self.INPUT_IDX:
@@ -95,10 +95,6 @@ class ImportModel(DictModel):
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
         super().__init__(self,ImportItem.FIELDS,feedback=parentModel.feedback)
         self.parentModel = parentModel
-        
-    def addItem(self,item):
-        super().addItem(item)
-        self.parentModel.addImport(item)
         
     def applyItemWithContext(self,item,context,feedback):
         input_path = itme.getLayerPath()
@@ -149,6 +145,15 @@ class ImportModel(DictModel):
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        
+    # FIELDS = [ INPUT, MODE, VALUE, STATUS ]
+    def getHeaderString(self,col):
+        h = [self.tr('Input layer'),
+            self.tr('Mode'),
+            self.tr('Value'),
+            self.tr('Status')]
+        return h[col] 
+
 
 class ImportConnector(TableToDialogConnector):
 
@@ -192,7 +197,7 @@ class ImportConnector(TableToDialogConnector):
     def openImportVectorNew(self,checked):
         item_dlg = VectorDataDialog(None,self.dlg)
         dlg_item = item_dlg.showDialog()
-        self.addDlgItem(dlg_item)
+        self.addDlgItem(dlg_item,True)
         
     # def openImportVector(self,dlg_item):
         # vector_data_dlg = VectorDataDialog(dlg_item,self.dlg)
@@ -203,18 +208,24 @@ class ImportConnector(TableToDialogConnector):
         item_dlg = RasterDataDialog(None,self.dlg,
             class_model=self.model.parentModel.frictionModel)
         dlg_item = item_dlg.showDialog()
-        self.addDlgItem(dlg_item)
+        self.addDlgItem(dlg_item,False)
             
     # def openImportRaster(self,dlg_item):
         # raster_data_dlg = RasterDataDialog(dlg_item,self.dlg,class_model=self.model.frictionModel)
         # dlg_item = raster_data_dlg.showDialog()
         # return dlg_item
         
-    def addDlgItem(self,dlg_item):
+    def addDlgItem(self,dlg_item,is_vector):
         if dlg_item:
             item = ImportItem(dlg_item)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
+            if not item.is_vector:
+                codes = dlg_item.getReclassModel().getCodes()
+                for code in codes:
+                    basename = item.getBaseName()
+                    self.model.parentModel.frictionModel.addRowFromCode(
+                        code,descr=basename)
         
     def updateItem(self,item,dlg_item): 
         item.updateFromDlgItem(dlg_item)

@@ -35,7 +35,8 @@ class FrictionModel(ExtensiveTableModel):
 
     def __init__(self,parentModel):
         self.parser_name = "FrictionModel"
-        super().__init__(self,parentModel)
+        ExtensiveTableModel.__init__(self,parentModel)
+        # self.feedback = parentModel.feedback
         
     def reload(self):
         colNames = self.parentModel.speciesModel.getNames()
@@ -44,6 +45,12 @@ class FrictionModel(ExtensiveTableModel):
         codes = [ i.dict[self.ROW_CODE] for i in self.items ]
         freeVals = getIntValues(nbVals)
         return freeVals
+        
+    def getHeaderStr(self,col):
+        if col < 2:
+            h = [self.tr('Value'),self.tr('Description')]
+            return h
+        return None
         
         
           

@@ -59,8 +59,7 @@ class PluginModel:
             
     def addImport(self,import_item):
         item_name = import_item.getBaseName()
-        # self.landuseModel.addItem()
-        # self.frictionModel.addImport(import_item)
+        self.frictionModel.addRowItem(import_item)
     def addSpecies(self,species_item):
         item_name = species_item.getName()
         self.frictionModel.addCol(item_name)

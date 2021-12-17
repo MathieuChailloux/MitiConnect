@@ -36,7 +36,6 @@ class FrictionModel(ExtensiveTableModel):
     def __init__(self,parentModel):
         self.parser_name = "FrictionModel"
         ExtensiveTableModel.__init__(self,parentModel)
-        # self.feedback = parentModel.feedback
         
     def reload(self):
         colNames = self.parentModel.speciesModel.getNames()
@@ -64,7 +63,7 @@ class FrictionConnector(AbstractConnector):
         
     def initGui(self):
         pass
-        
+            
     def connectComponents(self):
         super().connectComponents()
         # self.dlg.frictionLoadClass.clicked.connect(self.model.reload)

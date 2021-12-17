@@ -73,7 +73,8 @@ class ImportItem(DictItem):
         layer_path = self.dict[self.INPUT]
         if not layer_path:
             raise utils.CustomException("No layer specified for vector import")
-        res = os.path.basename(layer_path)
+        base = os.path.basename(layer_path)
+        res = os.path.splitext(base)[0]
         # if self.is_vector and self.dlg_item.getBurnMode():
             # res += "_" + str(self.dlg_item.getBurnField())
         return res                

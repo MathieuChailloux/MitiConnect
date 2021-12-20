@@ -30,8 +30,10 @@ from qgis.PyQt import QtWidgets
 from ..qgis_lib_mc import abstract_model, qgsUtils, feedbacks
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
+SC_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_dialog.ui'))
+SC_LANDUSE_DIALOG, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'scenario_landuse_dialog.ui'))
 
 class ScenarioReclassItem(abstract_model.DictItem):
 
@@ -71,14 +73,21 @@ class ScenarioDialogItem(abstract_model.DictItem):
     
     def __init__(self, name, base, layer, reclassMode=False,
             reclassField=None, reclassVal=0):
-        dict = { NAME : name, base : base, LAYER : layer,
-            RECLASS_MODE : reclassMode, RECLASS_FIELD : reclassField, 
-            RECLASS_VAL : reclassVal }
-        super().__init__(dict, FIELDS,display_fields=DISPLAY_FIELDS)
+        dict = { self.NAME : name, self.BASE : base, self.LAYER : layer,
+            self.RECLASS_MODE : reclassMode, self.RECLASS_FIELD : reclassField, 
+            self.RECLASS_VAL : reclassVal }
+        super().__init__(dict, self.FIELDS)
+        
+    def getName(self):
+        return self.dict[self.NAME]
+    def getBase(self):
+        return self.dict[self.BASE]
+    def getLayer(self):
+        return self.dict[self.LAYER]
     
     
 
-class ScenarioDialog(QtWidgets.QDialog, FORM_CLASS):
+class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
     def __init__(self, parent, dlgItem, scenarioList, feedback=None):
         """Constructor."""
         super(ScenarioDialog, self).__init__(parent)
@@ -166,4 +175,42 @@ class ScenarioDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.model = dlgItem.model
             else:
                 self.scBurnVal.setValue(dlgItem.dict[ScenarioDialogItem.RECLASS_VAL])
+                
+
+class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
+    def __init__(self, parent, dlgItem, feedback=None):
+        """Constructor."""
+        super(ScenarioLanduseDialog, self).__init__(parent)
+        self.setupUi(self)
+        # self.connectComponents()
+        self.updateUi(dlgItem)
+        
+    # def connectComponents(self):
+        # self.layerComboDlg = qgsUtils.LayerComboDialog(self,
+            # self.scLayerCombo,self.scLayer)
+                
+    def updateUi(self,dlgItem):
+        if dlgItem:
+            self.scName.setText(dlgItem.getName())
+            self.scLayer.setFilePath(dlgItem.getLayer())
+        
+    def errorDialog(self,msg):
+        feedbacks.launchDialog('ScenarioLanduseDialog',self.tr('Wrong parameter value'),msg)
+        
+    def showDialog(self):
+        while self.exec_():
+            name = self.scName.text()
+            if not name:
+                self.errorDialog(self.tr("Empty name"))
+                continue
+            layer = self.scLayer.filePath()
+            if not layer:
+                self.errorDialog(self.tr("Empty layer"))
+                continue
+            dlgItem = ScenarioDialogItem(name,None,layer)
+            return dlgItem
+        return None
+                
+                
+                
                 

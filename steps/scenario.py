@@ -29,7 +29,7 @@ from qgis.PyQt.QtCore import Qt
 
 from ..qgis_lib_mc.utils import CustomException
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
-from ..ui.scenario_dialog import ScenarioDialogItem, ScenarioDialog
+from ..ui.scenario_dialog import ScenarioDialogItem, ScenarioDialog, ScenarioLanduseDialog
 
 
 class ScenarioItem(DictItem):
@@ -43,28 +43,31 @@ class ScenarioItem(DictItem):
     
     def __init__(self, dlg_item, parent=None, feedback=None):
         dict = self.getDictFromDlgItem(dlg_item)
-        super().__init__(self,dict,fields=self.FIELDS,feedback=feedback)
+        super().__init__(dict,fields=self.FIELDS,feedback=feedback)
         self.dlg_item = dlg_item
         
     def getDictFromDlgItem(self,dlg_item):
-        statusChanged = dlg_item.dict != self.dlg_item.dict
-        dict = { NAME : dlg_item.NAME,
-            BASE : dlg_item.BASE,
-            STATUS_OS : not statusChanged,
-            STATUS_FRICTION : not statusChanged,
-            STATUS_GRAPH : not statusChanged }
+        statusChanged = True#dlg_item.dict != self.dlg_item.dict
+        dict = { self.NAME : dlg_item.getName(),
+            self.BASE : dlg_item.getBase(),
+            self.STATUS_OS : not statusChanged,
+            self.STATUS_FRICTION : not statusChanged,
+            self.STATUS_GRAPH : not statusChanged }
         return dict
         
     def updateFromDlgItem(self,dlg_item):
         dict = self.getDictFromDlgItem(dlg_item)
         self.dict = dict
         
+    def getName(self):
+        return self.dict[self.NAME]
+    def getBase(self):
+        return self.dict[self.BASE]
+        
 class ScenarioModel(DictModel):
 
-    
-
     def __init__(self, parentModel):
-        super().__init__(self,ScenarioItem.FIELDS,feedback=parentModel.feedback)
+        super().__init__(self,fields=ScenarioItem.FIELDS,feedback=parentModel.feedback)
         self.parentModel = parentModel
         
     def getScenarioNames(self):
@@ -99,13 +102,24 @@ class ScenarioConnector(TableToDialogConnector):
         super().connectComponents()
         self.dlg.scenarioUp.clicked.connect(self.upgradeItem)
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
+        self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
     
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
         # dlg_item = item.dlg_item if item else None
-        scenarioNames = self.model.getScenarioNames()
-        scenario_dlg = ScenarioDialog(self.dlg,item,scenarioNames,feedback=self.feedback)
-        return scenario_dlg 
+        if item.getBase():
+            scenarioNames = self.model.getScenarioNames()
+            scenarioDlg = ScenarioDialog(self.dlg,item,scenarioNames,feedback=self.feedback)
+        else:
+            scenarioDlg = ScenarioLanduseDialog(self.dlg,item.dlg_item)
+        return scenarioDlg
+        
+    def openDialogLanduseNew(self):
+        item_dlg = ScenarioLanduseDialog(self.dlg,None)
+        dlg_item = item_dlg.showDialog()
+        item = self.mkItemFromDlgItem(dlg_item)
+        self.model.addItem(item)
+        self.model.layoutChanged.emit()
     
     def updateFromDlgItem(self,item,dlg_item):
         item.updateFromDlgItem(dlg_item)

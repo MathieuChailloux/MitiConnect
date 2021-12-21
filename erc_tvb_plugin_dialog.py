@@ -29,7 +29,7 @@ from qgis.PyQt import QtWidgets
 import traceback
 from io import StringIO
 
-from .qgis_lib_mc import feedbacks, log, utils
+from .qgis_lib_mc import feedbacks, log, utils, abstract_model
 from .steps import (params, data, species, friction, scenario)#, species, friction, scenarios)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -40,10 +40,10 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     UI_DIR, 'erc_tvb_plugin_dialog_base.ui'))
 
 
-class PluginModel:
+class PluginModel(abstract_model.MainModel):
 
     def __init__(self,feedback):
-        self.parser_name = "PluginModel"
+        self.parser_name = "ERC-TVB"
         self.context = None
         self.feedback = feedback
         self.feedback.pushDebugInfo("feedback bd = " + str(feedback))
@@ -58,7 +58,6 @@ class PluginModel:
             self.scenarioModel ]
             
     def addImport(self,import_item):
-        item_name = import_item.getBaseName()
         self.frictionModel.addRowItem(import_item)
     def addSpecies(self,species_item):
         item_name = species_item.getName()
@@ -88,10 +87,11 @@ class PluginModel:
         extent = self.paramsModel.getExtentString()
         resolution = self.paramsModel.getResolution()
         return (crs, extent, resolution)
+        
 
     
 
-class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
+class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(ErcTvbPluginDialog, self).__init__(parent)
@@ -101,6 +101,7 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+        self.pluginName = 'ERC-TVB'
             
     def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
@@ -114,12 +115,7 @@ class ErcTvbPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.landuseConnector, self.speciesConnector,
             self.frictionConnector, self.scenarioConnector ]
         
-    def connectComponents(self):
-        for tab in self.connectors:
-            tab.connectComponents()
-        sys.excepthook = self.exceptionHook
-        
-        # Exception hook, i.e. function called when exception raised.
+    # Exception hook, i.e. function called when exception raised.
     # Displays traceback and error message in log tab.
     # Ignores CustomException : exception raised from erc_tvb and already displayed.
     def exceptionHook(self,excType, excValue, tracebackobj):

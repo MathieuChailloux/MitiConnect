@@ -107,8 +107,11 @@ class ScenarioConnector(TableToDialogConnector):
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
         # dlg_item = item.dlg_item if item else None
-        if item.getBase():
+        if not item or item.getBase():
             scenarioNames = self.model.getScenarioNames()
+            if not scenarioNames:
+                msg = self.tr("No scenario in model : please create base scenario from landuse")
+                self.feedback.user_error(msg)
             scenarioDlg = ScenarioDialog(self.dlg,item,scenarioNames,feedback=self.feedback)
         else:
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item.dlg_item)
@@ -117,9 +120,10 @@ class ScenarioConnector(TableToDialogConnector):
     def openDialogLanduseNew(self):
         item_dlg = ScenarioLanduseDialog(self.dlg,None)
         dlg_item = item_dlg.showDialog()
-        item = self.mkItemFromDlgItem(dlg_item)
-        self.model.addItem(item)
-        self.model.layoutChanged.emit()
+        if dlg_item:
+            item = self.mkItemFromDlgItem(dlg_item)
+            self.model.addItem(item)
+            self.model.layoutChanged.emit()
     
     def updateFromDlgItem(self,item,dlg_item):
         item.updateFromDlgItem(dlg_item)

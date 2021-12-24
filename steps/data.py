@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
@@ -32,52 +32,102 @@ from ..ui.vector_data_dialog import VectorDlgItem, VectorDataDialog
 from ..ui.raster_data_dialog import RasterDlgItem, RasterDataDialog
 from ..ui.landuse_dialog import LanduseDialog
 from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
-    AbstractConnector, TableToDialogConnector)
+    AbstractConnector, TableToDialogConnector, DictItemWithChildren)
 
 
-class ImportItem(DictItem):
+class ImportItem(DictItemWithChildren):
             
     INPUT = 'INPUT'
     MODE = 'MODE'
     VALUE = 'VALUE'
     STATUS = 'STATUS'
-    FIELDS = [ INPUT, MODE, VALUE, STATUS ]
+    DISPLAY_FIELDS = [ INPUT, MODE, VALUE, STATUS ]
+    FIELDS = DISPLAY_FIELDS
     
     INPUT_IDX = 0
     MODE_IDX = 1
     VALUE_IDX = 2
     STATUS_IDX = 3
 
-    def __init__(self, dlg_item, parent=None, feedback=None):
-        self.updateFromDlgItem(dlg_item)
+    def __init__(self, dlgItem=None, dict=None, parent=None, feedback=None):
+        print("dict = " +str(dict))
+        if dict:
+            self.dict = dict
+            self.recompute()
+        elif dlgItem:
+            self.updateFromDlgItem(dlgItem)
+        else:
+            assert(False)
         super().__init__(self.dict,feedback=feedback)
+    
+    def recompute(self):
+        self.computed = False
+        self.name = self.getBaseName()        
         
-    def updateFromDlgItem(self,dlg_item):
-        self.is_vector = type(dlg_item) is VectorDlgItem
-        if self.is_vector:
-            if dlg_item.getBurnMode():
-                val = dlg_item.getBurnField()
+    def updateFromDlgItem(self,dlgItem):
+        is_vector = type(dlgItem) is VectorDlgItem
+        if is_vector:
+            if dlgItem.getBurnMode():
+                val = dlgItem.getBurnField()
             else:
-                val = dlg_item.getBurnVal()
+                val = dlgItem.getBurnVal()
         else:
             val = None
-        self.dict = { self.INPUT : dlg_item.dict[self.INPUT],
-            self.MODE : self.is_vector,
+        self.dict = { self.INPUT : dlgItem.dict[self.INPUT],
+            self.MODE : is_vector,
             self.VALUE : val,
             self.STATUS : False }
-        self.computed = False
-        self.dlg_item = dlg_item
-        self.name = self.getBaseName()
+        self.children = [dlgItem]
+        self.dlgItem = dlgItem
+        self.recompute()
         
     def getBaseName(self):
+        print("dict = " +str(self.dict))
         layer_path = self.dict[self.INPUT]
         if not layer_path:
             raise utils.CustomException("No layer specified for vector import")
         base = os.path.basename(layer_path)
         res = os.path.splitext(base)[0]
-        # if self.is_vector and self.dlg_item.getBurnMode():
-            # res += "_" + str(self.dlg_item.getBurnField())
-        return res                
+        # if self.is_vector and self.dlgItem.getBurnMode():
+            # res += "_" + str(self.dlgItem.getBurnField())
+        return res
+
+    def isVector(self):
+        return self.dict[self.MODE]
+    def getDialog(self):
+        return self.children[0]
+    @classmethod
+    def fromXML(cls,root):
+        o = cls.fromDict(root.attrib)
+        for child in root:
+            childTag = child.tag
+            classObj = getattr(sys.modules[__name__], childTag)
+            childObj = classObj.fromXML(child)
+            o.children.append(childObj)
+        return o
+        
+    # def toXML(self):
+        # xmlStr = indent + "<" + self.__class__.__name__
+        # childrenStr = ""
+        # for k,v in self.dict.items():
+            # xmlStr += indent + " " + k + "=\"" + xmlUtils.xmlEscape(str(v)) + "\""
+        # xmlStr += ">\n"
+        # xmlStr += self.dlgItem.toXML()
+        # xmlStr += "</" + self.__class__.__name__ +">"
+        # return xmlStr
+        
+    # def fromXML(self,root):
+        # self.fromXMLAttribs(root.attrib)
+        # for child in root:
+            # rootTag = root.tag
+            # if rootTag = VectorDlgItem._class__.__name__:
+                # dlgItem = VectorDlgItem.fromXML(child)
+            # elif rootTag = RasterDlgItem._class__.__name__:
+                # dlgItem = RasterDlgItem.fromXML(child)
+            # else:
+                # assert(False)
+            # self.dlgItem = dlgItem
+        
         
     # def getNField(self,n):
         # if n == self.INPUT_IDX:
@@ -94,7 +144,10 @@ class ImportModel(DictModel):
     def __init__(self, parentModel):
         # self.item_fields = [ self.INPUT, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
-        super().__init__(self,ImportItem.FIELDS,feedback=parentModel.feedback)
+        itemClass = getattr(sys.modules[__name__], ImportItem.__name__)
+        super().__init__(self,itemClass,
+            feedback=parentModel.feedback)
+        # self.itemClass = getattr(sys.modules[__name__], itemClassName)
         self.parentModel = parentModel
         
     def applyItemWithContext(self,item,context,feedback):
@@ -106,7 +159,7 @@ class ImportModel(DictModel):
         out_type = Qgis.Int16
         out_nodata = -1
         out_path = self.getItemOutPath(item)
-        if item.is_vector:
+        if item.isVector():
             selected = QgsProcessingUtils.generateTempFilename('selection.gpkg')
             all_touch = item.getAllTouch()
             if item.getBurnMode():
@@ -154,7 +207,11 @@ class ImportModel(DictModel):
             self.tr('Value'),
             self.tr('Status')]
         return h[col] 
-
+        
+    # def mkItemFromDict(self,dict,parent=None,feedback=None):
+        # item = ImportItem.fromDict(dict=dict,feedback=self.feedback)
+        # item.recompute()
+        # return item
 
 class ImportConnector(TableToDialogConnector):
 
@@ -177,59 +234,59 @@ class ImportConnector(TableToDialogConnector):
         # item = self.model.getNItem(row)
         # self.feedback.pushDebugInfo("openImport item = " +str(item))
         # if item.is_vector:
-            # dlg_item = self.openImportVector(item.dlg_item)
+            # dlgItem = self.openImportVector(item.dlgItem)
         # else:
-            # dlg_item = self.openImportRaster(item.dlg_item)
-        # if dlg_item:
-            # item.updateFromDlgItem(dlg_item)
+            # dlgItem = self.openImportRaster(item.dlgItem)
+        # if dlgItem:
+            # item.updateFromDlgItem(dlgItem)
             # self.model.layoutChanged.emit()
             
             
     def openDialog(self,item):
-        if item.is_vector:
-            item_dlg = VectorDataDialog(item.dlg_item,self.dlg)
+        if item.isVector():
+            item_dlg = VectorDataDialog(item.getDialog(),self.dlg)
         else:
-            item_dlg = RasterDataDialog(item.dlg_item,self.dlg,
+            item_dlg = RasterDataDialog(item.getDialog(),self.dlg,
                 class_model=self.model.parentModel.frictionModel)
         return item_dlg
-        # dlg_item = item_dlg.showDialog()
-        # return dlg_item
+        # dlgItem = item_dlg.showDialog()
+        # return dlgItem
         
     def openImportVectorNew(self,checked):
         item_dlg = VectorDataDialog(None,self.dlg)
-        dlg_item = item_dlg.showDialog()
-        self.addDlgItem(dlg_item,True)
+        dlgItem = item_dlg.showDialog()
+        self.addDlgItem(dlgItem,True)
         
-    # def openImportVector(self,dlg_item):
-        # vector_data_dlg = VectorDataDialog(dlg_item,self.dlg)
-        # dlg_item = vector_data_dlg.showDialog()
-        # return dlg_item
+    # def openImportVector(self,dlgItem):
+        # vector_data_dlg = VectorDataDialog(dlgItem,self.dlg)
+        # dlgItem = vector_data_dlg.showDialog()
+        # return dlgItem
         
     def openImportRasterNew(self,checked):
         item_dlg = RasterDataDialog(None,self.dlg,
             class_model=self.model.parentModel.frictionModel)
-        dlg_item = item_dlg.showDialog()
-        self.addDlgItem(dlg_item,False)
+        dlgItem = item_dlg.showDialog()
+        self.addDlgItem(dlgItem,False)
             
-    # def openImportRaster(self,dlg_item):
-        # raster_data_dlg = RasterDataDialog(dlg_item,self.dlg,class_model=self.model.frictionModel)
-        # dlg_item = raster_data_dlg.showDialog()
-        # return dlg_item
+    # def openImportRaster(self,dlgItem):
+        # raster_data_dlg = RasterDataDialog(dlgItem,self.dlg,class_model=self.model.frictionModel)
+        # dlgItem = raster_data_dlg.showDialog()
+        # return dlgItem
         
-    def addDlgItem(self,dlg_item,is_vector):
-        if dlg_item:
-            item = ImportItem(dlg_item)
+    def addDlgItem(self,dlgItem,is_vector):
+        if dlgItem:
+            item = ImportItem(dlgItem=dlgItem,feedback=self.feedback)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
-            if not item.is_vector:
-                codes = dlg_item.getReclassModel().getCodes()
+            if not item.isVector():
+                codes = dlgItem.getReclassModel().getCodes()
                 for code in codes:
                     basename = item.getBaseName()
                     self.model.parentModel.frictionModel.addRowFromCode(
                         code,descr=basename)
         
-    def updateItem(self,item,dlg_item): 
-        item.updateFromDlgItem(dlg_item)
+    def updateItem(self,item,dlgItem): 
+        item.updateFromDlgItem(dlgItem)
         
 
 class LanduseItem(DictItem):
@@ -238,8 +295,10 @@ class LanduseItem(DictItem):
     IMPORTS = 'IMPORTS'
     FIELDS = [ NAME, IMPORTS ]
     
-    def __init__(self, name, imports, parent=None, feedback=None):
-        dict = { self.NAME : name, self.IMPORTS : imports }
+    def __init__(self, dict=None, name=None, imports=None,
+            parent=None, feedback=None):
+        if not dict:
+            dict = { self.NAME : name, self.IMPORTS : imports }
         super().__init__(dict, self.FIELDS, feedback=feedback)
         
     def getName(self):
@@ -262,9 +321,10 @@ class LanduseItem(DictItem):
 class LanduseModel(DictModel):
 
     def __init__(self, pluginModel):
+        itemClass = getattr(sys.modules[__name__], LanduseItem.__name__)
         self.pluginModel = pluginModel
         self.currImportNames = []
-        super().__init__(self,LanduseItem.FIELDS,feedback=pluginModel.feedback)
+        super().__init__(self,itemClass,feedback=pluginModel.feedback)
                     
     def updateImportName(self):
         pass
@@ -282,6 +342,9 @@ class LanduseModel(DictModel):
         # out_path = 
         qgsTreatments.applyMergeRaster(paths,out_path,
             out_type=Qgis.Int16,context=context,feedback=feedback)
+        
+    def mkItemFromDict(self,dict,parent=None,feedback=None):
+        return LanduseItem(dict=dict)
         
 
 class LanduseConnector(AbstractConnector):
@@ -308,7 +371,7 @@ class LanduseConnector(AbstractConnector):
             return
         (name, imports) = res
         if name:
-            item = LanduseItem(name,imports,feedback=self.feedback)
+            item = LanduseItem(name=name,imports=imports,feedback=self.feedback)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
         else:

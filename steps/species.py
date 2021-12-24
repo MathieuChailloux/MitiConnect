@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
@@ -54,7 +54,8 @@ class SpeciesModel(DictModel):
     def __init__(self, parentModel):
         # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
-        super().__init__(self,SpeciesItem.FIELDS,feedback=parentModel.feedback)
+        itemClass = getattr(sys.modules[__name__], SpeciesItem.__name__)
+        super().__init__(self,itemClass,feedback=parentModel.feedback)
         self.parentModel = parentModel
         
     def addItem(self,item):
@@ -79,6 +80,9 @@ class SpeciesModel(DictModel):
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        
+    def mkItemFromDict(self,dict,parent=None,feedback=None):
+        return SpeciesItem.fromDict(dict)
 
 
 class SpeciesConnector(TableToDialogConnector):

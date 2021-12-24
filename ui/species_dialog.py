@@ -55,6 +55,8 @@ class SpeciesItem(abstract_model.DictItem):
                  self.EXTENT_VAL : extent_val }
         super().__init__(dict,self.FIELDS,feedback=feedback,
             display_fields=self.DISPLAY_FIELDS)
+    def __init__(self,dict=dict,feedback=None):
+        super().__init__(dict=dict,feedback=feedback)
         
     def getName(self):
         return self.dict[self.ID]

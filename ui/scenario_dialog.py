@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -48,7 +48,8 @@ class ScenarioReclassItem(abstract_model.DictItem):
 class ScenarioReclassModel(abstract_model.DictModel):
 
     def __init__(self,values=[]):
-        super().__init__(self,ScenarioReclassItem.FIELDS)
+        itemClass = getattr(sys.modules[__name__], ScenarioReclassItem.__name__)
+        super().__init__(self,itemClass)
         self.loadValues(values)
             
     def loadValues(self,values):
@@ -126,7 +127,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.model.loadValues(values)
         
     def errorDialog(self,msg):
-        feedbacks.launchDialog('ScenarioDialog',self.tr('Wrong parameter value'),msg)
+        feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
         
     def showDialog(self):
         while self.exec_():
@@ -195,7 +196,7 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             self.scLayer.setFilePath(dlgItem.getLayer())
         
     def errorDialog(self,msg):
-        feedbacks.launchDialog('ScenarioLanduseDialog',self.tr('Wrong parameter value'),msg)
+        feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
         
     def showDialog(self):
         while self.exec_():

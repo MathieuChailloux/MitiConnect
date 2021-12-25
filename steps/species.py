@@ -91,7 +91,7 @@ class SpeciesConnector(TableToDialogConnector):
         self.dlg = dlg
         self.feedback = dlg.feedback
         super().__init__(model,self.dlg.speciesView,
-                         self.dlg.speciesAdd,self.dlg.importDelete)
+                         self.dlg.speciesAdd,self.dlg.speciesRemove)
 
     def connectComponents(self):
         super().connectComponents()

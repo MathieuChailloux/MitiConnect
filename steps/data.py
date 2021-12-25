@@ -80,6 +80,8 @@ class ImportItem(DictItemWithChildren):
         self.children = [dlgItem]
         self.dlgItem = dlgItem
         self.recompute()
+    def updateFromOther(self,dlgItem):
+        self.updateFromDlgItem(dlgItem)
         
     def getBaseName(self):
         print("dict = " +str(self.dict))
@@ -243,10 +245,12 @@ class ImportConnector(TableToDialogConnector):
             
             
     def openDialog(self,item):
+        dlg_item = item.getDialog()
+        self.feedback.pushDebugInfo("openDialog " + str(dlg_item))
         if item.isVector():
-            item_dlg = VectorDataDialog(item.getDialog(),self.dlg)
+            item_dlg = VectorDataDialog(dlg_item,self.dlg)
         else:
-            item_dlg = RasterDataDialog(item.getDialog(),self.dlg,
+            item_dlg = RasterDataDialog(dlg_item,self.dlg,
                 class_model=self.model.parentModel.frictionModel)
         return item_dlg
         # dlgItem = item_dlg.showDialog()

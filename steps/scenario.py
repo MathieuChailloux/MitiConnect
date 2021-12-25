@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
@@ -67,7 +67,8 @@ class ScenarioItem(DictItem):
 class ScenarioModel(DictModel):
 
     def __init__(self, parentModel):
-        super().__init__(self,fields=ScenarioItem.FIELDS,feedback=parentModel.feedback)
+        itemClass = getattr(sys.modules[__name__], ScenarioItem.__name__)
+        super().__init__(self,itemClass,feedback=parentModel.feedback)
         self.parentModel = parentModel
         
     def getScenarioNames(self):

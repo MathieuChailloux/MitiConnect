@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
@@ -36,11 +36,11 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 class LanduseDialogItem(abstract_model.DictItem):
 
     NAME = 'NAME'
-    ITEM_FIELDS = [ NAME ]
+    FIELDS = [ NAME ]
     
     def __init__(self, name, parent=None):
         dict = { self.NAME : name }
-        super().__init__(dict, self.ITEM_FIELDS)
+        super().__init__(dict, self.FIELDS)
         
     def getName(self):
         return self.dict[self.NAME]
@@ -49,12 +49,13 @@ class LanduseDialogModel(abstract_model.DictModel):
 
     NAME = 'NAME'
     LIST = 'LIST'
-    ITEM_FIELDS = [ NAME ]
+    FIELDS = [ NAME ]
     
     def __init__(self, name, string_list,pluginModel):
-        super().__init__({self.NAME : name}, LanduseDialogItem.ITEM_FIELDS)
+        itemClass = getattr(sys.modules[__name__], LanduseDialogItem.__name__)
+        super().__init__(self,itemClass,feedback = pluginModel.feedback)
         self.pluginModel = pluginModel
-        self.feedback = pluginModel.feedback
+        # self.feedback = pluginModel.feedback
         self.name = name
         self.setItemsFromList(string_list)
         

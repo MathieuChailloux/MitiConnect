@@ -41,7 +41,7 @@ class ImportItem(DictItemWithChildren):
     MODE = 'MODE'
     VALUE = 'VALUE'
     STATUS = 'STATUS'
-    DISPLAY_FIELDS = [ INPUT, MODE, VALUE, STATUS ]
+    DISPLAY_FIELDS = [ INPUT, VALUE, STATUS ]
     FIELDS = DISPLAY_FIELDS
     
     INPUT_IDX = 0
@@ -58,7 +58,7 @@ class ImportItem(DictItemWithChildren):
             self.updateFromDlgItem(dlgItem)
         else:
             assert(False)
-        super().__init__(self.dict,feedback=feedback)
+        super().__init__(self.dict,feedback=feedback,children=self.children)
     
     def recompute(self):
         self.computed = False
@@ -97,7 +97,10 @@ class ImportItem(DictItemWithChildren):
     def isVector(self):
         return self.dict[self.MODE]
     def getDialog(self):
-        return self.children[0]
+        if self.children:
+            return self.children[0]
+        else:
+            self.feedback.internal_error("No children for ImportItem")
     @classmethod
     def fromXML(cls,root):
         o = cls.fromDict(root.attrib)
@@ -205,7 +208,6 @@ class ImportModel(DictModel):
     # FIELDS = [ INPUT, MODE, VALUE, STATUS ]
     def getHeaderString(self,col):
         h = [self.tr('Input layer'),
-            self.tr('Mode'),
             self.tr('Value'),
             self.tr('Status')]
         return h[col] 
@@ -245,12 +247,11 @@ class ImportConnector(TableToDialogConnector):
             
             
     def openDialog(self,item):
-        dlg_item = item.getDialog()
-        self.feedback.pushDebugInfo("openDialog " + str(dlg_item))
+        dlgItem = item.getDialog()
         if item.isVector():
-            item_dlg = VectorDataDialog(dlg_item,self.dlg)
+            item_dlg = VectorDataDialog(dlgItem,self.dlg)
         else:
-            item_dlg = RasterDataDialog(dlg_item,self.dlg,
+            item_dlg = RasterDataDialog(dlgItem,self.dlg,
                 class_model=self.model.parentModel.frictionModel)
         return item_dlg
         # dlgItem = item_dlg.showDialog()

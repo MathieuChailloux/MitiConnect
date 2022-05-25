@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -38,18 +38,18 @@ class ReclassItem(abstract_model.DictItem):
     
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
-    ITEM_FIELDS = [ INPUT, OUTPUT ]
+    FIELDS = [ INPUT, OUTPUT ]
 
     def __init__(self, in_val,out_val):
         d = { self.INPUT : in_val, self.OUTPUT : out_val }
-        super().__init__(d,self.ITEM_FIELDS)
+        super().__init__(d,self.FIELDS)
         
         
 class ReclassModel(abstract_model.DictModel):
     
     def __init__(self, parent):
-        super().__init__(parent,ReclassItem.ITEM_FIELDS,
-            feedback=parent.feedback)
+        itemClass = getattr(sys.modules[__name__], ReclassItem.__name__)
+        super().__init__(parent,itemClass=itemClass,feedback=parent.feedback)
     
     def getCodes(self):
         return [i.dict[ReclassItem.OUTPUT] for i in self.items]
@@ -59,10 +59,10 @@ class RasterDlgItem(abstract_model.DictItem):
 
     INPUT = 'INPUT'
     RECLASS = 'RECLASS'
-    ITEM_FIELDS = [ INPUT, RECLASS ]
+    FIELDS = [ INPUT, RECLASS ]
 
     def __init__(self, dict, parent=None):
-        super().__init__(dict,self.ITEM_FIELDS)
+        super().__init__(dict,self.FIELDS)
     def getReclassModel(self):
         return self.dict[self.RECLASS]
 

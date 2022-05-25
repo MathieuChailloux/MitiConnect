@@ -280,6 +280,7 @@ class ImportConnector(TableToDialogConnector):
     def addDlgItem(self,dlgItem,is_vector):
         if dlgItem:
             item = ImportItem(dlgItem=dlgItem,feedback=self.feedback)
+            item.addChild(dlgItem)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
             if not item.isVector():

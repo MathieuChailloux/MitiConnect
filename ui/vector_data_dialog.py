@@ -44,11 +44,11 @@ class VectorDlgItem(abstract_model.DictItem):
     ALL_TOUCH = 'ALL_TOUCH'
     BUFFER_MODE = 'BUFFER_MODE'
     BUFFER_EXPR = 'BUFFER_EXPR'
-    ITEM_FIELDS = [ INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
+    FIELDS = [ INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
             ALL_TOUCH, BUFFER_MODE, BUFFER_EXPR ]
 
     def __init__(self, dict, parent=None):
-        super().__init__(dict, self.ITEM_FIELDS)
+        super().__init__(dict, self.FIELDS)
         
     def getLayerPath(self):
         return self.dict[self.INPUT]

@@ -111,7 +111,7 @@ class ScenarioConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("item = " + str(item))
         # dlg_item = item.dlg_item if item else None
         if not item or item.getBase():
-            # scenarioNames = self.model.getScenarioNames()
+            scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
                 msg = self.tr("No scenario in model : please create base scenario from landuse")
                 self.feedback.user_error(msg)

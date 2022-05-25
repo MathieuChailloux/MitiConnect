@@ -72,12 +72,17 @@ class ScenarioDialogItem(abstract_model.DictItem):
     # DISPLAY_FIELDS = ['NAME','BASE']
     FIELDS = ['NAME','BASE','LAYER','RECLASS_MODE','RECLASS_VAL']
     
-    def __init__(self, name, base, layer, reclassMode=False,
+    def __init__(self,dict,feedback=None):
+        super().__init__(dict,feedback=feedback)
+        self.reclassModel=ScenarioReclassModel()
+    
+    @classmethod
+    def fromValues(cls, name, base, layer, reclassMode=False,
             reclassField=None, reclassVal=0):
-        dict = { self.NAME : name, self.BASE : base, self.LAYER : layer,
-            self.RECLASS_MODE : reclassMode, self.RECLASS_FIELD : reclassField, 
-            self.RECLASS_VAL : reclassVal }
-        super().__init__(dict, self.FIELDS)
+        dict = { cls.NAME : name, cls.BASE : base, cls.LAYER : layer,
+            cls.RECLASS_MODE : reclassMode, cls.RECLASS_FIELD : reclassField, 
+            cls.RECLASS_VAL : reclassVal }
+        return cls(dict, cls.FIELDS)
         
     def getName(self):
         return self.dict[self.NAME]
@@ -97,7 +102,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
-        self.model = dlgItem.reclassModel if dlgItem else ScenarioReclassModel()
+        # self.model = dlgItem.reclassModel if dlgItem else ScenarioReclassModel()
+        self.model = ScenarioReclassModel()
+        self.feedback = feedback
         self.scModel = scenarioModel
         # self.scenarioList = scenarioList
         self.setupUi(self)
@@ -111,6 +118,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scField.fieldChanged.connect(self.changeField)
         self.scBase.setModel(self.scModel)
         self.scDialogView.setModel(self.model)
+        self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
         self.scField.setEnabled(fieldMode)
@@ -160,16 +168,19 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 if not self.model.items:
                     self.errorDialog(self.tr("Empty model"))
                     continue
-            dlgItem = ScenarioDialogItem(name,base,layer,reclassMode=burnFieldMode,
-                reclassField=reclassField,reclassVal=reclassVal)
+            dlgItem = ScenarioDialogItem.fromValues(name,base,layer,
+                reclassMode=burnFieldMode,
+                reclassField=reclassField,
+                reclassVal=reclassVal)
             return dlgItem
         return None
 
     def updateUi(self,dlgItem):
-        self.scBase.addItems(self.scenarioList)
+        # self.scBase.addItems(self.scenarioList)
         if dlgItem:
+            self.feedback.pushDebugInfo("updateUI " + str(dlgItem.dict))
             self.scName.setText(dlgItem.dict[ScenarioDialogItem.NAME])
-            self.scBase.setText(dlgItem.dict[ScenarioDialogItem.BASE])
+            self.scBase.setCurrentText(dlgItem.dict[ScenarioDialogItem.BASE])
             self.scLayer.setLayer(dlgItem.dict[ScenarioDialogItem.LAYER])
             reclassMode = dlgItem.dict[ScenarioDialogItem.RECLASS_MODE]
             self.switchBurnMode(reclassMode)
@@ -184,6 +195,7 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
     def __init__(self, parent, dlgItem, feedback=None):
         """Constructor."""
         super(ScenarioLanduseDialog, self).__init__(parent)
+        self.feedback = feedback
         self.setupUi(self)
         # self.connectComponents()
         self.updateUi(dlgItem)
@@ -210,7 +222,7 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
                 continue
-            dlgItem = ScenarioDialogItem(name,None,layer)
+            dlgItem = ScenarioDialogItem.fromValues(name=name,base=None,layer=layer,feedback=self.feedback)
             return dlgItem
         return None
                 

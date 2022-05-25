@@ -57,6 +57,9 @@ class PluginModel(abstract_model.MainModel):
             self.landuseModel, self.speciesModel, self.frictionModel,
             self.scenarioModel ]
             
+    def getLanduseNames(self):
+        return self.landuseModel.getNames()
+            
     def addImport(self,import_item):
         self.frictionModel.addRowItem(import_item)
     def addSpecies(self,species_item):
@@ -106,12 +109,14 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
     def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
         self.pluginModel = PluginModel(self.feedback)
+        self.paramsConnector = params.ParamsConnector(self,self.pluginModel.paramsModel)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)
         self.landuseConnector = data.LanduseConnector(self,self.pluginModel.landuseModel)
         self.speciesConnector = species.SpeciesConnector(self,self.pluginModel.speciesModel)
         self.frictionConnector = friction.FrictionConnector(self,self.pluginModel.frictionModel)
         self.scenarioConnector = scenario.ScenarioConnector(self,self.pluginModel.scenarioModel)
-        self.connectors = [ self.feedback, self.importConnector,
+        self.connectors = [ self.feedback,
+            self.paramsConnector, self.importConnector,
             self.landuseConnector, self.speciesConnector,
             self.frictionConnector, self.scenarioConnector ]
         

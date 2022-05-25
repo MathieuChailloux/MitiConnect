@@ -41,10 +41,12 @@ class ScenarioItem(DictItem):
     STATUS_GRAPH = 'GRAPH'
     FIELDS = [ NAME, BASE, STATUS_OS, STATUS_FRICTION, STATUS_GRAPH ]
     
-    def __init__(self, dlg_item, parent=None, feedback=None):
+    @classmethod
+    def fromDlgItem(cls, dlg_item, parent=None, feedback=None):
         dict = self.getDictFromDlgItem(dlg_item)
-        super().__init__(dict,fields=self.FIELDS,feedback=feedback)
-        self.dlg_item = dlg_item
+        i = cls(dict,fields=self.FIELDS,feedback=feedback)
+        i.dlg_item = dlg_item
+        return i
         
     def getDictFromDlgItem(self,dlg_item):
         statusChanged = True#dlg_item.dict != self.dlg_item.dict
@@ -109,11 +111,11 @@ class ScenarioConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("item = " + str(item))
         # dlg_item = item.dlg_item if item else None
         if not item or item.getBase():
-            scenarioNames = self.model.getScenarioNames()
+            # scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
                 msg = self.tr("No scenario in model : please create base scenario from landuse")
                 self.feedback.user_error(msg)
-            scenarioDlg = ScenarioDialog(self.dlg,item,scenarioNames,feedback=self.feedback)
+            scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item.dlg_item)
         return scenarioDlg

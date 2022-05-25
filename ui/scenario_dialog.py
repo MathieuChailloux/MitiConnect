@@ -89,7 +89,7 @@ class ScenarioDialogItem(abstract_model.DictItem):
     
 
 class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
-    def __init__(self, parent, dlgItem, scenarioList, feedback=None):
+    def __init__(self, parent, dlgItem, scenarioModel=None, feedback=None):
         """Constructor."""
         super(ScenarioDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
@@ -98,7 +98,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.model = dlgItem.reclassModel if dlgItem else ScenarioReclassModel()
-        self.scenarioList = scenarioList
+        self.scModel = scenarioModel
+        # self.scenarioList = scenarioList
         self.setupUi(self)
         self.updateUi(dlgItem)
         self.connectComponents()
@@ -108,6 +109,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scFieldMode.clicked.connect(self.switchFieldMode)
         self.scFixedMode.clicked.connect(self.switchFixedMode)
         self.scField.fieldChanged.connect(self.changeField)
+        self.scBase.setModel(self.scModel)
         self.scDialogView.setModel(self.model)
         
     def switchBurnMode(self,fieldMode):

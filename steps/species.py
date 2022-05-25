@@ -51,21 +51,21 @@ from ..ui.species_dialog import SpeciesItem, SpeciesDialog
 
 class SpeciesModel(DictModel):
 
-    def __init__(self, parentModel):
+    def __init__(self, pluginModel):
         # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
         itemClass = getattr(sys.modules[__name__], SpeciesItem.__name__)
-        super().__init__(self,itemClass,feedback=parentModel.feedback)
-        self.parentModel = parentModel
+        super().__init__(self,itemClass,feedback=pluginModel.feedback)
+        self.pluginModel = pluginModel
         
     def addItem(self,item):
         super().addItem(item)
-        self.parentModel.addSpecies(item)
+        self.pluginModel.addSpecies(item)
                         
     # Returns absolute path of 'item' output layer
     def getItemOutPath(self,item):
         out_bname = item.getName() + ".tif"
-        out_dir = self.parentModel.getImportsDir()
+        out_dir = self.pluginModel.getImportsDir()
         return os.path.join(out_dir,out_bname)
     def getItemFromName(self,name):
         for i in self.items:
@@ -99,7 +99,9 @@ class SpeciesConnector(TableToDialogConnector):
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
         # dlg_item = item.dlg_item if item else None
-        species_dlg = SpeciesDialog(self.dlg,item,feedback=self.feedback)
+        species_dlg = SpeciesDialog(self.dlg,item,
+            landuseModel=self.model.pluginModel.landuseModel,
+            feedback=self.feedback)
         return species_dlg 
     
     def updateFromDlgItem(self,item,dlg_item):

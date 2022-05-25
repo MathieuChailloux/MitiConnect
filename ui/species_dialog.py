@@ -44,7 +44,8 @@ class SpeciesItem(abstract_model.DictItem):
     FIELDS = [ ID, FULL_NAME, MAX_DISP, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
     DISPLAY_FIELDS = [ ID, FULL_NAME ]
     
-    def __init__(self,name,full_name,max_disp,disp_unit,min_patch,
+    @classmethod
+    def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,
                  patch_unit,landuse,extent_mode,extent_val,
                  feedback=None):
         dict = { self.ID : name,
@@ -53,7 +54,7 @@ class SpeciesItem(abstract_model.DictItem):
                  self.LANDUSE : landuse,
                  self.EXTENT_MODE : extent_mode,
                  self.EXTENT_VAL : extent_val }
-        super().__init__(dict,self.FIELDS,feedback=feedback,
+        return cls(dict,self.FIELDS,feedback=feedback,
             display_fields=self.DISPLAY_FIELDS)
     # def __init__(self,dict=dict,feedback=None):
         # super().__init__(dict=dict,feedback=feedback)
@@ -63,17 +64,23 @@ class SpeciesItem(abstract_model.DictItem):
                 
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent, dlg_item,feedback=None):
+    def __init__(self, parent, dlg_item, landuseModel=None,feedback=None):
         """Constructor."""
         super(SpeciesDialog, self).__init__(parent)
+        self.feedback=feedback
+        self.landuseModel = landuseModel
         self.setupUi(self)
         self.updateUi(dlg_item)
-        self.feedback=feedback
+        self.connectComponents()
         
     def connectComponents(self):
-        super().connectComponents()
+        # super().connectComponents()
         self.speciesBufferMode.clicked.connect(self.switchBufferMode)
         self.speciesLayerMode.clicked.connect(self.switchLayerMode)
+        self.speciesLanduse.setModel(self.landuseModel)
+        self.feedback.pushInfo("LANDUSE MODEL NB ITEMS " + str(len(self.landuseModel.items)))
+        # assert(False)
+        self.landuseModel.layoutChanged.emit()
         
     def switchMode(self,buffer_mode):
         self.speciesBufferMode.setChecked(buffer_mode)
@@ -102,7 +109,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             buffer_val = self.speciesExtentBuffer.value()
             buffer_layer = self.speciesExtentLayer.filePath()
             extent_val = buffer_val if buffer_mode else buffer_layer
-            item = SpeciesItem(name,full_name,max_disp,disp_unit,
+            item = SpeciesItem.fromValues(name,full_name,max_disp,disp_unit,
                 min_patch,patch_unit,landuse,extent_mode,extent_val,
                 feedback=self.feedback)
             return item

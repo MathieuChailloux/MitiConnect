@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -48,6 +48,8 @@ class ReclassItem(abstract_model.DictItem):
 class ReclassModel(abstract_model.DictModel):
     
     def __init__(self, parent):
+        # itemClass = getattr(sys.modules[__name__], ReclassItem.__name__)
+        # super().__init__(parent,itemClass=itemClass,feedback=parent.feedback)
         super().__init__(parent,itemClass=ReclassItem,
             feedback=parent.feedback)
     

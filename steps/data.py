@@ -156,7 +156,7 @@ class ImportModel(DictModel):
         self.parentModel = parentModel
         
     def applyItemWithContext(self,item,context,feedback):
-        input_path = itme.getLayerPath()
+        input_path = item.getLayerPath()
         input = qgsUtils.loadLayer(input_path)
         input_extent = input.extent()
         crs = input.crs().authid()
@@ -225,7 +225,8 @@ class ImportConnector(TableToDialogConnector):
         self.onlySelection = False
         # self.importModel = ImportModel(self)
         super().__init__(model,self.dlg.importView,
-                         None,self.dlg.importDelete)
+            removeButton=self.dlg.importDelete,
+            runButton=self.dlg.importRun)
 
     def connectComponents(self):
         super().connectComponents()

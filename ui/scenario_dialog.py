@@ -41,48 +41,65 @@ class ScenarioReclassItem(abstract_model.DictItem):
     CLASS = 'CLASS'
     FIELDS = [ VAL, CLASS ]
     
-    def __init__(self, name, reclass=None):
-        dict = { NAME : name, reclass : reclass }
-        super().__init__(dict, FIELDS)
+    def __init__(self, val, reclass=None,feedback=None):
+        dict = { self.VAL : val, self.CLASS : reclass }
+        super().__init__(dict, self.FIELDS,feedback=feedback)
+        self.feedback=feedback
         
 class ScenarioReclassModel(abstract_model.DictModel):
 
-    def __init__(self,values=[]):
+    def __init__(self,values=[],feedback=None):
         itemClass = getattr(sys.modules[__name__], ScenarioReclassItem.__name__)
-        super().__init__(self,itemClass)
+        super().__init__(self,itemClass=itemClass,feedback=feedback)
+        self.feedback=feedback
         self.loadValues(values)
             
     def loadValues(self,values):
         self.items=[]
         for v in values:
-            i = ScenarioReclassItem(v)
+            i = ScenarioReclassItem(v,feedback=self.feedback)
             self.addItem(i)
         self.layoutChanged.emit()
         
+    def __str__(self):
+        return "ReclassModel"
+        
 
-class ScenarioDialogItem(abstract_model.DictItem):
+# class ScenarioItem(abstract_model.DictItemWithChildren):
+class ScenarioItem(abstract_model.DictItemWithChildren):
     
     NAME = 'NAME'
     BASE = 'BASE'
     LAYER = 'LAYER'
     # True = Field mode, False = Fixed mode
-    RECLASS_MODE = 'RECLASS_MODE'
+    MODE = 'MODE'
     RECLASS_FIELD = 'RECLASS_FIELD'
-    RECLASS_VAL = 'RECLASS_VAL'
+    # MODEL = 'RECLASS_VAL'
+    MODEL = 'MODEL'
+    BURN_VAL = 'BURN_VAL'
     # DISPLAY_FIELDS = ['NAME','BASE']
-    FIELDS = ['NAME','BASE','LAYER','RECLASS_MODE','RECLASS_VAL']
+    STATUS_OS = 'OS'
+    STATUS_FRICTION = 'FRICTION'
+    STATUS_GRAPH = 'GRAPH'
+    BASE_FIELDS = [ NAME, BASE ]
+    RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
+    STATUS_FIELDS = [ STATUS_OS, STATUS_FRICTION, STATUS_GRAPH ]
+    FIELDS = BASE_FIELDS + RECLASS_FIELDS + STATUS_FIELDS
+    DISPLAY_FIELDS = BASE_FIELDS + STATUS_FIELDS
     
     def __init__(self,dict,feedback=None):
         super().__init__(dict,feedback=feedback)
-        self.reclassModel=ScenarioReclassModel()
+        self.setReclassModel(ScenarioReclassModel(feedback=feedback))
     
     @classmethod
-    def fromValues(cls, name, base, layer, reclassMode=False,
-            reclassField=None, reclassVal=0):
+    def fromValues(cls, name, layer, base=None,
+            mode=0, reclassField=None, burnVal=0,
+            statusOS=False,statusFrict=False,statusGraph=False,feedback=None):
         dict = { cls.NAME : name, cls.BASE : base, cls.LAYER : layer,
-            cls.RECLASS_MODE : reclassMode, cls.RECLASS_FIELD : reclassField, 
-            cls.RECLASS_VAL : reclassVal }
-        return cls(dict, cls.FIELDS)
+            cls.MODE : mode, cls.RECLASS_FIELD : reclassField,
+            cls.BURN_VAL : burnVal, cls.STATUS_OS : statusOS,
+            cls.STATUS_FRICTION : statusFrict, cls.STATUS_GRAPH : statusGraph }
+        return cls(dict, feedback=feedback)
         
     def getName(self):
         return self.dict[self.NAME]
@@ -90,6 +107,24 @@ class ScenarioDialogItem(abstract_model.DictItem):
         return self.dict[self.BASE]
     def getLayer(self):
         return self.dict[self.LAYER]
+        
+    def setReclassModel(self,model):
+        self.reclassModel = model
+        self.children = [model]
+        
+    # Mandatory to redefine it for import links reasons
+    @classmethod
+    def fromXML(cls,root,feedback=None):
+        o = cls.fromDict(root.attrib)
+        for child in root:
+            childObj = ScenarioReclassModel(feedback=feedback)
+            childObj.fromXML(child,feedback=feedback)
+            # childTag = child.tag
+            # classObj = getattr(sys.modules[__name__], childTag)
+            # childObj = classObj.fromXML(child,feedback=feedback)
+            o.children.append(childObj)
+            o.model = childObj
+        return o
     
     
 
@@ -102,39 +137,51 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
-        # self.model = dlgItem.reclassModel if dlgItem else ScenarioReclassModel()
-        self.model = ScenarioReclassModel()
+        self.reclassModel = dlgItem.reclassModel if dlgItem else ScenarioReclassModel(feedback=feedback)
+        # self.reclassModel = ScenarioReclassModel(feedback=feedback)
         self.feedback = feedback
+        self.reclassModel.feedback = feedback
+        self.feedback.pushDebugInfo("TESTES")
+        self.reclassModel.feedback.pushDebugInfo("TESTTTT")
         self.scModel = scenarioModel
         # self.scenarioList = scenarioList
         self.setupUi(self)
+        self.layerComboDlg = qgsUtils.LayerComboDialog(self,
+            self.scLayerCombo,self.scLayerButton)
+        self.layerComboDlg.setVectorMode()
         self.updateUi(dlgItem)
         self.connectComponents()
+        self.feedback.pushDebugInfo("TESTES")
+        self.reclassModel.feedback.pushDebugInfo("TESTTTT")
         
     def connectComponents(self):
-        self.scLayer.layerChanged.connect(self.changeLayer)
+        self.scLayerCombo.layerChanged.connect(self.changeLayer)
         self.scFieldMode.clicked.connect(self.switchFieldMode)
         self.scFixedMode.clicked.connect(self.switchFixedMode)
         self.scField.fieldChanged.connect(self.changeField)
         self.scBase.setModel(self.scModel)
-        self.scDialogView.setModel(self.model)
+        self.scDialogView.setModel(self.reclassModel)
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
+        self.scFixedMode.setChecked(not fieldMode)
+        self.scFieldMode.setChecked(fieldMode)
+        self.scPerValue.setEnabled(fieldMode)
         self.scField.setEnabled(fieldMode)
         self.scDialogView.setEnabled(fieldMode)
         self.scBurnVal.setEnabled(not fieldMode)
     def switchFieldMode(self):
-        self.switchBurnMode(self,True)
+        self.switchBurnMode(True)
     def switchFixedMode(self):
-        self.switchBurnMode(self,False)
+        self.switchBurnMode(False)
         
     def changeLayer(self,layer):
         self.scField.setLayer(layer)
-        self.layer = layer
+        # self.layer = layer
     def changeField(self,fieldname):
-        values = qgsUtils.getLayerFieldUniqueValues(self.layer,fieldname)
-        self.model.loadValues(values)
+        values = qgsUtils.getLayerFieldUniqueValues(self.scLayerCombo.currentLayer(),fieldname)
+        self.feedback.pushDebugInfo("field values = " + str(values))
+        self.reclassModel.loadValues(values)
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
@@ -145,33 +192,39 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if not name:
                 self.errorDialog(self.tr("Empty name"))
                 continue
-            base = self.scBase.currentIndex()
-            if not base:
+            base = self.scBase.currentText()
+            self.feedback.pushDebugInfo("base = " + str(base))
+            if base is None:
                 self.errorDialog(self.tr("Empty base scenario"))
                 continue
-            layer = self.scLayer.currentLayer()
+            layer = self.scLayerCombo.currentLayer()
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
                 continue
             layerPath = qgsUtils.pathOfLayer(layer)
             shortMode = self.scShort.isChecked()
             scPerValueMode = self.scPerValue.isChecked()
-            burnFieldMode = self.scFieldMode.isChecked()
+            fixedMode = self.scFixedMode.isChecked()
             reclassField = self.scField.currentField()
-            if burnFieldMode:
-                reclassVal = self.scBurnVal
+            self.feedback.pushDebugInfo("fixedMode = " + str(fixedMode))
+            if fixedMode:
+                burnVal = self.scBurnVal.text()
+                dlgItem = ScenarioItem.fromValues(name,layerPath,base=base,
+                    mode=1,
+                    burnVal=burnVal,
+                    feedback=self.feedback)
             else:
                 if not reclassField:
                     self.errorDialog(self.tr("Empty field"))
                     continue
-                reclassVal = self.model
-                if not self.model.items:
-                    self.errorDialog(self.tr("Empty model"))
-                    continue
-            dlgItem = ScenarioDialogItem.fromValues(name,base,layer,
-                reclassMode=burnFieldMode,
-                reclassField=reclassField,
-                reclassVal=reclassVal)
+                dlgItem = ScenarioItem.fromValues(name,layerPath,base=base,
+                    mode=2,
+                    reclassField=reclassField,
+                    feedback=self.feedback)
+                dlgItem.setReclassModel(self.reclassModel)
+                # if not self.model.items:
+                    # self.errorDialog(self.tr("Empty model"))
+                    # continue
             return dlgItem
         return None
 
@@ -179,16 +232,16 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # self.scBase.addItems(self.scenarioList)
         if dlgItem:
             self.feedback.pushDebugInfo("updateUI " + str(dlgItem.dict))
-            self.scName.setText(dlgItem.dict[ScenarioDialogItem.NAME])
-            self.scBase.setCurrentText(dlgItem.dict[ScenarioDialogItem.BASE])
-            self.scLayer.setLayer(dlgItem.dict[ScenarioDialogItem.LAYER])
-            reclassMode = dlgItem.dict[ScenarioDialogItem.RECLASS_MODE]
-            self.switchBurnMode(reclassMode)
-            if reclassMode:
-                self.scField.setField(dlgItem.dict[ScenarioDialogItem.RECLASS_FIELD])
+            self.scName.setText(dlgItem.dict[ScenarioItem.NAME])
+            self.scBase.setCurrentText(dlgItem.dict[ScenarioItem.BASE])
+            self.layerComboDlg.setLayerPath(dlgItem.dict[ScenarioItem.LAYER])
+            fieldMode = dlgItem.dict[ScenarioItem.MODE] == 2
+            self.switchBurnMode(fieldMode)
+            if fieldMode:
+                self.scField.setField(dlgItem.dict[ScenarioItem.RECLASS_FIELD])
                 self.model = dlgItem.model
             else:
-                self.scBurnVal.setValue(dlgItem.dict[ScenarioDialogItem.RECLASS_VAL])
+                self.scBurnVal.setText(str(dlgItem.dict[ScenarioItem.BURN_VAL]))
                 
 
 class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
@@ -222,7 +275,7 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
                 continue
-            dlgItem = ScenarioDialogItem.fromValues(name=name,base=None,layer=layer,feedback=self.feedback)
+            dlgItem = ScenarioItem.fromValues(name=name,base=None,layer=layer,feedback=self.feedback)
             return dlgItem
         return None
                 

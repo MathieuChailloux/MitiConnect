@@ -104,47 +104,68 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <widget class="QgsMapLayerComboBox" name="scLayer">
-         <property name="geometry">
-          <rect>
-           <x>60</x>
-           <y>0</y>
-           <width>301</width>
-           <height>20</height>
-          </rect>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="leftMargin">
+          <number>0</number>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
+         <property name="topMargin">
+          <number>0</number>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777214</width>
-           <height>20</height>
-          </size>
+         <property name="rightMargin">
+          <number>0</number>
          </property>
-        </widget>
-        <widget class="QLabel" name="label_4">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>0</y>
-           <width>90</width>
-           <height>20</height>
-          </rect>
+         <property name="bottomMargin">
+          <number>0</number>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Layer</string>
-         </property>
-        </widget>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>29</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Layer</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QgsMapLayerComboBox" name="scLayerCombo">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>19</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777214</width>
+             <height>20</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="scLayerButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
@@ -168,6 +189,9 @@
       </item>
       <item>
        <widget class="QRadioButton" name="scPerValue">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>151</width>
@@ -181,7 +205,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Create 1 scenario per value</string>
+         <string>Create 1 scenario per field value</string>
         </property>
        </widget>
       </item>
@@ -209,7 +233,7 @@
          <item row="0" column="0">
           <widget class="QRadioButton" name="scFieldMode">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Field values</string>

@@ -103,7 +103,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="../../BioDispersal/resources.qrc">
+              <iconset>
                <normaloff>:/plugins/BioDispersal/icons/enFlag.svg</normaloff>:/plugins/BioDispersal/icons/enFlag.svg</iconset>
              </property>
              <property name="checkable">
@@ -139,7 +139,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="../../BioDispersal/resources.qrc">
+              <iconset>
                <normaloff>:/plugins/BioDispersal/icons/iconHelpConsole.svg</normaloff>:/plugins/BioDispersal/icons/iconHelpConsole.svg</iconset>
              </property>
              <property name="autoRaise">
@@ -162,7 +162,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="../../BioDispersal/resources.qrc">
+              <iconset>
                <normaloff>:/plugins/BioDispersal/icons/mActionFileSave.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileSave.svg</iconset>
              </property>
              <property name="autoRaise">
@@ -191,7 +191,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="../../BioDispersal/resources.qrc">
+              <iconset>
                <normaloff>:/plugins/BioDispersal/icons/mActionFileOpen.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileOpen.svg</iconset>
              </property>
              <property name="autoRaise">
@@ -214,7 +214,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="../../BioDispersal/resources.qrc">
+              <iconset>
                <normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</iconset>
              </property>
              <property name="autoRaise">
@@ -228,7 +228,7 @@
               <string>...</string>
              </property>
              <property name="icon">
-              <iconset resource="../../BioDispersal/resources.qrc">
+              <iconset>
                <normaloff>:/plugins/BioDispersal/icons/frFlag.svg</normaloff>:/plugins/BioDispersal/icons/frFlag.svg</iconset>
              </property>
              <property name="checkable">
@@ -270,7 +270,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="paramsTab">
               <attribute name="title">
@@ -634,7 +634,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -663,7 +663,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -686,7 +686,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/mActionDeleteSelected.svg</normaloff>:/plugins/BioDispersal/icons/mActionDeleteSelected.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -801,7 +801,7 @@
                          <string>Import data</string>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
                         </property>
                        </widget>
@@ -927,7 +927,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -956,7 +956,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/mActionDeleteSelected.svg</normaloff>:/plugins/BioDispersal/icons/mActionDeleteSelected.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -1052,7 +1052,7 @@
                        <string>Create land use layer(s)</string>
                       </property>
                       <property name="icon">
-                       <iconset resource="../../BioDispersal/resources.qrc">
+                       <iconset>
                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
                       </property>
                      </widget>
@@ -1200,7 +1200,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -1229,7 +1229,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/symbologyRemove.svg</normaloff>:/plugins/BioDispersal/icons/symbologyRemove.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -1374,7 +1374,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -1403,7 +1403,7 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset resource="../../BioDispersal/resources.qrc">
+                         <iconset>
                           <normaloff>:/plugins/BioDispersal/icons/symbologyRemove.svg</normaloff>:/plugins/BioDispersal/icons/symbologyRemove.svg</iconset>
                         </property>
                         <property name="autoRaise">
@@ -1527,7 +1527,7 @@
                       <string/>
                      </property>
                      <property name="icon">
-                      <iconset resource="../../BioDispersal/resources.qrc">
+                      <iconset>
                        <normaloff>:/plugins/BioDispersal/icons/mActionRefresh.svg</normaloff>:/plugins/BioDispersal/icons/mActionRefresh.svg</iconset>
                      </property>
                      <property name="autoRaise">
@@ -1556,7 +1556,7 @@
                       <string/>
                      </property>
                      <property name="icon">
-                      <iconset resource="../../BioDispersal/resources.qrc">
+                      <iconset>
                        <normaloff>:/plugins/BioDispersal/icons/mActionFileOpen.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileOpen.svg</iconset>
                      </property>
                      <property name="autoRaise">
@@ -1585,7 +1585,7 @@
                       <string/>
                      </property>
                      <property name="icon">
-                      <iconset resource="../../BioDispersal/resources.qrc">
+                      <iconset>
                        <normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</iconset>
                      </property>
                      <property name="autoRaise">
@@ -1738,7 +1738,7 @@
                         <string>Land Use </string>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
                        </property>
                        <property name="iconSize">
@@ -1761,7 +1761,7 @@
                         <string>Friction</string>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
                        </property>
                        <property name="iconSize">
@@ -1784,7 +1784,7 @@
                         <string>Graph</string>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
                        </property>
                        <property name="iconSize">
@@ -1859,7 +1859,7 @@
                            <string>Spatialize</string>
                           </property>
                           <property name="icon">
-                           <iconset resource="../../BioDispersal/resources.qrc">
+                           <iconset>
                             <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
                           </property>
                           <property name="iconSize">
@@ -1888,7 +1888,7 @@
                            <string>Compare scenarios</string>
                           </property>
                           <property name="icon">
-                           <iconset resource="../../BioDispersal/resources.qrc">
+                           <iconset>
                             <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
                           </property>
                           <property name="iconSize">
@@ -1995,13 +1995,13 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Add new species</string>
+                        <string>Add scenario from layer</string>
                        </property>
                        <property name="text">
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
                        </property>
                        <property name="autoRaise">
@@ -2024,13 +2024,13 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Add new species</string>
+                        <string>Add scenario from scenario</string>
                        </property>
                        <property name="text">
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
                        </property>
                        <property name="autoRaise">
@@ -2053,13 +2053,13 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Delete selected layer</string>
+                        <string>Delete selected scenario</string>
                        </property>
                        <property name="text">
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/mActionDeleteSelected.svg</normaloff>:/plugins/BioDispersal/icons/mActionDeleteSelected.svg</iconset>
                        </property>
                        <property name="autoRaise">
@@ -2088,13 +2088,13 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Upgrade layer</string>
+                        <string>Upgrade scenario</string>
                        </property>
                        <property name="text">
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/up-arrow.png</normaloff>:/plugins/BioDispersal/icons/up-arrow.png</iconset>
                        </property>
                        <property name="autoRaise">
@@ -2123,13 +2123,13 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Downgrade layer</string>
+                        <string>Downgrade scenario</string>
                        </property>
                        <property name="text">
                         <string/>
                        </property>
                        <property name="icon">
-                        <iconset resource="../../BioDispersal/resources.qrc">
+                        <iconset>
                          <normaloff>:/plugins/BioDispersal/icons/down-arrow.png</normaloff>:/plugins/BioDispersal/icons/down-arrow.png</iconset>
                        </property>
                        <property name="autoRaise">
@@ -2214,7 +2214,7 @@
                     <string>...</string>
                    </property>
                    <property name="icon">
-                    <iconset resource="../../BioDispersal/resources.qrc">
+                    <iconset>
                      <normaloff>:/plugins/BioDispersal/icons/debug_icon/mActionAnnotation.svg</normaloff>:/plugins/BioDispersal/icons/debug_icon/mActionAnnotation.svg</iconset>
                    </property>
                    <property name="checkable">
@@ -2234,7 +2234,7 @@
                     <string>...</string>
                    </property>
                    <property name="icon">
-                    <iconset resource="../../BioDispersal/resources.qrc">
+                    <iconset>
                      <normaloff>:/plugins/BioDispersal/icons/mActionFileSave.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileSave.svg</iconset>
                    </property>
                    <property name="autoRaise">
@@ -2251,7 +2251,7 @@
                     <string>...</string>
                    </property>
                    <property name="icon">
-                    <iconset resource="../../BioDispersal/resources.qrc">
+                    <iconset>
                      <normaloff>:/plugins/BioDispersal/icons/iconClearConsole.svg</normaloff>:/plugins/BioDispersal/icons/iconClearConsole.svg</iconset>
                    </property>
                    <property name="autoRaise">
@@ -2358,7 +2358,7 @@ p, li { white-space: pre-wrap; }
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../../BioDispersal/resources.qrc">:/plugins/BioDispersal/icons/logoINRAE.png</pixmap>
+         <pixmap>:/plugins/BioDispersal/icons/logoINRAE.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -2386,7 +2386,7 @@ p, li { white-space: pre-wrap; }
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../../BioDispersal/resources.qrc">:/plugins/BioDispersal/icons/logoTetis.png</pixmap>
+         <pixmap>:/plugins/BioDispersal/icons/logoTetis.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>

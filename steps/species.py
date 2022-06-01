@@ -51,6 +51,8 @@ from ..ui.species_dialog import SpeciesItem, SpeciesDialog
 
 class SpeciesModel(DictModel):
 
+    DISPLAY_FIELDS = SpeciesItem.DISPLAY_FIELDS
+
     def __init__(self, pluginModel):
         # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]

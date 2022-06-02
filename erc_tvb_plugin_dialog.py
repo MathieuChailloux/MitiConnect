@@ -108,6 +108,9 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
             
     def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
+        utils.print_func = self.feedback.print_func
+        # self.feedback.switchDebugMode()
+        # self.feedback.pushInfo("hey")
         self.pluginModel = PluginModel(self.feedback)
         self.paramsConnector = params.ParamsConnector(self,self.pluginModel.paramsModel)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)
@@ -127,6 +130,12 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.feedback.pushDebugInfo("exceptionHook")
         if excType == utils.CustomException:
             self.feedback.pushDebugInfo("Ignoring custom exception : " + str(excValue))
+        elif excType == utils.UserError:
+            self.feedback.user_error(str(excValue))
+        elif excType == utils.InternalError:
+            self.feedback.itnernal_error(str(excValue))
+        elif excType == utils.TodoError:
+            self.feedback.todo_error(str(excValue))
         else:
             tbinfofile = StringIO()
             traceback.print_tb(tracebackobj, None, tbinfofile)

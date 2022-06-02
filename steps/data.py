@@ -141,14 +141,14 @@ class ImportItem(DictItemWithChildren):
         # super().__init__(self.dict,feedback=feedback,children=self.children)
     @classmethod
     def fromDlgItem(cls,dlgItem,feedback=None):
-        dict = self.dlgToDict(dlgItem)
+        dict = cls.dlgToDict(dlgItem)
         cls(dict,feedback=feedback)
     # def recompute(self):
         # self.computed = False
         # self.name = self.getBaseName()        
         
     @staticmethod
-    def dlgToDict(dlgItem):
+    def dlgToDict(cls,dlgItem):
         is_vector = type(dlgItem) is VectorDlgItem
         if is_vector:
             if dlgItem.getBurnMode():
@@ -157,10 +157,10 @@ class ImportItem(DictItemWithChildren):
                 val = dlgItem.getBurnVal()
         else:
             val = None
-        dict = { self.INPUT : dlgItem.dict[self.INPUT],
-            self.MODE : is_vector,
-            self.VALUE : val,
-            self.STATUS : False }
+        dict = { cls.INPUT : dlgItem.dict[cls.INPUT],
+            cls.MODE : is_vector,
+            cls.VALUE : val,
+            cls.STATUS : False }
         return dict
     def updateFromDlgItem(self,dlgItem):
         self.dict = self.dlgToDict(dlgItem)

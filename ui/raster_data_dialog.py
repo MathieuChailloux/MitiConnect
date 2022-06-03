@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 # from qgis.core import QgsMapLayerProxyModel
 
-from ..qgis_lib_mc import qgsUtils, abstract_model
+from ..qgis_lib_mc import utils, qgsUtils, abstract_model
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -57,16 +57,18 @@ class ReclassModel(abstract_model.DictModel):
         return [i.dict[ReclassItem.OUTPUT] for i in self.items]
 
 
-class RasterDlgItem(abstract_model.DictItem):
+class RasterDlgItem(abstract_model.DictItemWithChild):
 
     INPUT = 'INPUT'
-    RECLASS = 'RECLASS'
-    FIELDS = [ INPUT, RECLASS ]
+    # RECLASS = 'RECLASS'
+    FIELDS = [ INPUT ]
 
     def __init__(self, dict, parent=None):
         super().__init__(dict,self.FIELDS)
+    def getLayer(self):
+        return self.dict[self.INPUT]
     def getReclassModel(self):
-        return self.dict[self.RECLASS]
+        return self.getChild()
 
 class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, raster_data_item, parent,class_model=None):
@@ -86,6 +88,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.rasterDataLayerCombo,self.rasterDataLayerOpen)
         self.layerComboDlg.setRasterMode()
         self.connectComponents()
+        self.updateUi()
 
     def connectComponents(self):
         self.rasterDataDialogView.setModel(self.reclass_model)
@@ -98,6 +101,16 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.reclass_model.items = [ReclassItem(in_val,out_val)
             for (in_val, out_val) in zip(vals, free_vals)]
         self.reclass_model.layoutChanged.emit() 
+    
+    def updateUi(self):
+        if self.data_item:
+            layer = self.data_item.getLayer()
+            utils.checkFileExists(layer)
+            self.layerComboDlg.setLayerPath(layer)
+            model = self.data_item.child
+            if model:
+                self.rasterDataDialogView.setModel(model)
+                model.layoutChanged.emit()
         
     def showDialog(self):
         self.feedback.pushDebugInfo("showDialog")
@@ -110,7 +123,9 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             if not layer_path:
                 self.feedback.user_error("Could not load layer " + str(layer_path))
             dict[RasterDlgItem.INPUT] = layer_path
-            dict[RasterDlgItem.RECLASS] = self.reclass_model
+            # dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict)
+            self.data_item.setChild(self.rasterDataDialogView.model())
+            # self.data_item.setChild(self.reclass_model)
             return self.data_item
         return None

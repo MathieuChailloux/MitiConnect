@@ -32,7 +32,8 @@ from ..ui.vector_data_dialog import VectorDlgItem, VectorDataDialog
 from ..ui.raster_data_dialog import RasterDlgItem, RasterDataDialog
 from ..ui.landuse_dialog import LanduseDialog
 from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
-    AbstractConnector, TableToDialogConnector, DictItemWithChildren)
+    AbstractConnector, TableToDialogConnector,
+    DictItemWithChild, DictItemWithChildren)
 
 # RASTER_DLG_CLASS, _ = uic.loadUiType(os.path.join(
     # os.path.dirname(__file__), '../ui/raster_data_dialog.ui'))
@@ -114,7 +115,7 @@ from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
         # return None
 
 
-class ImportItem(DictItemWithChildren):
+class ImportItem(DictItemWithChild):
             
     INPUT = 'INPUT'
     MODE = 'MODE'
@@ -139,16 +140,16 @@ class ImportItem(DictItemWithChildren):
         # else:
             # assert(False)
         # super().__init__(self.dict,feedback=feedback,children=self.children)
-    @classmethod
-    def fromDlgItem(cls,dlgItem,feedback=None):
-        dict = cls.dlgToDict(dlgItem)
-        cls(dict,feedback=feedback)
+    # @classmethod
+    # def fromDlgItem(cls,dlgItem,feedback=None):
+        # dict = cls.dlgToDict(dlgItem)
+        # return cls(dict,feedback=feedback)
     # def recompute(self):
         # self.computed = False
         # self.name = self.getBaseName()        
         
     @staticmethod
-    def dlgToDict(cls,dlgItem):
+    def childToDict(dlgItem):
         is_vector = type(dlgItem) is VectorDlgItem
         if is_vector:
             if dlgItem.getBurnMode():
@@ -157,19 +158,20 @@ class ImportItem(DictItemWithChildren):
                 val = dlgItem.getBurnVal()
         else:
             val = None
-        dict = { cls.INPUT : dlgItem.dict[cls.INPUT],
-            cls.MODE : is_vector,
-            cls.VALUE : val,
-            cls.STATUS : False }
+        dict = { ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
+            ImportItem.MODE : is_vector,
+            ImportItem.VALUE : val,
+            ImportItem.STATUS : False }
         return dict
-    def updateFromDlgItem(self,dlgItem):
-        self.dict = self.dlgToDict(dlgItem)
-        self.children = [dlgItem]
-        self.dlgItem = dlgItem
+    # def updateFromDlgItem(self,dlgItem):
+        # self.dict = self.dlgToDict(dlgItem)
+        # self.children = [dlgItem]
+        # self.dlgItem = dlgItem
+        
         # self.recompute()
         
     def getBaseName(self):
-        print("dict = " +str(self.dict))
+        # print("dict = " +str(self.dict))
         layer_path = self.dict[self.INPUT]
         if not layer_path:
             raise utils.CustomException("No layer specified for vector import")
@@ -181,20 +183,21 @@ class ImportItem(DictItemWithChildren):
 
     def isVector(self):
         return self.dict[self.MODE]
-    def getDialog(self):
-        if self.children:
-            return self.children[0]
-        else:
-            self.feedback.internal_error("No children for ImportItem")
+    # def getDialog(self):
+        # if self.children:
+            # return self.children[0]
+        # else:
+            # self.feedback.internal_error("No children for ImportItem")
+            
     # Mandatory to redefine it for import links reasons
     @classmethod
-    def fromXML(cls,root):
+    def fromXML(cls,root,feedback=None):
         o = cls.fromDict(root.attrib)
         for child in root:
             childTag = child.tag
             classObj = getattr(sys.modules[__name__], childTag)
-            childObj = classObj.fromXML(child)
-            o.children.append(childObj)
+            childObj = classObj.fromXML(child,feedback=feedback)
+            o.setChild(childObj)
         return o
         
 
@@ -206,6 +209,7 @@ class ImportModel(DictModel):
         itemClass = getattr(sys.modules[__name__], ImportItem.__name__)
         super().__init__(self,itemClass,
             feedback=pluginModel.feedback)
+        self.feedback.pushInfo("IM OK")
         # self.itemClass = getattr(sys.modules[__name__], itemClassName)
         self.pluginModel = pluginModel
         
@@ -274,13 +278,14 @@ class ImportModel(DictModel):
 class ImportConnector(TableToDialogConnector):
 
     def __init__(self,dlg,model):
-        self.dlg = dlg
-        self.feedback = dlg.feedback
-        self.onlySelection = False
         # self.importModel = ImportModel(self)
+        self.dlg = dlg
         super().__init__(model,self.dlg.importView,
             removeButton=self.dlg.importDelete,
             runButton=self.dlg.importRun)
+        self.feedback.pushInfo("IC OK")
+        # self.feedback = dlg.feedback
+        self.onlySelection = False
 
     def connectComponents(self):
         super().connectComponents()
@@ -302,7 +307,7 @@ class ImportConnector(TableToDialogConnector):
             
             
     def openDialog(self,item):
-        dlgItem = item.getDialog()
+        dlgItem = item.getChild()
         if item.isVector():
             item_dlg = VectorDataDialog(dlgItem,self.dlg)
         else:
@@ -335,8 +340,8 @@ class ImportConnector(TableToDialogConnector):
         
     def addDlgItem(self,dlgItem,is_vector):
         if dlgItem:
-            item = ImportItem.fromDlgItem(dlgItem,feedback=self.feedback)
-            item.addChild(dlgItem)
+            item = ImportItem.fromChildItem(dlgItem,feedback=self.feedback)
+            item.setChild(dlgItem)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
             if not item.isVector():
@@ -345,6 +350,8 @@ class ImportConnector(TableToDialogConnector):
                     basename = item.getBaseName()
                     self.model.pluginModel.frictionModel.addRowFromCode(
                         code,descr=basename)
+        else:
+            self.feedback.pushDebugInfo("No dlgItem given")
         
     def updateItem(self,item,dlgItem): 
         item.updateFromDlgItem(dlgItem)
@@ -358,7 +365,7 @@ class LanduseItem(DictItem):
     
     @classmethod
     def fromValues(cls,name=None, imports=None,feedback=None):
-        dict = { self.NAME : name, self.IMPORTS : imports }
+        dict = { cls.NAME : name, cls.IMPORTS : imports }
         return cls(dict,feedback=feedback)
         
     def getName(self):

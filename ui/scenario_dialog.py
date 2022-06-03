@@ -27,7 +27,7 @@ import os, sys
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
-from ..qgis_lib_mc import abstract_model, qgsUtils, feedbacks
+from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 SC_DIALOG, _ = uic.loadUiType(os.path.join(
@@ -44,14 +44,16 @@ class ScenarioReclassItem(abstract_model.DictItem):
     def __init__(self, val, reclass=None,feedback=None):
         dict = { self.VAL : val, self.CLASS : reclass }
         super().__init__(dict, self.FIELDS,feedback=feedback)
-        self.feedback=feedback
+        # self.feedback=feedback
         
 class ScenarioReclassModel(abstract_model.DictModel):
 
     def __init__(self,values=[],feedback=None):
+        utils.info("values = " +str(values))
+        assert(feedback is not None)
         itemClass = getattr(sys.modules[__name__], ScenarioReclassItem.__name__)
         super().__init__(self,itemClass=itemClass,feedback=feedback)
-        self.feedback=feedback
+        # self.feedback=feedback
         self.loadValues(values)
             
     def loadValues(self,values):
@@ -66,7 +68,7 @@ class ScenarioReclassModel(abstract_model.DictModel):
         
 
 # class ScenarioItem(abstract_model.DictItemWithChildren):
-class ScenarioItem(abstract_model.DictItemWithChildren):
+class ScenarioItem(abstract_model.DictItemWithChild):
     
     NAME = 'NAME'
     BASE = 'BASE'
@@ -88,8 +90,10 @@ class ScenarioItem(abstract_model.DictItemWithChildren):
     DISPLAY_FIELDS = BASE_FIELDS + STATUS_FIELDS
     
     def __init__(self,dict,feedback=None):
-        super().__init__(dict,feedback=feedback)
-        self.setReclassModel(ScenarioReclassModel(feedback=feedback))
+        super().__init__(dict,feedback=feedback,child=None)
+        self.reclassModel = ScenarioReclassModel(feedback=feedback)
+        # self.reclassModel = self.child
+        # self.setReclassModel(ScenarioReclassModel(feedback=self.feedback))
     
     @classmethod
     def fromValues(cls, name, layer, base=None,
@@ -109,21 +113,25 @@ class ScenarioItem(abstract_model.DictItemWithChildren):
         return self.dict[self.LAYER]
         
     def setReclassModel(self,model):
+        # self.child = model
         self.reclassModel = model
-        self.children = [model]
+        # self.children = [model]
         
     # Mandatory to redefine it for import links reasons
     @classmethod
     def fromXML(cls,root,feedback=None):
         o = cls.fromDict(root.attrib)
         for child in root:
-            childObj = ScenarioReclassModel(feedback=feedback)
+            # childObj = ScenarioReclassModel(feedback=feedback)
+            childTag = child.tag
+            childObj = getattr(sys.modules[__name__], childTag)
             childObj.fromXML(child,feedback=feedback)
             # childTag = child.tag
             # classObj = getattr(sys.modules[__name__], childTag)
             # childObj = classObj.fromXML(child,feedback=feedback)
+            
             o.children.append(childObj)
-            o.model = childObj
+            o.reclassModel = childObj
         return o
     
     
@@ -140,19 +148,19 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.reclassModel = dlgItem.reclassModel if dlgItem else ScenarioReclassModel(feedback=feedback)
         # self.reclassModel = ScenarioReclassModel(feedback=feedback)
         self.feedback = feedback
-        self.reclassModel.feedback = feedback
-        self.feedback.pushDebugInfo("TESTES")
-        self.reclassModel.feedback.pushDebugInfo("TESTTTT")
+        # self.reclassModel.feedback = feedback
+        # self.feedback.pushDebugInfo("TESTES")
+        # self.reclassModel.feedback.pushDebugInfo("TESTTTT")
         self.scModel = scenarioModel
         # self.scenarioList = scenarioList
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.scLayerCombo,self.scLayerButton)
         self.layerComboDlg.setVectorMode()
-        self.updateUi(dlgItem)
         self.connectComponents()
-        self.feedback.pushDebugInfo("TESTES")
-        self.reclassModel.feedback.pushDebugInfo("TESTTTT")
+        self.updateUi(dlgItem)
+        # self.feedback.pushDebugInfo("TESTES")
+        # self.reclassModel.feedback.pushDebugInfo("TESTTTT")
         
     def connectComponents(self):
         self.scLayerCombo.layerChanged.connect(self.changeLayer)
@@ -239,7 +247,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.switchBurnMode(fieldMode)
             if fieldMode:
                 self.scField.setField(dlgItem.dict[ScenarioItem.RECLASS_FIELD])
-                self.model = dlgItem.model
+                self.reclassModel = dlgItem.reclassModel
             else:
                 self.scBurnVal.setText(str(dlgItem.dict[ScenarioItem.BURN_VAL]))
                 
@@ -275,7 +283,8 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
                 continue
-            dlgItem = ScenarioItem.fromValues(name=name,base=None,layer=layer,feedback=self.feedback)
+            dlgItem = ScenarioItem.fromValues(name=name,base=None,
+                layer=layer,feedback=self.feedback)
             return dlgItem
         return None
                 

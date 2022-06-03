@@ -49,6 +49,7 @@ class PluginModel(abstract_model.MainModel):
         self.feedback.pushDebugInfo("feedback bd = " + str(feedback))
         self.paramsModel = params.ParamsModel(self)
         self.importModel = data.ImportModel(self)
+        self.importModel.feedback.pushInfo("PM OK")
         self.landuseModel = data.LanduseModel(self)
         self.speciesModel = species.SpeciesModel(self)
         self.frictionModel = friction.FrictionModel(self)
@@ -108,12 +109,15 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
             
     def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
+        self.feedback.pushInfo("ERC1 OK")
         utils.print_func = self.feedback.print_func
         # self.feedback.switchDebugMode()
         # self.feedback.pushInfo("hey")
         self.pluginModel = PluginModel(self.feedback)
+        self.pluginModel.feedback.pushInfo("ERC2 OK")
         self.paramsConnector = params.ParamsConnector(self,self.pluginModel.paramsModel)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)
+        self.importConnector.feedback.pushInfo("ERC3 OK")
         self.landuseConnector = data.LanduseConnector(self,self.pluginModel.landuseModel)
         self.speciesConnector = species.SpeciesConnector(self,self.pluginModel.speciesModel)
         self.frictionConnector = friction.FrictionConnector(self,self.pluginModel.frictionModel)

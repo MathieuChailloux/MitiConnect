@@ -132,11 +132,13 @@ class ScenarioConnector(TableToDialogConnector):
                 self.feedback.user_error(msg)
             scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
-            scenarioDlg = ScenarioLanduseDialog(self.dlg,item)
+            scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
+                feedback=self.feedback)
         return scenarioDlg
         
     def openDialogLanduseNew(self):
-        item_dlg = ScenarioLanduseDialog(self.dlg,None)
+        item_dlg = ScenarioLanduseDialog(self.dlg,None,
+            feedback=self.feedback)
         dlg_item = item_dlg.showDialog()
         if dlg_item:
             # item = self.mkItemFromDlgItem(dlg_item)

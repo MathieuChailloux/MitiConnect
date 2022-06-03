@@ -96,9 +96,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.vectorBufferMode.clicked.connect(self.setBufferMode)
         
     def updateUi(self):
-        print("update")
+        # print("update")
         if self.data_item:
-            print("lets go")
+            # print("lets go")
             self.vectorLayerCombo.setLayer(None)
             self.layerComboDlg.setLayerPath(self.data_item.getLayerPath())
             self.vectorSelectionExpression.setExpression(self.data_item.getExpression())

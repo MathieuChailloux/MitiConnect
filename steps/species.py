@@ -57,7 +57,7 @@ class SpeciesModel(DictModel):
         # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
         itemClass = getattr(sys.modules[__name__], SpeciesItem.__name__)
-        super().__init__(self,itemClass,feedback=pluginModel.feedback)
+        super().__init__(itemClass,feedback=pluginModel.feedback)
         self.pluginModel = pluginModel
         
     def addItem(self,item):

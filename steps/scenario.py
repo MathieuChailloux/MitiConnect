@@ -73,7 +73,7 @@ class ScenarioModel(DictModel):
 
     def __init__(self, parentModel):
         itemClass = getattr(sys.modules[__name__], ScenarioItem.__name__)
-        super().__init__(self,itemClass,feedback=parentModel.feedback)
+        super().__init__(itemClass,feedback=parentModel.feedback)
         # super().__init__(self,itemClass,feedback=parentModel.feedback,
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.parentModel = parentModel

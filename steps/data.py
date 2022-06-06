@@ -207,8 +207,7 @@ class ImportModel(DictModel):
         # self.item_fields = [ self.INPUT, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
         itemClass = getattr(sys.modules[__name__], ImportItem.__name__)
-        super().__init__(self,itemClass,
-            feedback=pluginModel.feedback)
+        super().__init__(itemClass,feedback=pluginModel.feedback)
         self.feedback.pushInfo("IM OK")
         # self.itemClass = getattr(sys.modules[__name__], itemClassName)
         self.pluginModel = pluginModel
@@ -391,7 +390,7 @@ class LanduseModel(DictModel):
         itemClass = getattr(sys.modules[__name__], LanduseItem.__name__)
         self.pluginModel = pluginModel
         self.currImportNames = []
-        super().__init__(self,itemClass,feedback=pluginModel.feedback)
+        super().__init__(itemClass,feedback=pluginModel.feedback)
                     
     def updateImportName(self):
         pass

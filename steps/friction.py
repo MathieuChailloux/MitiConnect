@@ -36,6 +36,8 @@ class FrictionModel(ExtensiveTableModel):
     def __init__(self,parentModel):
         self.parser_name = "FrictionModel"
         ExtensiveTableModel.__init__(self,parentModel)
+        self.feedback.pushInfo("FM1 " + str(self.__class__.__name__))
+        self.feedback.pushInfo("FM2 " + str(self.itemClass.__class__.__name__))
         
     def reload(self):
         colNames = self.parentModel.speciesModel.getNames()

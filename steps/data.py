@@ -146,7 +146,11 @@ class ImportItem(DictItemWithChild):
         # return cls(dict,feedback=feedback)
     # def recompute(self):
         # self.computed = False
-        # self.name = self.getBaseName()        
+        # self.name = self.getBaseName()     
+        
+    @staticmethod
+    def getItemClass(childTag):
+        return getattr(sys.modules[__name__], childTag)              
         
     @staticmethod
     def childToDict(dlgItem):
@@ -168,7 +172,11 @@ class ImportItem(DictItemWithChild):
         # self.children = [dlgItem]
         # self.dlgItem = dlgItem
         
-        # self.recompute()
+        # self.recompute()        
+        
+    def updateFromOther(self,other):
+        for k in other.dict:
+            self.dict[k] = other.dict[k]
         
     def getBaseName(self):
         # print("dict = " +str(self.dict))
@@ -190,15 +198,15 @@ class ImportItem(DictItemWithChild):
             # self.feedback.internal_error("No children for ImportItem")
             
     # Mandatory to redefine it for import links reasons
-    @classmethod
-    def fromXML(cls,root,feedback=None):
-        o = cls.fromDict(root.attrib)
-        for child in root:
-            childTag = child.tag
-            classObj = getattr(sys.modules[__name__], childTag)
-            childObj = classObj.fromXML(child,feedback=feedback)
-            o.setChild(childObj)
-        return o
+    # @classmethod
+    # def fromXML(cls,root,feedback=None):
+        # o = cls.fromDict(root.attrib)
+        # for child in root:
+            # childTag = child.tag
+            # classObj = getattr(sys.modules[__name__], childTag)
+            # childObj = classObj.fromXML(child,feedback=feedback)
+            # o.setChild(childObj)
+        # return o
         
 
 class ImportModel(DictModel):
@@ -211,6 +219,10 @@ class ImportModel(DictModel):
         self.feedback.pushInfo("IM OK")
         # self.itemClass = getattr(sys.modules[__name__], itemClassName)
         self.pluginModel = pluginModel
+        
+    @staticmethod
+    def getItemClass(childTag):
+        return getattr(sys.modules[__name__], childTag)      
         
     def applyItemWithContext(self,item,context,feedback):
         input_path = item.getLayerPath()
@@ -413,7 +425,7 @@ class LanduseModel(DictModel):
         qgsTreatments.applyMergeRaster(paths,out_path,
             out_type=Qgis.Int16,context=context,feedback=feedback)
         
-    def mkItemFromDict(self,dict,parent=None,feedback=None):
+    def mkItemFromDict(self,dict,feedback=None):
         return LanduseItem(dict)
         
 

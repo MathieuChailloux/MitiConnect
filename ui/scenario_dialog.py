@@ -49,10 +49,11 @@ class ScenarioReclassItem(abstract_model.DictItem):
 class ScenarioReclassModel(abstract_model.DictModel):
 
     def __init__(self,values=[],feedback=None):
-        utils.info("values = " +str(values))
+        utils.debug("values = " +str(values))
         assert(feedback is not None)
+        feedback.pushInfo("values = " +str(values))
         itemClass = getattr(sys.modules[__name__], ScenarioReclassItem.__name__)
-        super().__init__(self,itemClass=itemClass,feedback=feedback)
+        super().__init__(itemClass=itemClass,feedback=feedback)
         # self.feedback=feedback
         self.loadValues(values)
             
@@ -117,10 +118,14 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         self.reclassModel = model
         # self.children = [model]
         
+    def updateFromOther(self,other):
+        for k in other.dict:
+            self.dict[k] = other.dict[k]
+                
     # Mandatory to redefine it for import links reasons
     @classmethod
     def fromXML(cls,root,feedback=None):
-        o = cls.fromDict(root.attrib)
+        o = cls.fromDict(root.attrib,feedback=feedback)
         for child in root:
             # childObj = ScenarioReclassModel(feedback=feedback)
             childTag = child.tag

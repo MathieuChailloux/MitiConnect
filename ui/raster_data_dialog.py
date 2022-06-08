@@ -40,20 +40,18 @@ class ReclassItem(abstract_model.DictItem):
     OUTPUT = 'OUTPUT'
     FIELDS = [ INPUT, OUTPUT ]
 
-    def __init__(self, in_val,out_val):
+    @classmethod
+    def fromValues(self, in_val,out_val):
         d = { self.INPUT : in_val, self.OUTPUT : out_val }
         super().__init__(d,self.FIELDS)
         
         
 class ReclassModel(abstract_model.DictModel):
     
-    def __init__(self, parent, feedback=None):
+    def __init__(self, feedback=None):
         # itemClass = getattr(sys.modules[__name__], ReclassItem.__name__)
         # super().__init__(parent,itemClass=itemClass,feedback=parent.feedback)
-        if not feedback:
-            feedback = parent.feedback
-        super().__init__(parent,itemClass=ReclassItem,
-            feedback=feedback)
+        super().__init__(itemClass=ReclassItem,feedback=feedback)
     
     def getCodes(self):
         return [i.dict[ReclassItem.OUTPUT] for i in self.items]
@@ -65,9 +63,9 @@ class RasterDlgItem(abstract_model.DictItemWithChild):
     # RECLASS = 'RECLASS'
     FIELDS = [ INPUT ]
 
-    def __init__(self, dict, parent=None):
-        super().__init__(dict,self.FIELDS)
-    def getLayer(self):
+    def __init__(self, dict, feedback=None):
+        super().__init__(dict,feedback=feedback)
+    def getLayerPath(self):
         return self.dict[self.INPUT]
     def getReclassModel(self):
         return self.getChild()
@@ -87,7 +85,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.feedback=parent.feedback
         self.data_item = raster_data_item
         self.class_model = class_model
-        self.reclass_model = ReclassModel(self)
+        self.reclass_model = ReclassModel(self,feedback=self.feedback)
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.rasterDataLayerCombo,self.rasterDataLayerOpen)
@@ -103,13 +101,13 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         vals = qgsUtils.getRasterValsBis(layer)
         nb_vals = len(vals)
         free_vals = self.class_model.getFreeVals(nb_vals)
-        self.reclass_model.items = [ReclassItem(in_val,out_val)
+        self.reclass_model.items = [ReclassItem.fromValues(in_val,out_val)
             for (in_val, out_val) in zip(vals, free_vals)]
         self.reclass_model.layoutChanged.emit() 
     
     def updateUi(self):
         if self.data_item:
-            layer = self.data_item.getLayer()
+            layer = self.data_item.getLayerPath()
             utils.checkFileExists(layer)
             self.layerComboDlg.setLayerPath(layer)
             model = self.data_item.child
@@ -129,7 +127,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.feedback.user_error("Could not load layer " + str(layer_path))
             dict[RasterDlgItem.INPUT] = layer_path
             # dict[RasterDlgItem.RECLASS] = self.reclass_model
-            self.data_item = RasterDlgItem(dict)
+            self.data_item = RasterDlgItem(dict,feedback=self.feedback)
             self.data_item.setChild(self.rasterDataDialogView.model())
             # self.data_item.setChild(self.reclass_model)
             return self.data_item

@@ -125,13 +125,27 @@ class ScenarioConnector(TableToDialogConnector):
         # return scenarioDlg
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
-        if not item or item.getBase() is not None:
+        b = item.getBase()
+        self.feedback.pushDebugInfo("itemBase = " + str(b))
+        self.feedback.pushDebugInfo("item = " + str(item is None))
+        self.feedback.pushDebugInfo("itemBase = " + str((b is None)))
+        # if (item is None) or (item.getBase() is None):
+        if (item is None):
+            luFlag = True
+        else:
+            if (b is None) or (b == "None"):
+                luFlag = True
+            else:
+                luFlag = False
+        if not luFlag:
+            self.feedback.pushDebugInfo("k1")
             scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
                 msg = self.tr("No scenario in model : please create base scenario from landuse")
                 self.feedback.user_error(msg)
             scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
+            self.feedback.pushDebugInfo("k2")
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
                 feedback=self.feedback)
         return scenarioDlg

@@ -133,9 +133,28 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         self.reclassModel = model
         # self.children = [model]
         
-    def updateFromOther(self,other):
-        for k in other.dict:
-            self.dict[k] = other.dict[k]
+    # def updateFromOther(self,other):
+        # for k in other.dict:
+            # self.dict[k] = other.dict[k]
+    def updateFromDlgItem(self,dlgItem):
+        self.updateFromOther(dlgItem)
+    # def childToDict(self,child):
+        # return child.dict
+            
+    # @staticmethod
+    # def childToDict(dlgItem):
+        # is_vector = type(dlgItem) is VectorDlgItem
+        # if is_vector:
+            # if dlgItem.getBurnMode():
+                # val = dlgItem.getBurnField()
+            # else:
+                # val = dlgItem.getBurnVal()
+        # else:
+            # val = None
+        # dict = { ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
+            # ImportItem.MODE : is_vector,
+            # ImportItem.VALUE : val,
+            # ImportItem.STATUS : False }
                 
     # Mandatory to redefine it for import links reasons
     @classmethod
@@ -156,8 +175,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             o.setReclassModel(childObj)
             utils.debug("child str = " + str(child))
             utils.debug("reclassModel = " + str(o.reclassModel))
-            utils.debug("reclassModel type = " + str(type(o.reclassModel)))
-            o.reclassModel = childObj
+            utils.debug("reclassModel type = " + str(o.reclassModel.__class__.__name__))
+            # o.reclassModel = childObj
         return o
     
     
@@ -218,8 +237,10 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
     def changeField(self,fieldname):
         values = qgsUtils.getLayerFieldUniqueValues(self.scLayerCombo.currentLayer(),fieldname)
         self.feedback.pushDebugInfo("field values = " + str(values))
+        self.feedback.pushDebugInfo("reload flag = " + str(self.reloadFlag))
         if self.reloadFlag:
             self.reclassModel.loadValues(values)
+            self.reclassModel.layoutChanged.emit()
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
@@ -279,12 +300,14 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.switchBurnMode(fieldMode)
             if fieldMode:
                 self.feedback.pushDebugInfo("updateUI child 2" + str(dlgItem.reclassModel))
-                copyModel = dlgItem.reclassModel.__copy__()
+                # copyModel = dlgItem.reclassModel.__copy__()
+                # self.reclassModel = dlgItem.reclassModel.__copy__()
                 self.scField.setField(dlgItem.dict[ScenarioItem.RECLASS_FIELD])
-                # self.reclassModel = dlgItem.reclassModel
+                self.reclassModel = dlgItem.reclassModel
                 self.feedback.pushDebugInfo("updateUI child 3 " + str(dlgItem.reclassModel))
-                self.feedback.pushDebugInfo("updateUI child 4 " + str(self.reclassModel))
-                self.scDialogView.setModel(copyModel)
+                # self.feedback.pushDebugInfo("updateUI child 4 " + str(self.reclassModel))
+                # self.scDialogView.setModel(copyModel)
+                self.scDialogView.setModel(self.reclassModel)
                 self.reclassModel.layoutChanged.emit()
             else:
                 self.scBurnVal.setText(str(dlgItem.dict[ScenarioItem.BURN_VAL]))

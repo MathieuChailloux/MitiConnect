@@ -318,6 +318,7 @@ class ImportConnector(TableToDialogConnector):
             
             
     def openDialog(self,item):
+        self.feedback.pushDebugInfo("openDialog " + str(item))
         dlgItem = item.getChild()
         if item.isVector():
             item_dlg = VectorDataDialog(dlgItem,self.dlg)

@@ -47,7 +47,7 @@ class VectorDlgItem(abstract_model.DictItem):
     FIELDS = [ INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
             ALL_TOUCH, BUFFER_MODE, BUFFER_EXPR ]
 
-    def __init__(self, dict, parent=None):
+    def __init__(self, dict, feedback=None):
         super().__init__(dict, self.FIELDS)
         
     def getLayerPath(self):
@@ -106,7 +106,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.vectorFieldCombo.setField(self.data_item.getBurnField())
             self.vectorFixedValue.setValue(self.data_item.getBurnVal())
             self.vectorAllTouch.setChecked(self.data_item.getAllTouch())
-            self.vectorBufferMode.setChecked(self.data_item.getBufferMode())
+            bm = self.data_item.getBufferMode()
+            self.vectorBufferMode.setChecked(bm)
+            self.vectorBufferValue.setEnabled(bm)
             self.vectorBufferValue.setValue(self.data_item.getBufferExpr())
         
     def setLayer(self,layer):

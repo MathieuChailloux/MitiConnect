@@ -56,8 +56,7 @@ class SpeciesItem(abstract_model.DictItem):
                  cls.LANDUSE : landuse,
                  cls.EXTENT_MODE : extent_mode,
                  cls.EXTENT_VAL : extent_val }
-        return cls(dict,cls.FIELDS,feedback=feedback,
-            display_fields=cls.DISPLAY_FIELDS)
+        return cls(dict,feedback=feedback)
     # def __init__(self,dict=dict,feedback=None):
         # super().__init__(dict=dict,feedback=feedback)
         

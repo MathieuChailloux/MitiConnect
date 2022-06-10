@@ -41,9 +41,9 @@ class ReclassItem(abstract_model.DictItem):
     FIELDS = [ INPUT, OUTPUT ]
 
     @classmethod
-    def fromValues(self, in_val,out_val):
-        d = { self.INPUT : in_val, self.OUTPUT : out_val }
-        super().__init__(d,self.FIELDS)
+    def fromValues(cls, in_val,out_val,feedback=None):
+        d = { cls.INPUT : in_val, cls.OUTPUT : out_val }
+        return cls(d,feedback=feedback)
         
         
 class ReclassModel(abstract_model.DictModel):
@@ -85,7 +85,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.feedback=parent.feedback
         self.data_item = raster_data_item
         self.class_model = class_model
-        self.reclass_model = ReclassModel(self,feedback=self.feedback)
+        self.reclass_model = ReclassModel(feedback=self.feedback)
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.rasterDataLayerCombo,self.rasterDataLayerOpen)
@@ -101,7 +101,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         vals = qgsUtils.getRasterValsBis(layer)
         nb_vals = len(vals)
         free_vals = self.class_model.getFreeVals(nb_vals)
-        self.reclass_model.items = [ReclassItem.fromValues(in_val,out_val)
+        self.reclass_model.items = [ReclassItem.fromValues(in_val,out_val,feedback=self.feedback)
             for (in_val, out_val) in zip(vals, free_vals)]
         self.reclass_model.layoutChanged.emit() 
     

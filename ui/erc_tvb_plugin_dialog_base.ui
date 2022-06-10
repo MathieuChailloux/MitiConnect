@@ -2145,21 +2145,6 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="tab">
-              <attribute name="title">
-               <string>Page</string>
-              </attribute>
-              <widget class="QgsCollapsibleGroupBox" name="mGroupBox">
-               <property name="geometry">
-                <rect>
-                 <x>110</x>
-                 <y>80</y>
-                 <width>300</width>
-                 <height>100</height>
-                </rect>
-               </property>
-              </widget>
-             </widget>
              <widget class="QWidget" name="logTab">
               <attribute name="title">
                <string>Log</string>
@@ -2406,12 +2391,6 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QgsCollapsibleGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>qgscollapsiblegroupbox.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>QgsDoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>

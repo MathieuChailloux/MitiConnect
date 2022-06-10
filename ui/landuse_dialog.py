@@ -53,7 +53,7 @@ class LanduseDialogModel(abstract_model.DictModel):
     
     def __init__(self, name, string_list,pluginModel):
         itemClass = getattr(sys.modules[__name__], LanduseDialogItem.__name__)
-        super().__init__(self,itemClass,feedback = pluginModel.feedback)
+        super().__init__(itemClass=itemClass,feedback = pluginModel.feedback)
         self.pluginModel = pluginModel
         # self.feedback = pluginModel.feedback
         self.name = name

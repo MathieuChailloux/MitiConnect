@@ -73,7 +73,8 @@ class ScenarioModel(DictModel):
 
     def __init__(self, parentModel):
         itemClass = getattr(sys.modules[__name__], ScenarioItem.__name__)
-        super().__init__(itemClass,feedback=parentModel.feedback)
+        super().__init__(itemClass,feedback=parentModel.feedback,
+            fields=ScenarioItem.FIELDS,display_fields=ScenarioItem.DISPLAY_FIELDS)
         # super().__init__(self,itemClass,feedback=parentModel.feedback,
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.parentModel = parentModel
@@ -125,14 +126,14 @@ class ScenarioConnector(TableToDialogConnector):
         # return scenarioDlg
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
-        b = item.getBase()
-        self.feedback.pushDebugInfo("itemBase = " + str(b))
-        self.feedback.pushDebugInfo("item = " + str(item is None))
-        self.feedback.pushDebugInfo("itemBase = " + str((b is None)))
+        # self.feedback.pushDebugInfo("itemBase = " + str(b))
+        # self.feedback.pushDebugInfo("item = " + str(item is None))
+        # self.feedback.pushDebugInfo("itemBase = " + str((b is None)))
         # if (item is None) or (item.getBase() is None):
         if (item is None):
-            luFlag = True
+            luFlag = False
         else:
+            b = item.getBase()
             if (b is None) or (b == "None"):
                 luFlag = True
             else:

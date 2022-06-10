@@ -53,6 +53,13 @@ class FrictionModel(ExtensiveTableModel):
             return h
         return None
         
+    def flags(self, index):
+        if index.column() in [0]:
+            flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        else:
+            flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+        return flags
+        
         
           
 class FrictionConnector(AbstractConnector):

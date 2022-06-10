@@ -51,13 +51,12 @@ from ..ui.species_dialog import SpeciesItem, SpeciesDialog
 
 class SpeciesModel(DictModel):
 
-    DISPLAY_FIELDS = SpeciesItem.DISPLAY_FIELDS
-
     def __init__(self, pluginModel):
         # self.item_fields = [ self.PATH, self.EXPRESSION, self.BURN_MODE, self.BURN_VAL,
             # self.ALL_TOUCH, self.BUFFER_MODE, self.BUFFER_EXPR ]
         itemClass = getattr(sys.modules[__name__], SpeciesItem.__name__)
-        super().__init__(itemClass,feedback=pluginModel.feedback)
+        super().__init__(itemClass,fields=SpeciesItem.FIELDS,
+            display_fields=SpeciesItem.DISPLAY_FIELDS,feedback=pluginModel.feedback)
         self.pluginModel = pluginModel
         
     def addItem(self,item):

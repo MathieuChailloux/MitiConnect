@@ -138,6 +138,7 @@ class ScenarioConnector(TableToDialogConnector):
                 luFlag = True
             else:
                 luFlag = False
+        self.pathFieldToAbs(item,VectorDlgItem.LANDUSE)
         if not luFlag:
             self.feedback.pushDebugInfo("k1")
             scenarioNames = self.model.getScenarioNames()
@@ -147,10 +148,11 @@ class ScenarioConnector(TableToDialogConnector):
             scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
             self.feedback.pushDebugInfo("k2")
+            self.pathFieldToAbs(item,VectorDlgItem.BASE)
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
                 feedback=self.feedback)
         return scenarioDlg
-        
+                        
     def openDialogLanduseNew(self):
         item_dlg = ScenarioLanduseDialog(self.dlg,None,
             feedback=self.feedback)
@@ -158,10 +160,13 @@ class ScenarioConnector(TableToDialogConnector):
         if dlg_item:
             # item = self.mkItemFromDlgItem(dlg_item)
             # self.model.addItem(item)
+            self.pathFieldToRel(dlg_item,VectorDlgItem.BASE)
+            self.pathFieldToRel(dlg_item,VectorDlgItem.LANDUSE)
             self.model.addItem(dlg_item)
             self.model.layoutChanged.emit()
     
     def updateFromDlgItem(self,item,dlg_item):
+        self.pathFieldToRel(dlg_item,VectorDlgItem.LANDUSE)
         item.updateFromDlgItem(dlg_item)
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)

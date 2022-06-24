@@ -316,10 +316,18 @@ class ImportConnector(TableToDialogConnector):
             # item.updateFromDlgItem(dlgItem)
             # self.model.layoutChanged.emit()
             
-            
+    def preDlg(self,item):
+        if item:
+            dlg_item = item.getChild()
+            self.pathFieldToAbs(dlg_item,VectorDlgItem.INPUT)
+
+    def postDlg(self,dlg_item):
+        self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
+      
     def openDialog(self,item):
         self.feedback.pushDebugInfo("openDialog " + str(item))
         dlgItem = item.getChild()
+        # self.pathFieldToAbs(item,VectorDlgItem.INPUT)
         if item.isVector():
             item_dlg = VectorDataDialog(dlgItem,self.dlg)
         else:
@@ -349,9 +357,10 @@ class ImportConnector(TableToDialogConnector):
         # raster_data_dlg = RasterDataDialog(dlgItem,self.dlg,class_model=self.model.frictionModel)
         # dlgItem = raster_data_dlg.showDialog()
         # return dlgItem
-        
+                
     def addDlgItem(self,dlgItem,is_vector):
         if dlgItem:
+            self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
             item = ImportItem.fromChildItem(dlgItem,feedback=self.feedback)
             item.setChild(dlgItem)
             self.model.addItem(item)
@@ -362,10 +371,12 @@ class ImportConnector(TableToDialogConnector):
                     basename = item.getBaseName()
                     self.model.pluginModel.frictionModel.addRowFromCode(
                         code,descr=basename)
+                    
         else:
             self.feedback.pushDebugInfo("No dlgItem given")
         
-    def updateItem(self,item,dlgItem): 
+    def updateItem(self,item,dlgItem):
+        self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
         item.updateFromDlgItem(dlgItem)
         
 

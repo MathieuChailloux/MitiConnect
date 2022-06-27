@@ -71,13 +71,13 @@ from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDi
         
 class ScenarioModel(DictModel):
 
-    def __init__(self, parentModel):
+    def __init__(self, pluginModel):
         itemClass = getattr(sys.modules[__name__], ScenarioItem.__name__)
-        super().__init__(itemClass,feedback=parentModel.feedback,
+        super().__init__(itemClass,feedback=pluginModel.feedback,
             fields=ScenarioItem.FIELDS,display_fields=ScenarioItem.DISPLAY_FIELDS)
-        # super().__init__(self,itemClass,feedback=parentModel.feedback,
+        # super().__init__(self,itemClass,feedback=pluginModel.feedback,
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
-        self.parentModel = parentModel
+        self.pluginModel = pluginModel
         
     def getScenarioNames(self):
         return [i.getName() for i in self.items]
@@ -90,7 +90,7 @@ class ScenarioModel(DictModel):
     # Returns absolute path of 'item' output layer
     # def getItemOutBase(self,item):
         # out_bname = item.getName() + ".tif"
-        # out_dir = self.parentModel.getScenarioDir()
+        # out_dir = self.pluginModel.getScenarioDir()
         # return os.path.join(out_dir,out_bname)
         
         
@@ -113,6 +113,20 @@ class ScenarioConnector(TableToDialogConnector):
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
         self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
     
+    def preDlg(self,item):
+        self.feedback.pushDebugInfo("preDlg = " + str(item))
+        if item is not None:
+            self.pathFieldToAbs(item,ScenarioItem.LAYER)
+            if item.isLanduseMode():
+                 self.pathFieldToAbs(item,ScenarioItem.BASE)
+
+    def postDlg(self,dlg_item):
+        self.feedback.pushDebugInfo("postDlg = " + str(dlg_item))
+        if dlg_item is not None:
+            self.pathFieldToRel(dlg_item,ScenarioItem.LAYER)
+            if dlg_item.isLanduseMode():
+                 self.pathFieldToRel(dlg_item,ScenarioItem.BASE)
+    
     # def openDialog(self,item): 
         # self.feedback.pushDebugInfo("item = " + str(item))
         # if not item or item.getBase():
@@ -133,22 +147,23 @@ class ScenarioConnector(TableToDialogConnector):
         if (item is None):
             luFlag = False
         else:
-            b = item.getBase()
-            if (b is None) or (b == "None"):
-                luFlag = True
-            else:
-                luFlag = False
-        self.pathFieldToAbs(item,VectorDlgItem.LANDUSE)
+            luFlag = item.isLanduseMode()
+            # b = item.getBase()
+            # if (b is None) or (b == "None"):
+                # luFlag = True
+            # else:
+                # luFlag = False
         if not luFlag:
             self.feedback.pushDebugInfo("k1")
             scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
                 msg = self.tr("No scenario in model : please create base scenario from landuse")
                 self.feedback.user_error(msg)
-            scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
+            item_copy = item.__deepcopy__()
+            scenarioDlg = ScenarioDialog(self.dlg,item_copy,scenarioModel=self.model,feedback=self.feedback)
+            # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
             self.feedback.pushDebugInfo("k2")
-            self.pathFieldToAbs(item,VectorDlgItem.BASE)
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
                 feedback=self.feedback)
         return scenarioDlg
@@ -160,13 +175,10 @@ class ScenarioConnector(TableToDialogConnector):
         if dlg_item:
             # item = self.mkItemFromDlgItem(dlg_item)
             # self.model.addItem(item)
-            self.pathFieldToRel(dlg_item,VectorDlgItem.BASE)
-            self.pathFieldToRel(dlg_item,VectorDlgItem.LANDUSE)
             self.model.addItem(dlg_item)
             self.model.layoutChanged.emit()
     
     def updateFromDlgItem(self,item,dlg_item):
-        self.pathFieldToRel(dlg_item,VectorDlgItem.LANDUSE)
         item.updateFromDlgItem(dlg_item)
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)

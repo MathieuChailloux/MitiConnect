@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os, sys
+import os, sys, copy
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -47,8 +47,8 @@ class ScenarioReclassItem(abstract_model.DictItem):
         return cls(dict,feedback=feedback)
         # self.feedback=feedback
         
-    def __copy__(self):
-        return ScenarioReclassItem(self.dict)
+    def __deepcopy__(self):
+        return ScenarioReclassItem(copy.deepcopy(self.dict),feedback=self.feedback)
         
 class ScenarioReclassModel(abstract_model.DictModel):
 
@@ -73,10 +73,10 @@ class ScenarioReclassModel(abstract_model.DictModel):
             self.addItem(i)
         self.layoutChanged.emit()
         
-    def __copy__(self):
+    def __deepcopy__(self):
         model = ScenarioReclassModel(feedback=self.feedback)
         for i in self.items:
-            model.addItem(i.__copy__())
+            model.addItem(i.__deepcopy__())
         return model
     # def __str__(self):
         # return "ReclassModel"
@@ -87,6 +87,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     
     NAME = 'NAME'
     BASE = 'BASE'
+    BASE_LAYER = 'BASE_LAYER'
     LAYER = 'LAYER'
     # True = Field mode, False = Fixed mode
     MODE = 'MODE'
@@ -98,6 +99,9 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     STATUS_OS = 'OS'
     STATUS_FRICTION = 'FRICTION'
     STATUS_GRAPH = 'GRAPH'
+    
+    LANDUSE_MODE = 0
+    
     BASE_FIELDS = [ NAME, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
     STATUS_FIELDS = [ STATUS_OS, STATUS_FRICTION, STATUS_GRAPH ]
@@ -112,21 +116,34 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         # self.setReclassModel(ScenarioReclassModel(feedback=self.feedback))
     
     @classmethod
-    def fromValues(cls, name, layer, base=None,
+    def fromValues(cls, name, layer=None, base=None,baseLayer=None,
             mode=0, reclassField=None, burnVal=0,
             statusOS=False,statusFrict=False,statusGraph=False,feedback=None):
-        dict = { cls.NAME : name, cls.BASE : base, cls.LAYER : layer,
-            cls.MODE : mode, cls.RECLASS_FIELD : reclassField,
+        dict = { cls.NAME : name, cls.BASE : base, cls.BASE_LAYER : baseLayer,
+            cls.LAYER : layer, cls.MODE : mode, cls.RECLASS_FIELD : reclassField,
             cls.BURN_VAL : burnVal, cls.STATUS_OS : statusOS,
             cls.STATUS_FRICTION : statusFrict, cls.STATUS_GRAPH : statusGraph }
         return cls(dict, feedback=feedback)
+        
+    def __deepcopy__(self):
+        item = ScenarioItem(copy.deepcopy(self.dict),feedback=self.feedback)
+        self.feedback.pushDebugInfo("deepcpy1 " + str(self.reclassModel))
+        item.setReclassModel(self.reclassModel.__deepcopy__())
+        self.feedback.pushDebugInfo("deepcpy2 " + str(item.reclassModel))
+        return item
         
     def getName(self):
         return self.dict[self.NAME]
     def getBase(self):
         return self.dict[self.BASE]
+    def getBaseLayer(self):
+        return self.dict[self.BASE_LAYER]
     def getLayer(self):
         return self.dict[self.LAYER]
+    def getMode(self):
+        return self.dict[self.MODE]
+    def isLanduseMode(self):
+        return self.getMode() == 0
         
     def setReclassModel(self,model):
         super().setChild(model)
@@ -138,6 +155,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             # self.dict[k] = other.dict[k]
     def updateFromDlgItem(self,dlgItem):
         self.updateFromOther(dlgItem)
+        self.setReclassModel(dlgItem.reclassModel)
     # def childToDict(self,child):
         # return child.dict
             
@@ -190,7 +208,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
-        self.reclassModel = dlgItem.reclassModel if dlgItem else ScenarioReclassModel(feedback=feedback)
+        self.reclassModel = dlgItem.reclassModel.__deepcopy__() if dlgItem else ScenarioReclassModel(feedback=feedback)
         self.reloadFlag = False
         # self.reclassModel = ScenarioReclassModel(feedback=feedback)
         self.feedback = feedback
@@ -268,18 +286,14 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.feedback.pushDebugInfo("fixedMode = " + str(fixedMode))
             if fixedMode:
                 burnVal = self.scBurnVal.text()
-                dlgItem = ScenarioItem.fromValues(name,layerPath,base=base,
-                    mode=1,
-                    burnVal=burnVal,
-                    feedback=self.feedback)
+                dlgItem = ScenarioItem.fromValues(name,layer=layerPath,base=base,
+                    mode=1,burnVal=burnVal,feedback=self.feedback)
             else:
                 if not reclassField:
                     self.errorDialog(self.tr("Empty field"))
                     continue
-                dlgItem = ScenarioItem.fromValues(name,layerPath,base=base,
-                    mode=2,
-                    reclassField=reclassField,
-                    feedback=self.feedback)
+                dlgItem = ScenarioItem.fromValues(name,layer=layerPath,base=base,
+                    mode=2,reclassField=reclassField,feedback=self.feedback)
                 dlgItem.setReclassModel(self.reclassModel)
                 # if not self.model.items:
                     # self.errorDialog(self.tr("Empty model"))

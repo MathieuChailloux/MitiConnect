@@ -60,9 +60,11 @@ class LanduseDialogModel(abstract_model.DictModel):
         self.setItemsFromList(string_list)
         
     def setItemsFromList(self,string_list):
+        self.feedback.pushDebugInfo("string_list = " + str(string_list))
         self.items = []
-        for str in string_list:
-            string_item = LanduseDialogItem(str)
+        for s in string_list:
+            self.feedback.pushDebugInfo("s = " + str(s))
+            string_item = LanduseDialogItem(s)
             self.addItem(string_item)
             
     def reloadNames(self):
@@ -98,6 +100,7 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
         self.setupUi(self)
         # super().__init__(parent)
         self.feedback=parent.feedback
+        self.feedback.pushDebugInfo("string_list = " + str(string_list))
         self.model = LanduseDialogModel(name,string_list,pluginModel)
         self.connector = LanduseDialogConnector(self,self.model)
         self.connector.connectComponents()

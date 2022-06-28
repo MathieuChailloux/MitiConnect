@@ -270,6 +270,8 @@ class ImportModel(DictModel):
         
     def getImportNames(self):
         return [i.getBaseName() for i in self.items]
+    def getImportNamesAsStr(self):
+        return ",".join(self.getImportNames())
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -395,6 +397,8 @@ class LanduseItem(DictItem):
         return self.dict[self.NAME]
     def getImports(self):
         return self.dict[self.IMPORTS]
+    def getImportsAsList(self):
+        return self.getImports().split(",")
     def setName(self,name):
         self.dict[self.NAME] = name
     def setImports(self,imports):
@@ -464,8 +468,9 @@ class LanduseConnector(AbstractConnector):
         if not res:
             return
         (name, imports) = res
+        imports2 = ",".join(imports)
         if name:
-            item = LanduseItem.fromValues(name=name,imports=imports,feedback=self.feedback)
+            item = LanduseItem.fromValues(name=name,imports=imports2,feedback=self.feedback)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
         else:
@@ -474,18 +479,20 @@ class LanduseConnector(AbstractConnector):
     def openLanduse(self,index):
         row = index.row()
         item = self.model.getNItem(row)
-        self.feedback.pushDebugInfo("openImport item = " +str(item))
+        self.feedback.pushDebugInfo("openLanduse item = " +str(item))
         landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
-            name=item.getName(),string_list=item.getImports())
+            name=item.getName(),string_list=item.getImportsAsList())
         res = landuse_dlg.showDialog()
         if not res:
             return
         (name, imports) = res
         self.feedback.pushDebugInfo("name = " +str(name))
         self.feedback.pushDebugInfo("imports = " +str(imports))
+        imports2 = ",".join(imports)
+        self.feedback.pushDebugInfo("imports2 = " +str(imports2))
         if name:
             item.setName(name)
-            item.setImports(imports)
+            item.setImports(imports2)
             self.model.layoutChanged.emit()
         else:
             self.feedback.user_error("No name given to landuse layers ranking")

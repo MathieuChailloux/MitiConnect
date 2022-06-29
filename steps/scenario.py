@@ -88,10 +88,10 @@ class ScenarioModel(DictModel):
         return None
                         
     # Returns absolute path of 'item' output layer
-    # def getItemOutBase(self,item):
-        # out_bname = item.getName() + ".tif"
-        # out_dir = self.pluginModel.getScenarioDir()
-        # return os.path.join(out_dir,out_bname)
+    def getItemOutBase(self,item):
+        out_bname = item.getName() + ".tif"
+        out_dir = self.pluginModel.getScenarioDir()
+        return os.path.join(out_dir,out_bname)
         
         
     def flags(self, index):

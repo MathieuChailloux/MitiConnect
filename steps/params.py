@@ -54,6 +54,9 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
         # self.crs = defaultCrs
         # fields = ["workspace","extentLayer","resolution","projectFile","crs"]
         abstract_model.NormalizingParamsModel.__init__(self,feedback=parentModel.feedback)
+        
+    # def setWorkspace(self,workspace,name):
+        # super().setWorkspace(workspace)
     
     def toXML(self,indent=""):
         xmlStr = indent + "<" + self.parser_name
@@ -99,7 +102,6 @@ class ParamsConnector:
             self.dlg.projectName.setText(self.tr("Projet ERC-TVB : ") + basename)
         else:
             self.dlg.projectName.setText(self.tr("Pas de projet ERC-TVB"))
-        
         
     def setProjectFile(self,fname):
         self.model.projectFile = fname

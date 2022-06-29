@@ -200,7 +200,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QToolButton" name="saveProjectAs">
+            <widget class="QToolButton" name="initializeProject">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -215,7 +215,7 @@
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</iconset>
+               <normaloff>../icons/mActionAdd.svg</normaloff>../icons/mActionAdd.svg</iconset>
              </property>
              <property name="autoRaise">
               <bool>true</bool>

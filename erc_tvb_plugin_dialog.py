@@ -26,6 +26,7 @@ import os, sys
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.gui import QgsFileWidget
 import traceback
 from io import StringIO
 
@@ -38,6 +39,8 @@ UI_DIR = os.path.join(PLUGIN_DIR,'ui')
 STEPS_DIR = os.path.join(PLUGIN_DIR,'steps')
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     UI_DIR, 'erc_tvb_plugin_dialog_base.ui'))
+CREATE_PROJECT_CLASS, _ = uic.loadUiType(os.path.join(
+    UI_DIR, 'new_project.ui'))
 
 
 class PluginModel(abstract_model.MainModel):
@@ -93,7 +96,29 @@ class PluginModel(abstract_model.MainModel):
         return (crs, extent, resolution)
         
 
-    
+class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
+
+    def __init__(self, parent=None):
+        super(CreateProjectDialog, self).__init__(parent)
+        self.setupUi(self)
+        self.workspaceDir.setStorageMode(QgsFileWidget.GetDirectory)
+        
+    def showDialog(self):
+        while self.exec_():
+            d = self.workspaceDir.filePath()
+            n = self.projectName.text()
+            if not n.isalnum():
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Project name '" + str(n) + "' must be an alphanumeric string"))
+                continue
+            joined = utils.joinPath(d,n)
+            if utils.fileExists(joined):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Directory '" + str(joined) + "' already exists"))
+                continue
+            return (d,n,joined)
+        return None
+            
 
 class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
     def __init__(self, parent=None):
@@ -126,7 +151,30 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
             self.paramsConnector, self.importConnector,
             self.landuseConnector, self.speciesConnector,
             self.frictionConnector, self.scenarioConnector ]
+            
+    def connectComponents(self):
+        super().connectComponents(saveAsFlag=False)
+        self.initializeProject.clicked.connect(self.createNewProject)
         
+    def createNewProject(self):
+        createDlg = CreateProjectDialog(parent=self)
+        d, n, workspace = createDlg.showDialog()
+        if workspace:
+            self.initializeWorkspace(workspace,n)
+        
+    # def getScenariosDir(self):
+        # self.scDir = utils.joinPath(workspace,"Scenarios")
+        # return 
+    def getScenarioDir(self,scDir):
+        return utils.joinPath(self.scDir,scDir)
+    def initializeWorkspace(self,workspace,name):
+        utils.mkDir(workspace)
+        self.pluginModel.paramsModel.setWorkspace(workspace)
+        self.scDir = utils.joinPath(workspace,"Scenarios")
+        utils.mkDir(self.scDir)
+        projectFile = utils.joinPath(workspace, name + ".xml")
+        self.saveModelAs(projectFile)
+                
     # Exception hook, i.e. function called when exception raised.
     # Displays traceback and error message in log tab.
     # Ignores CustomException : exception raised from erc_tvb and already displayed.

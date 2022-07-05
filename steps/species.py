@@ -68,12 +68,12 @@ class SpeciesModel(DictModel):
         out_bname = item.getName() + ".tif"
         out_dir = self.pluginModel.getImportsDir()
         return os.path.join(out_dir,out_bname)
+        
     def getItemFromName(self,name):
         for i in self.items:
-            if i.name == name:
+            if i.getName() == name:
                 return i
         return None
-        
     def getNames(self):
         return [i.getName() for i in self.items]
     def getImportNames(self):

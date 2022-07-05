@@ -96,7 +96,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     MODEL = 'MODEL'
     BURN_VAL = 'BURN_VAL'
     # DISPLAY_FIELDS = ['NAME','BASE']
-    STATUS_OS = 'OS'
+    STATUS_LANDUSE = 'LANDUSE'
     STATUS_FRICTION = 'FRICTION'
     STATUS_GRAPH = 'GRAPH'
     
@@ -104,7 +104,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     
     BASE_FIELDS = [ NAME, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
-    STATUS_FIELDS = [ STATUS_OS, STATUS_FRICTION, STATUS_GRAPH ]
+    STATUS_FIELDS = [ STATUS_LANDUSE, STATUS_FRICTION, STATUS_GRAPH ]
     FIELDS = BASE_FIELDS + RECLASS_FIELDS + STATUS_FIELDS
     DISPLAY_FIELDS = BASE_FIELDS + STATUS_FIELDS
     
@@ -118,10 +118,11 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     @classmethod
     def fromValues(cls, name, layer=None, base=None,baseLayer=None,
             mode=0, reclassField=None, burnVal=0,
-            statusOS=False,statusFrict=False,statusGraph=False,feedback=None):
+            statusLanduse=False,statusFrict=False,statusGraph=False,
+            feedback=None):
         dict = { cls.NAME : name, cls.BASE : base, cls.BASE_LAYER : baseLayer,
             cls.LAYER : layer, cls.MODE : mode, cls.RECLASS_FIELD : reclassField,
-            cls.BURN_VAL : burnVal, cls.STATUS_OS : statusOS,
+            cls.BURN_VAL : burnVal, cls.STATUS_LANDUSE : statusLanduse,
             cls.STATUS_FRICTION : statusFrict, cls.STATUS_GRAPH : statusGraph }
         return cls(dict, feedback=feedback)
         
@@ -142,6 +143,12 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.dict[self.LAYER]
     def getMode(self):
         return self.dict[self.MODE]
+    def getStatusLanduse(self):
+        return bool(self.dict[self.STATUS_LANDUSE])
+    def getStatusFriction(self):
+        return bool(self.dict[self.STATUS_FRICTION])
+    def getStatusGraph(self):
+        return bool(self.dict[self.STATUS_GRAPH])
     def isLanduseMode(self):
         return self.getMode() == 0
         

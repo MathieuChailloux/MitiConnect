@@ -29,45 +29,26 @@ from qgis.PyQt.QtCore import Qt
 
 from ..qgis_lib_mc.utils import CustomException
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
+from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
+from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 
+# Graphab utils
 
-# class ScenarioItem(ScenarioDialogItem):
+#{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
+# TODO : grapha wrappers in erc_tvb_algs_provider ?
+def createGraphabProject(landuse,codes,out_dir,project_name,
+        nodata=None,patch_size=0,feedback=None):
+    params = {
+        'DIRPATH' : out_dir,
+        'INPUT' : landuse,
+        'LANDCODE' : codes,
+        'NAMEPROJECT' : project_name,
+        'NODATA' : nodata,
+        'SIZEPATCHES' : 0 }
+    applyProcessingAlg('erc_tvb','create_graph',params,feedback=feedback)
 
-    # NAME = 'NAME'
-    # STATUS_OS = 'OS'
-    # STATUS_FRICTION = 'FRICTION'
-    # STATUS_GRAPH = 'GRAPH'
-    # STATUS_FIELDS = [ STATUS_OS, STATUS_FRICTION, STATUS_GRAPH ]
-    # FIELDS = ScenarioDialogItem.FIELDS + STATUS_FIELDS
-    # DISPLAY_FIELDS = [ ScenarioDialogItem.NAME, ScenarioDialogItem.BASE ] + STATUS_FIELDS
-    
-    # @classmethod
-    # def fromDlgItem(cls, dlg_item, parent=None, feedback=None):
-        # dict = self.getDictFromDlgItem(dlg_item)
-        # i = cls(dict,fields=self.FIELDS,feedback=feedback)
-        # i.dlg_item = dlg_item
-        # return i
-        
-    # def getDictFromDlgItem(self,dlg_item):
-        # statusChanged = True
-        # dict = { self.NAME : dlg_item.getName(),
-            # self.BASE : dlg_item.getBase(),
-            # self.STATUS_OS : not statusChanged,
-            # self.STATUS_FRICTION : not statusChanged,
-            # self.STATUS_GRAPH : not statusChanged }
-        # return dict
-        
-    # def updateFromDlgItem(self,dlg_item):
-        # dict = self.getDictFromDlgItem(dlg_item)
-        # self.dict = dict
-        
-    # def getName(self):
-        # return self.dict[self.NAME]
-    # def getBase(self):
-        # return self.dict[self.BASE]
-    # def getLayer(self):
-        # return self.dict[self.LAYER]
+# Scenario
         
 class ScenarioModel(DictModel):
 
@@ -88,14 +69,50 @@ class ScenarioModel(DictModel):
         return None
                         
     # Returns absolute path of 'item' output layer
-    def getItemOutBase(self,item):
-        out_bname = item.getName() + ".tif"
+    # def getItemSubElement
+    def getItemOutBase(self,item,suffix=""):
+        out_bname = item.getName() + suffix + ".tif"
         out_dir = self.pluginModel.getScenarioDir()
         return os.path.join(out_dir,out_bname)
-        
+    def getItemLanduse(self,item):
+        return self.getItemOutBase(item,suffix="_landuse")
+    def getItemFriction(self,item):
+        return self.getItemOutBase(item,suffix="_friction")
+    # def getItemGraphabDir(self,item):
+        # return self.getItemOutBase(item,suffix="_landuse")
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        
+    def applyItemLanduse(self, item):
+        self.feedback.pushDebugInfo("applyItemLanduse")
+        name = item.getName()
+        if self.item.getStatusLanuduse():
+            msg = self.tr("Landuse layer already computed for scenario ")
+            self.feedback.pushWarning(msg + str(name))
+        elif self.item.isLanduseMode():
+            self.feedback.pushInfo("No need to compute landuse (TODO)")
+        else:
+            # Rasterize
+            # Reclassify
+            # Merge
+            self.feedback.pushInfo("About to apply rrm")
+            
+    def applyItemFriction(self, item):
+        self.feedback.pushDebugInfo("applyItemFriction")
+        name = item.getName()
+        if self.item.getStatusFriction():
+            msg = self.tr("Friction layer already computed for scenario ")
+            self.feedback.pushWarning(msg + str(name))
+        else:
+            # GetLanduse
+            # Reclassify
+            self.feedback.pushInfo("About to apply rm")
+            
+    #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
+    def applyItemGraph(self, item):
+        self.feedback.pushDebugInfo("applyItemGraph")
+        name = item.getName()
 
 
 class ScenarioConnector(TableToDialogConnector):
@@ -112,6 +129,47 @@ class ScenarioConnector(TableToDialogConnector):
         self.dlg.scenarioUp.clicked.connect(self.upgradeItem)
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
         self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
+        self.dlg.speciesSelection.setModel(self.model.pluginModel.speciesModel)
+        self.dlg.scLanduseRun.clicked.connect(self.landuseRun)
+        self.dlg.scFrictionRun.clicked.connect(self.frictionRun)
+        self.dlg.scGraphRun.clicked.connect(self.graphRun)
+        
+    def getSelectedScenarios(self):
+        indexes = self.view.selectedIndexes()
+        if not indexes:
+            self.feedback.user_error("No scenario selected")
+        rows = list(set([i.row() for i in indexes]))
+        res = [self.model.items[i] for i in rows]
+        return res
+        
+    def getSelectedSpecies(self):
+        specie = self.dlg.speciesSelection.currentText()
+        if not specie:
+            self.feedback.user_error("No specie selected")
+        speciesItem = self.model.pluginModel.speciesModel.getItemFromName(specie)
+        return [speciesItem]
+        
+    def landuseRun(self):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        for sc in scenarios:
+            for sp in species:
+                self.feedback.pushDebugInfo("TODO : landuse Run "
+                    + sc.getName() + " - " + sp.getName())
+    def frictionRun(self):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        for sc in scenarios:
+            for sp in species:
+                self.feedback.pushDebugInfo("TODO : friction Run "
+                    + sc.getName() + " - " + sp.getName())
+    def graphRun(self):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        for sc in scenarios:
+            for sp in species:
+                self.feedback.pushDebugInfo("TODO : graph Run "
+                    + sc.getName() + " - " + sp.getName())
     
     def preDlg(self,item):
         self.feedback.pushDebugInfo("preDlg = " + str(item))

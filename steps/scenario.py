@@ -84,14 +84,17 @@ class ScenarioModel(DictModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
         
-    def applyItemLanduse(self, item):
+    def applyItemLanduse(self, scItem, spItem):
         self.feedback.pushDebugInfo("applyItemLanduse")
-        name = item.getName()
-        if self.item.getStatusLanuduse():
+        name = scItem.getName()
+        if scItem.getStatusLanduse():
             msg = self.tr("Landuse layer already computed for scenario ")
             self.feedback.pushWarning(msg + str(name))
-        elif self.item.isLanduseMode():
-            self.feedback.pushInfo("No need to compute landuse (TODO)")
+            return
+        out_path = self.getItemLanduse(scItem)
+        if scItem.isLanduseMode():
+            self.pluginModel.paramsModel.normalizeRaster(
+                scItem.getLayer(),out_path=out_path,feedback=self.feedback)
         else:
             # Rasterize
             # Reclassify
@@ -156,6 +159,7 @@ class ScenarioConnector(TableToDialogConnector):
             for sp in species:
                 self.feedback.pushDebugInfo("TODO : landuse Run "
                     + sc.getName() + " - " + sp.getName())
+                self.model.applyItemLanduse(sc,sp)
     def frictionRun(self):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()

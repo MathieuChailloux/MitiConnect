@@ -77,9 +77,9 @@ class PluginModel(abstract_model.MainModel):
         pass
         
     def getImportsDir(self):
-        return utils.createSubDir(self.paramsModel.workspace,"Imports")
+        return utils.createSubdir(self.paramsModel.workspace,"Imports")
     def getScenarioDir(self,sc_name):
-        return utils.createSubDir(self.paramsModel.workspace,sc_name)
+        return utils.createSubdir(self.paramsModel.workspace,sc_name)
         
     def checkWorkspaceInit(self):
         self.paramsModel.checkWorkspaceInit()

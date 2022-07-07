@@ -27,7 +27,7 @@ import os, sys
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from ..qgis_lib_mc.utils import CustomException
+from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
 from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
@@ -71,9 +71,10 @@ class ScenarioModel(DictModel):
     # Returns absolute path of 'item' output layer
     # def getItemSubElement
     def getItemOutBase(self,item,suffix=""):
-        out_bname = item.getName() + suffix + ".tif"
-        out_dir = self.pluginModel.getScenarioDir()
-        return os.path.join(out_dir,out_bname)
+        sc_name = item.getName()
+        out_bname = sc_name + suffix + ".tif"
+        out_dir = self.pluginModel.getScenarioDir(sc_name)
+        return joinPath(out_dir,out_bname)
     def getItemLanduse(self,item):
         return self.getItemOutBase(item,suffix="_landuse")
     def getItemFriction(self,item):
@@ -91,10 +92,13 @@ class ScenarioModel(DictModel):
             msg = self.tr("Landuse layer already computed for scenario ")
             self.feedback.pushWarning(msg + str(name))
             return
+        in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         out_path = self.getItemLanduse(scItem)
+        
         if scItem.isLanduseMode():
             self.pluginModel.paramsModel.normalizeRaster(
-                scItem.getLayer(),out_path=out_path,feedback=self.feedback)
+                in_path,out_path=out_path,feedback=self.feedback)
+            assert(False)
         else:
             # Rasterize
             # Reclassify

@@ -26,7 +26,9 @@ import os, sys
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
+from qgis.core import Qgis, QgsProcessingUtils
 
+from ..qgis_lib_mc import qgsUtils, qgsTreatments
 from ..qgis_lib_mc.utils import CustomException
 from ..ui.vector_data_dialog import VectorDlgItem, VectorDataDialog
 from ..ui.raster_data_dialog import RasterDlgItem, RasterDataDialog
@@ -34,85 +36,6 @@ from ..ui.landuse_dialog import LanduseDialog
 from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
     AbstractConnector, TableToDialogConnector,
     DictItemWithChild, DictItemWithChildren)
-
-# RASTER_DLG_CLASS, _ = uic.loadUiType(os.path.join(
-    # os.path.dirname(__file__), '../ui/raster_data_dialog.ui'))
-# VECTOR_DLG_CLASS, _ = uic.loadUiType(os.path.join(
-    # os.path.dirname(__file__), '../ui/vector_data_dialog.ui'))
-    
-# class ReclassItem(DictItem):
-    
-    # INPUT = 'INPUT'
-    # OUTPUT = 'OUTPUT'
-    # FIELDS = [ INPUT, OUTPUT ]
-
-    # def __init__(self, in_val,out_val):
-        # d = { self.INPUT : in_val, self.OUTPUT : out_val }
-        # super().__init__(d,self.FIELDS)
-        
-        
-# class ReclassModel(DictModel):
-    
-    # def __init__(self, parent):
-        # super().__init__(parent,itemClass=ReclassItem,
-            # feedback=parent.feedback)
-    
-    # def getCodes(self):
-        # return [i.dict[ReclassItem.OUTPUT] for i in self.items]
-
-
-# class RasterDlgItem(DictItem):
-
-    # INPUT = 'INPUT'
-    # RECLASS = 'RECLASS'
-    # FIELDS = [ INPUT, RECLASS ]
-
-    # def __init__(self, dict, parent=None):
-        # super().__init__(dict,self.FIELDS)
-    # def getReclassModel(self):
-        # return self.dict[self.RECLASS]
-
-# class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
-    # def __init__(self, raster_data_item, parent,class_model=None):
-        # """Constructor."""
-        # super(RasterDataDialog, self).__init__(parent)
-        # self.feedback=parent.feedback
-        # self.data_item = raster_data_item
-        # self.class_model = class_model
-        # self.reclass_model = ReclassModel(self)
-        # self.setupUi(self)
-        # self.layerComboDlg = qgsUtils.LayerComboDialog(self,
-            # self.rasterDataLayerCombo,self.rasterDataLayerOpen)
-        # self.layerComboDlg.setRasterMode()
-        # self.connectComponents()
-
-    # def connectComponents(self):
-        # self.rasterDataDialogView.setModel(self.reclass_model)
-        # self.rasterDataLayerCombo.layerChanged.connect(self.setLayer)
-        
-    # def setLayer(self,layer):
-        # vals = qgsUtils.getRasterValsBis(layer)
-        # nb_vals = len(vals)
-        # free_vals = self.class_model.getFreeVals(nb_vals)
-        # self.reclass_model.items = [ReclassItem(in_val,out_val)
-            # for (in_val, out_val) in zip(vals, free_vals)]
-        # self.reclass_model.layoutChanged.emit() 
-        
-    # def showDialog(self):
-        # self.feedback.pushDebugInfo("showDialog")
-        # while self.exec_():
-            # dict = {}
-            # layer = self.rasterDataLayerCombo.currentLayer()
-            # if not layer:
-                # self.feedback.user_error("No layer selected")
-            # layer_path = qgsUtils.pathOfLayer(layer)
-            # if not layer_path:
-                # self.feedback.user_error("Could not load layer " + str(layer_path))
-            # dict[RasterDlgItem.INPUT] = layer_path
-            # dict[RasterDlgItem.RECLASS] = self.reclass_model
-            # self.data_item = RasterDlgItem(dict)
-            # return self.data_item
-        # return None
 
 
 class ImportItem(DictItemWithChild):
@@ -128,25 +51,6 @@ class ImportItem(DictItemWithChild):
     MODE_IDX = 1
     VALUE_IDX = 2
     STATUS_IDX = 3
-
-    # def fromValues(self, dlgItem=None, dict=None, parent=None, feedback=None):
-        # print("dict = " +str(dict))
-        # self.children = []
-        # if dict:
-            # self.dict = dict
-            # self.recompute()
-        # elif dlgItem:
-            # self.updateFromDlgItem(dlgItem)
-        # else:
-            # assert(False)
-        # super().__init__(self.dict,feedback=feedback,children=self.children)
-    # @classmethod
-    # def fromDlgItem(cls,dlgItem,feedback=None):
-        # dict = cls.dlgToDict(dlgItem)
-        # return cls(dict,feedback=feedback)
-    # def recompute(self):
-        # self.computed = False
-        # self.name = self.getBaseName()     
         
     @staticmethod
     def getItemClass(childTag):
@@ -166,13 +70,14 @@ class ImportItem(DictItemWithChild):
             ImportItem.MODE : is_vector,
             ImportItem.VALUE : val,
             ImportItem.STATUS : False }
-        return dict
-    # def updateFromDlgItem(self,dlgItem):
-        # self.dict = self.dlgToDict(dlgItem)
-        # self.children = [dlgItem]
-        # self.dlgItem = dlgItem
+        return dict 
         
-        # self.recompute()        
+    def getInput(self):
+        return self.dict[ImportItem.INPUT]
+    def getValue(self):
+        return self.dict[ImportItem.VALUE]
+    def isVector(self):
+        return self.dict[self.MODE]
         
     def updateFromOther(self,other):
         for k in other.dict:
@@ -188,26 +93,12 @@ class ImportItem(DictItemWithChild):
         # if self.is_vector and self.dlgItem.getBurnMode():
             # res += "_" + str(self.dlgItem.getBurnField())
         return res
-
-    def isVector(self):
-        return self.dict[self.MODE]
-    # def getDialog(self):
-        # if self.children:
-            # return self.children[0]
-        # else:
-            # self.feedback.internal_error("No children for ImportItem")
-            
-    # Mandatory to redefine it for import links reasons
-    # @classmethod
-    # def fromXML(cls,root,feedback=None):
-        # o = cls.fromDict(root.attrib)
-        # for child in root:
-            # childTag = child.tag
-            # classObj = getattr(sys.modules[__name__], childTag)
-            # childObj = classObj.fromXML(child,feedback=feedback)
-            # o.setChild(childObj)
-        # return o
         
+    def getName(self):
+        bn = self.getBaseName()
+        if self.isVector():
+            bn += str(self.getValue())
+        return bn
 
 class ImportModel(DictModel):
 
@@ -225,37 +116,41 @@ class ImportModel(DictModel):
         return getattr(sys.modules[__name__], childTag)      
         
     def applyItemWithContext(self,item,context,feedback):
-        input_path = item.getLayerPath()
-        input = qgsUtils.loadLayer(input_path)
-        input_extent = input.extent()
-        crs = input.crs().authid()
-        resolution = 10
+        input_rel_path = item.getInput()
+        input_path = self.pluginModel.getOrigPath(input_rel_path)
+        # input = qgsUtils.loadLayer(input_path)
         out_type = Qgis.Int16
         out_nodata = -1
-        out_path = self.getItemOutPath(item)
+        out_rel_path = self.getItemOutPath(item)
+        out_path = self.pluginModel.getOrigPath(out_rel_path)
         if item.isVector():
-            selected = QgsProcessingUtils.generateTempFilename('selection.gpkg')
-            all_touch = item.getAllTouch()
-            if item.getBurnMode():
-                burn_field = item.getBurnField()
-                BioDispersal_algs.applyRasterizationFixAllTouch(
-                    selected,out_path,input_extent,resolution,
-                    field=burn_field,out_type=out_type,all_touch=all_touch,
-                    context=context,feedback=feedback)
+            childItem = item.getChild()
+            all_touch = childItem.getAllTouch()
+            expr = childItem.getExpression()
+            if expr:
+                selected = QgsProcessingUtils.generateTempFilename('selection.gpkg')
+                feedback.pushWarning("Selection expression not yet implemented")
+            # at = childItem.getAllTouch()
+            if childItem.getBurnMode():
+                burnField = childItem.getBurnField()
+                burnVal = None
             else:
-                burn_val = item.getBurnVal()
-                BioDispersal_algs.applyRasterizationFixAllTouch(
-                    selected,out_path,input_extent,resolution,
-                    burn_val=burn_val,out_type=out_type,all_touch=all_touch,
-                    context=context,feedback=feedback)
+                burnField = None
+                burnVal = childItem.getBurnVal()
+            crs, extent, resolution = self.pluginModel.getRasterParams()
+            qgsTreatments.applyRasterization(input_path,out_path,
+                extent,resolution,field=burnField,burn_val=burnVal,
+                all_touch=all_touch,context=context,feedback=feedback)
         else:
-            reclassified = QgsProcessingUtils.generateTempFilename('reclassified.tif')
-            qgsTreatments.applyReclassifyByTable(input,matrix,reclassified,
-                out_type = out_type,boundaries_mode=2,nodata_missing=True,
-                context=context,feedback=feedback)
-            qgsTreatments.applyWarpReproject(reclassified,out_path,dst_crs=crs,
-                extent=input_extent,extent_crs=crs,resolution=resolution,
-                out_type=out_type,overwrite=True,context=context,feedback=feedback)
+            # reclassified = QgsProcessingUtils.generateTempFilename('reclassified.tif')
+            # qgsTreatments.applyReclassifyByTable(input,matrix,reclassified,
+                # out_type = out_type,boundaries_mode=2,nodata_missing=True,
+                # context=context,feedback=feedback)
+            self.pluginModel.paramsModel.normalizeRaster(
+                input_path,out_path=out_path,
+                context=context,
+                feedback=feedback)
+        qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 
     # Returns absolute path of 'item' output layer
     def getItemOutPath(self,item):
@@ -271,7 +166,7 @@ class ImportModel(DictModel):
     def getImportNames(self):
         return [i.getBaseName() for i in self.items]
     def getImportNamesAsStr(self):
-        return ",".join(self.getImportNames())
+        return ",".join(self.getImportNames())     
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled

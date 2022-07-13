@@ -27,6 +27,7 @@ import os, sys
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.gui import QgsFileWidget
+from qgis.core import QgsProcessingContext
 import traceback
 from io import StringIO
 
@@ -47,7 +48,6 @@ class PluginModel(abstract_model.MainModel):
 
     def __init__(self,feedback):
         self.parser_name = "ERC-TVB"
-        self.context = None
         self.feedback = feedback
         self.feedback.pushDebugInfo("feedback bd = " + str(feedback))
         self.paramsModel = params.ParamsModel(self)
@@ -136,6 +136,8 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.feedback =  feedbacks.ProgressFeedback(self)
         self.feedback.pushInfo("ERC1 OK")
         utils.print_func = self.feedback.print_func
+        self.context = QgsProcessingContext()
+        self.context.setFeedback(self.feedback)
         # self.feedback.switchDebugMode()
         # self.feedback.pushInfo("hey")
         self.pluginModel = PluginModel(self.feedback)

@@ -26,11 +26,13 @@ import os, sys
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
+from qgis.core import QgsProcessingContext, QgsProcessingUtils
 
 from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
 from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
+from ..qgis_lib_mc import qgsTreatments, qgsUtils
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 
 # Graphab utils
@@ -85,7 +87,7 @@ class ScenarioModel(DictModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
         
-    def applyItemLanduse(self, scItem, spItem):
+    def applyItemLanduse(self, scItem, spItem,context=None):
         self.feedback.pushDebugInfo("applyItemLanduse")
         name = scItem.getName()
         if scItem.getStatusLanduse():
@@ -94,10 +96,36 @@ class ScenarioModel(DictModel):
             return
         in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         out_path = self.getItemLanduse(scItem)
-        
+        out_path = QgsProcessingUtils.generateTempFilename("out.tif")
+        out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
+        out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
+        out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         if scItem.isLanduseMode():
-            self.pluginModel.paramsModel.normalizeRaster(
-                in_path,out_path=out_path,feedback=self.feedback)
+            # self.pluginModel.paramsModel.normalizeRaster(
+                # in_path,out_path=out_path,
+                # context=QgsProcessingContext(),
+                # feedback=self.feedback)
+            # qgsUtils.loadRasterLayer(in_path,loadProject=True)
+            # qgsTreatments.applyWarpReproject(in_path,out_path,resolution=10,
+                # feedback=self.feedback)
+            # qgsUtils.loadRasterLayer(out_path,loadProject=True)
+            #
+            # { 'EXPRESSION' : 'True', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/Routes/TRONCON_ROUTE_BOUSQUET_ORB.shp', 'METHOD' : 0 }
+            input = 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/Routes/TRONCON_ROUTE_BOUSQUET_ORB.shp'
+            # qgsUtils.loadVectorLayer(input,loadProject=True)
+            # qgsTreatments.selectByExpression(input,'True',feedback=self.feedback)
+            # qgsTreatments.extractByExpression(input,'True',out_gpkg,feedback=self.feedback)
+            # self.pluginModel.paramsModel.clipByExtent(input,name="test",
+                # feedback=self.feedback)
+            
+            crs, extent, resolution = self.pluginModel.getRasterParams()
+            # res = qgsTreatments.clipVectorByExtent(input,extent,out_shp,
+                # feedback=self.feedback)
+            extent_layer_path = self.pluginModel.paramsModel.getExtentLayer()
+            res = qgsTreatments.clipRasterFromVector(in_path,extent_layer_path,out_path,context=context,feedback=self.feedback,resolution=10)
+            # qgsTreatments.applyRasterization(input,out_path,extent=extent,resolution=10,feedback=self.feedback)
+            # out_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
+            # qgsTreatments.applyWarpReproject(out_path,out_path2,extent=extent,dst_crs=crs,extent_crs=crs,resolution=resolution,nodata_val=255,feedback=self.feedback)
             assert(False)
         else:
             # Rasterize
@@ -163,7 +191,7 @@ class ScenarioConnector(TableToDialogConnector):
             for sp in species:
                 self.feedback.pushDebugInfo("TODO : landuse Run "
                     + sc.getName() + " - " + sp.getName())
-                self.model.applyItemLanduse(sc,sp)
+                self.model.applyItemLanduse(sc,sp,context=self.dlg.context)
     def frictionRun(self):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()

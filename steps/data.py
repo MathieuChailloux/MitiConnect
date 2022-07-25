@@ -28,7 +28,7 @@ from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 from qgis.core import Qgis, QgsProcessingUtils
 
-from ..qgis_lib_mc import qgsUtils, qgsTreatments
+from ..qgis_lib_mc import qgsUtils, qgsTreatments, utils, feedbacks
 from ..qgis_lib_mc.utils import CustomException
 from ..ui.vector_data_dialog import VectorDlgItem, VectorDataDialog
 from ..ui.raster_data_dialog import RasterDlgItem, RasterDataDialog
@@ -40,11 +40,12 @@ from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
 
 class ImportItem(DictItemWithChild):
             
+    NAME = 'NAME'
     INPUT = 'INPUT'
     MODE = 'MODE'
     VALUE = 'VALUE'
     STATUS = 'STATUS'
-    DISPLAY_FIELDS = [ INPUT, VALUE, STATUS ]
+    DISPLAY_FIELDS = [ NAME, STATUS, INPUT, VALUE ]
     FIELDS = DISPLAY_FIELDS
     
     INPUT_IDX = 0
@@ -66,12 +67,15 @@ class ImportItem(DictItemWithChild):
                 val = dlgItem.getBurnVal()
         else:
             val = None
-        dict = { ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
+        dict = { ImportItem.NAME : dlgItem.getName(),
+            ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
             ImportItem.MODE : is_vector,
             ImportItem.VALUE : val,
             ImportItem.STATUS : False }
         return dict 
         
+    def getName(self):
+        return self.dict[ImportItem.NAME]
     def getInput(self):
         return self.dict[ImportItem.INPUT]
     def getValue(self):
@@ -94,11 +98,11 @@ class ImportItem(DictItemWithChild):
             # res += "_" + str(self.dlgItem.getBurnField())
         return res
         
-    def getName(self):
-        bn = self.getBaseName()
-        if self.isVector():
-            bn += str(self.getValue())
-        return bn
+    # def getName(self):
+        # bn = self.getBaseName()
+        # if self.isVector():
+            # bn += str(self.getValue())
+        # return bn
 
 class ImportModel(DictModel):
 
@@ -156,7 +160,7 @@ class ImportModel(DictModel):
     def getItemOutPath(self,item):
         out_bname = item.getName() + ".tif"
         out_dir = self.pluginModel.getImportsDir()
-        return os.path.join(out_dir,out_bname)
+        return utils.joinPath(out_dir,out_bname)
     def getItemFromName(self,name):
         for i in self.items:
             if i.getName() == name:
@@ -173,7 +177,8 @@ class ImportModel(DictModel):
         
     # FIELDS = [ INPUT, MODE, VALUE, STATUS ]
     def getHeaderString(self,col):
-        h = [self.tr('Input layer'),
+        h = [self.tr('Name'),
+            self.tr('Input layer'),
             self.tr('Value'),
             self.tr('Status')]
         return h[col] 
@@ -299,14 +304,7 @@ class LanduseItem(DictItem):
         self.dict[self.NAME] = name
     def setImports(self,imports):
         self.dict[self.IMPORTS] = imports
-        
-    def applyItemWithContext(self,context,feedback,indexes=None):
-        names = [i.getName() for n in self.items]
-        import_items = [self.pluginModel.importModel.getItemFromName(n) for n in names]
-        paths = [i.getItemOutPath() for i in import_items]
-        # out_path = 
-        qgsTreatments.applyMergeRaster(paths,out_path,
-            out_type=Qgis.Int16,context=context,feedback=feedback)
+
         
 class LanduseModel(DictModel):
 
@@ -319,8 +317,10 @@ class LanduseModel(DictModel):
     def updateImportName(self):
         pass
         
-    def getOutPathOfItem(self,item):
-        pass
+    def getItemOutPath(self,item):
+        out_bname = item.getName() + ".tif"
+        out_dir = self.pluginModel.getImportsDir()
+        return utils.joinPath(out_dir,out_bname)
         
     def getNames(self,item):  
         return [i.getName() for i in self.items]
@@ -328,14 +328,23 @@ class LanduseModel(DictModel):
     # def addItem(self,item):
         # super().addItem()
         # self.pluginModel.addLanduse(item)
-        
-    def applyItemWithContext(self,context,feedback,indexes=None):
-        names = [i.getName() for n in self.items]
-        import_items = [self.pluginModel.importModel.getItemFromName(n) for n in names]
-        paths = [i.getItemOutPath() for i in import_items]
-        # out_path = 
+                            
+    def applyItemWithContext(self,item,context,feedback,indexes=None):
+        names = item.getImportsAsList()
+        feedback.pushDebugInfo("names = " + str(names))
+        importModel = self.pluginModel.importModel
+        all_names = [i.getName() for i in importModel.items]
+        feedback.pushDebugInfo("all names = " + str(all_names))
+        import_items = [importModel.getItemFromName(n) for n in names]
+        paths = [importModel.getItemOutPath(i) for i in import_items]
+        for p in paths:
+            if not utils.fileExists(p):
+                feedback.user_error("Please launch imports first, file '"
+                    + str(p) + " does not exist")
+        out_path = self.getItemOutPath(item)
         qgsTreatments.applyMergeRaster(paths,out_path,
             out_type=Qgis.Int16,context=context,feedback=feedback)
+        qgsUtils.loadLayer(out_path,loadProject=True)
         
     def mkItemFromDict(self,dict,feedback=None):
         return LanduseItem(dict)
@@ -347,7 +356,10 @@ class LanduseConnector(AbstractConnector):
         self.dlg = dlg
         self.feedback = landuseModel.feedback
         super().__init__(landuseModel,self.dlg.landuseView,
-                        None,self.dlg.landuseRemove)
+                        addButton=None,
+                        removeButton=self.dlg.landuseRemove,
+                        runButton=self.dlg.landuseRun,
+                        selectionCheckbox=self.dlg.landuseSelection)
     
     def connectComponents(self):
         super().connectComponents()

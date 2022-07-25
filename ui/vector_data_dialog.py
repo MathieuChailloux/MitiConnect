@@ -36,6 +36,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class VectorDlgItem(abstract_model.DictItem):
 
+    NAME = 'NAME'
     INPUT = 'INPUT'
     EXPRESSION = 'EXPRESSION'
     BURN_MODE = 'BURN_MODE'
@@ -44,12 +45,14 @@ class VectorDlgItem(abstract_model.DictItem):
     ALL_TOUCH = 'ALL_TOUCH'
     BUFFER_MODE = 'BUFFER_MODE'
     BUFFER_EXPR = 'BUFFER_EXPR'
-    FIELDS = [ INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
+    FIELDS = [ NAME, INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
             ALL_TOUCH, BUFFER_MODE, BUFFER_EXPR ]
 
     def __init__(self, dict, feedback=None):
         super().__init__(dict, self.FIELDS)
         
+    def getName(self):
+        return self.dict[self.NAME]
     def getLayerPath(self):
         return self.dict[self.INPUT]
     def getExpression(self):
@@ -99,6 +102,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         # print("update")
         if self.data_item:
             # print("lets go")
+            self.nameValue.setText(self.data_item.getName())
             self.vectorLayerCombo.setLayer(None)
             self.layerComboDlg.setLayerPath(self.data_item.getLayerPath())
             self.vectorSelectionExpression.setExpression(self.data_item.getExpression())
@@ -140,6 +144,10 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
             dict = {}
+            name = self.nameValue.text()
+            if not name:
+                self.feedback.user_error("Empty name")
+            dict[VectorDlgItem.NAME] = name
             layer = self.vectorLayerCombo.currentLayer()
             if not layer:
                 self.feedback.user_error("No layer selected")

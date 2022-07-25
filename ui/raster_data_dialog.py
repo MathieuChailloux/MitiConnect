@@ -59,6 +59,7 @@ class ReclassModel(abstract_model.DictModel):
 
 class RasterDlgItem(abstract_model.DictItemWithChild):
 
+    NAME = 'NAME'
     INPUT = 'INPUT'
     # RECLASS = 'RECLASS'
     FIELDS = [ INPUT ]
@@ -107,6 +108,8 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
     
     def updateUi(self):
         if self.data_item:
+            name = self.data_item.getName()
+            self.nameValue.setText(name)
             layer = self.data_item.getLayerPath()
             utils.checkFileExists(layer)
             self.layerComboDlg.setLayerPath(layer)
@@ -119,6 +122,10 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
             dict = {}
+            name = self.nameValue.text()
+            dict[RasterDlgItem.NAME] = name
+            if not name:
+                self.feedback.user_error("Empty name")
             layer = self.rasterDataLayerCombo.currentLayer()
             if not layer:
                 self.feedback.user_error("No layer selected")

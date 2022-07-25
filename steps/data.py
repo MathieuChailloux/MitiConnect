@@ -190,7 +190,8 @@ class ImportConnector(TableToDialogConnector):
         self.dlg = dlg
         super().__init__(model,self.dlg.importView,
             removeButton=self.dlg.importDelete,
-            runButton=self.dlg.importRun)
+            runButton=self.dlg.importRun,
+            selectionCheckbox=self.dlg.importSelection)
         self.feedback.pushInfo("IC OK")
         # self.feedback = dlg.feedback
         self.onlySelection = False

@@ -32,7 +32,7 @@ from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
 from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
-from ..qgis_lib_mc import qgsTreatments, qgsUtils
+from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 
 # Graphab utils
@@ -87,6 +87,26 @@ class ScenarioModel(DictModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
         
+    
+    def applyItemWithContext(self,scItem,context,feedback):
+        feedback.pushDebugInfo("applyItemLanduse")
+        name = scItem.getName()
+        if scItem.getStatusLanduse():
+            msg = self.tr("Landuse layer already computed for scenario ")
+            feedback.pushWarning(msg + str(name))
+            return
+        in_path = self.pluginModel.getOrigPath(scItem.getLayer())
+        out_path = self.getItemLanduse(scItem)
+        out_path = 'C:/Users/mathieu.chailloux/Desktop/BousquetOrbExtended\\dummy.tif'
+        if scItem.isLanduseMode():
+            crs, extent, resolution = self.pluginModel.getRasterParams()
+            self.pluginModel.paramsModel.normalizeRaster(
+                in_path,out_path=out_path,
+                context=context,
+                feedback=self.feedback)
+        else:
+            assert(False)
+        
     def applyItemLanduse(self, scItem, spItem,context=None):
         self.feedback.pushDebugInfo("applyItemLanduse")
         name = scItem.getName()
@@ -101,28 +121,30 @@ class ScenarioModel(DictModel):
         out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
         out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         if scItem.isLanduseMode():
-            # self.pluginModel.paramsModel.normalizeRaster(
-                # in_path,out_path=out_path,
-                # context=QgsProcessingContext(),
-                # feedback=self.feedback)
+            crs, extent, resolution = self.pluginModel.getRasterParams()
+            self.pluginModel.paramsModel.normalizeRaster(
+                in_path,out_path=out_path,
+                context=context,
+                feedback=self.feedback)
             # qgsUtils.loadRasterLayer(in_path,loadProject=True)
             # qgsTreatments.applyWarpReproject(in_path,out_path,resolution=10,
                 # feedback=self.feedback)
             # qgsUtils.loadRasterLayer(out_path,loadProject=True)
             #
             # { 'EXPRESSION' : 'True', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/Routes/TRONCON_ROUTE_BOUSQUET_ORB.shp', 'METHOD' : 0 }
-            input = 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/Routes/TRONCON_ROUTE_BOUSQUET_ORB.shp'
+            # input = 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/Routes/TRONCON_ROUTE_BOUSQUET_ORB.shp'
             # qgsUtils.loadVectorLayer(input,loadProject=True)
             # qgsTreatments.selectByExpression(input,'True',feedback=self.feedback)
             # qgsTreatments.extractByExpression(input,'True',out_gpkg,feedback=self.feedback)
             # self.pluginModel.paramsModel.clipByExtent(input,name="test",
                 # feedback=self.feedback)
             
-            crs, extent, resolution = self.pluginModel.getRasterParams()
             # res = qgsTreatments.clipVectorByExtent(input,extent,out_shp,
                 # feedback=self.feedback)
-            extent_layer_path = self.pluginModel.paramsModel.getExtentLayer()
-            res = qgsTreatments.clipRasterFromVector(in_path,extent_layer_path,out_path,context=context,feedback=self.feedback,resolution=10)
+                
+            # extent_layer_path = self.pluginModel.paramsModel.getExtentLayer()
+            # res = qgsTreatments.clipRasterFromVector(in_path,extent_layer_path,out_path,context=context,feedback=self.feedback,resolution=10)
+            
             # qgsTreatments.applyRasterization(input,out_path,extent=extent,resolution=10,feedback=self.feedback)
             # out_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
             # qgsTreatments.applyWarpReproject(out_path,out_path2,extent=extent,dst_crs=crs,extent_crs=crs,resolution=resolution,nodata_val=255,feedback=self.feedback)
@@ -157,7 +179,8 @@ class ScenarioConnector(TableToDialogConnector):
         self.feedback = dlg.feedback
         super().__init__(model,self.dlg.scenarioView,
                          addButton=self.dlg.scenarioAdd,
-                         removeButton=self.dlg.scenarioRemove)
+                         removeButton=self.dlg.scenarioRemove,
+                         runButton=self.dlg.scLanduseRun)
 
     def connectComponents(self):
         super().connectComponents()
@@ -165,7 +188,7 @@ class ScenarioConnector(TableToDialogConnector):
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
         self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
         self.dlg.speciesSelection.setModel(self.model.pluginModel.speciesModel)
-        self.dlg.scLanduseRun.clicked.connect(self.landuseRun)
+        # self.dlg.scLanduseRun.clicked.connect(self.landuseRun)
         self.dlg.scFrictionRun.clicked.connect(self.frictionRun)
         self.dlg.scGraphRun.clicked.connect(self.graphRun)
         
@@ -187,11 +210,17 @@ class ScenarioConnector(TableToDialogConnector):
     def landuseRun(self):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
+        nb_steps = len(scenarios) * len(species)
+        step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
+        cpt=0
+        step_feedback.setCurrentStep(cpt)
         for sc in scenarios:
             for sp in species:
                 self.feedback.pushDebugInfo("TODO : landuse Run "
                     + sc.getName() + " - " + sp.getName())
-                self.model.applyItemLanduse(sc,sp,context=self.dlg.context)
+                self.model.applyItemLanduse(sc,sp,context=None)
+                cpt+=1
+                step_feedback.setCurrentStep(cpt)
     def frictionRun(self):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()

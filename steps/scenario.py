@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os, sys
+import os, sys, shutil
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
@@ -120,38 +120,39 @@ class ScenarioModel(DictModel):
         out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
         out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
         out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
+        crs, extent, resolution = self.pluginModel.getRasterParams()
         if scItem.isLanduseMode():
-            crs, extent, resolution = self.pluginModel.getRasterParams()
-            self.pluginModel.paramsModel.normalizeRaster(
-                in_path,out_path=out_path,
-                context=context,
-                feedback=self.feedback)
+            shutil.copy(in_path,out_path)
+            # self.pluginModel.paramsModel.normalizeRaster(
+                # in_path,out_path=out_path,
+                # context=context,
+                # feedback=self.feedback)
             # qgsUtils.loadRasterLayer(in_path,loadProject=True)
-            # qgsTreatments.applyWarpReproject(in_path,out_path,resolution=10,
-                # feedback=self.feedback)
-            # qgsUtils.loadRasterLayer(out_path,loadProject=True)
-            #
-            # { 'EXPRESSION' : 'True', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/Routes/TRONCON_ROUTE_BOUSQUET_ORB.shp', 'METHOD' : 0 }
-            # input = 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/Routes/TRONCON_ROUTE_BOUSQUET_ORB.shp'
-            # qgsUtils.loadVectorLayer(input,loadProject=True)
-            # qgsTreatments.selectByExpression(input,'True',feedback=self.feedback)
-            # qgsTreatments.extractByExpression(input,'True',out_gpkg,feedback=self.feedback)
-            # self.pluginModel.paramsModel.clipByExtent(input,name="test",
-                # feedback=self.feedback)
-            
-            # res = qgsTreatments.clipVectorByExtent(input,extent,out_shp,
-                # feedback=self.feedback)
-                
-            # extent_layer_path = self.pluginModel.paramsModel.getExtentLayer()
-            # res = qgsTreatments.clipRasterFromVector(in_path,extent_layer_path,out_path,context=context,feedback=self.feedback,resolution=10)
-            
-            # qgsTreatments.applyRasterization(input,out_path,extent=extent,resolution=10,feedback=self.feedback)
-            # out_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
-            # qgsTreatments.applyWarpReproject(out_path,out_path2,extent=extent,dst_crs=crs,extent_crs=crs,resolution=resolution,nodata_val=255,feedback=self.feedback)
-            assert(False)
+
+            # assert(False)
         else:
             # Rasterize
-            # Reclassify
+            vector_rel_path = scItem.getBase()
+            vector_path = self.pluginModel.getOrigPath(vector_rel_path)
+            raster_path = qgsUtils.mkTmpPath(name + "_raster.tif")
+            mode = scItem.getMode()
+            if mode == 1:
+                # Fixed mode
+                qgsTreatments.applyRasterization(vector_path,raster_path,
+                    extent,resolution,burn_val=scItem.getBurnVal(),
+                    context=context,feedback=self.feedback)
+                path = raster_path
+            elif mode == 2:
+                # Field mode
+                reclass_path = qgsUtils.mkTmpPath(name + "_reclass.tif")
+                qgsTreatments.applyRasterization(vector_path,raster_path,
+                    extent,resolution,burn_field=scItem.getBurnField())
+                qgsTreatments.applyReclassifyByTable(raster_path,
+                    scItem.getReclassTable(),reclass_path)
+                path = reclass_path
+            else:
+                self.feedback.user_error("Unexpected scenario mode : " + str(mode))
+                # Reclassify
             # Merge
             self.feedback.pushInfo("About to apply rrm")
             

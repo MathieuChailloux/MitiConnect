@@ -81,6 +81,12 @@ class PluginModel(abstract_model.MainModel):
     def getScenarioDir(self,sc_name):
         return utils.createSubdir(self.paramsModel.workspace,sc_name)
         
+    def changeImport(self,oldName,newName):
+        for luItem in self.landuseModel:
+            if luItem.getName() == newName:
+                luItem.setName(newName)
+        self.landuseModel.layoutChanged.emit()
+        
     def checkWorkspaceInit(self):
         self.paramsModel.checkWorkspaceInit()
     def normalizePath(self,path):

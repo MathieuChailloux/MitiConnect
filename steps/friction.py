@@ -29,6 +29,7 @@ from qgis.PyQt.QtCore import Qt
 
 from ..qgis_lib_mc.utils import CustomException, getIntValues
 from ..qgis_lib_mc.abstract_model import DictItem, ExtensiveTableModel, AbstractConnector
+from ..qgis_lib_mc import qgsUtils
 
 
 class FrictionModel(ExtensiveTableModel):

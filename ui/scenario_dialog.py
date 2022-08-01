@@ -143,6 +143,10 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.dict[self.LAYER]
     def getMode(self):
         return self.dict[self.MODE]
+    def getBurnVal(self):
+        return self.dict[self.BURN_VAL]
+    def getBurnField(self):
+        return self.dict[self.RECLASS_FIELD]
     def getStatusLanduse(self):
         return bool(self.dict[self.STATUS_LANDUSE])
     def getStatusFriction(self):
@@ -151,6 +155,9 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return bool(self.dict[self.STATUS_GRAPH])
     def isLanduseMode(self):
         return self.getMode() == 0
+        
+    def getReclassTable(self):
+        return self.reclassModel.getReclassTable()
         
     def setReclassModel(self,model):
         super().setChild(model)

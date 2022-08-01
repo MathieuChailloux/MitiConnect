@@ -81,6 +81,16 @@ class PluginModel(abstract_model.MainModel):
     def getScenarioDir(self,sc_name):
         return utils.createSubdir(self.paramsModel.workspace,sc_name)
         
+    def getImportOutLayerFromName(self,name):
+        layer = self.getOutLayerFromName(name,self.importModel)
+        return layer
+    def getLanduseOutLayerFromName(self,name):
+        layer = self.getOutLayerFromName(name,self.landuseModel)
+        return layer
+    def getScenarioOutLayerFromName(self,name):
+        layer = self.getOutLayerFromName(name,self.landuseModel)
+        return layer
+        
     def changeImport(self,oldName,newName):
         for luItem in self.landuseModel:
             if luItem.getName() == newName:

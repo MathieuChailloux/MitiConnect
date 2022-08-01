@@ -26,7 +26,7 @@ import os, sys, shutil
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
-from qgis.core import QgsProcessingContext, QgsProcessingUtils
+from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
 
 from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
@@ -97,7 +97,7 @@ class ScenarioModel(DictModel):
             return
         in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         out_path = self.getItemLanduse(scItem)
-        out_path = 'C:/Users/mathieu.chailloux/Desktop/BousquetOrbExtended\\dummy.tif'
+        # out_path = 'C:/Users/mathieu.chailloux/Desktop/BousquetOrbExtended\\dummy.tif'
         if scItem.isLanduseMode():
             crs, extent, resolution = self.pluginModel.getRasterParams()
             self.pluginModel.paramsModel.normalizeRaster(
@@ -108,31 +108,35 @@ class ScenarioModel(DictModel):
             assert(False)
         
     def applyItemLanduse(self, scItem, spItem,context=None):
-        self.feedback.pushDebugInfo("applyItemLanduse")
+        self.feedback.pushDebugInfo("applyItemLanduse " + str(scItem))
         name = scItem.getName()
         if scItem.getStatusLanduse():
             msg = self.tr("Landuse layer already computed for scenario ")
             self.feedback.pushWarning(msg + str(name))
             return
-        in_path = self.pluginModel.getOrigPath(scItem.getLayer())
+        base = scItem.getBase()
+        # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         out_path = self.getItemLanduse(scItem)
-        out_path = QgsProcessingUtils.generateTempFilename("out.tif")
-        out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
-        out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
-        out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
+        # out_path = QgsProcessingUtils.generateTempFilename("out.tif")
+        # out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
+        # out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
+        # out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         crs, extent, resolution = self.pluginModel.getRasterParams()
         if scItem.isLanduseMode():
+            in_path = self.pluginModel.getLanduseOutLayerFromName(base)
             shutil.copy(in_path,out_path)
             # self.pluginModel.paramsModel.normalizeRaster(
                 # in_path,out_path=out_path,
                 # context=context,
                 # feedback=self.feedback)
-            # qgsUtils.loadRasterLayer(in_path,loadProject=True)
+            qgsUtils.loadRasterLayer(out_path,loadProject=True)
 
             # assert(False)
         else:
+            baseItem = self.getItemFromName(base)
+            in_path = self.getItemLanduse(baseItem)
             # Rasterize
-            vector_rel_path = scItem.getBase()
+            vector_rel_path = scItem.getLayer()
             vector_path = self.pluginModel.getOrigPath(vector_rel_path)
             raster_path = qgsUtils.mkTmpPath(name + "_raster.tif")
             mode = scItem.getMode()
@@ -146,15 +150,20 @@ class ScenarioModel(DictModel):
                 # Field mode
                 reclass_path = qgsUtils.mkTmpPath(name + "_reclass.tif")
                 qgsTreatments.applyRasterization(vector_path,raster_path,
-                    extent,resolution,burn_field=scItem.getBurnField())
+                    extent,resolution,field=scItem.getBurnField(),
+                    context=context,feedback=self.feedback)
                 qgsTreatments.applyReclassifyByTable(raster_path,
-                    scItem.getReclassTable(),reclass_path)
+                    scItem.getReclassTable(),reclass_path,
+                    context=context,feedback=self.feedback)
                 path = reclass_path
             else:
                 self.feedback.user_error("Unexpected scenario mode : " + str(mode))
                 # Reclassify
             # Merge
-            self.feedback.pushInfo("About to apply rrm")
+            paths = [in_path, path]
+            qgsTreatments.applyMergeRaster(paths,out_path,
+                out_type=Qgis.Int16,context=context,feedback=self.feedback)
+            qgsUtils.loadRasterLayer(out_path,loadProject=True)
             
     def applyItemFriction(self, item):
         self.feedback.pushDebugInfo("applyItemFriction")
@@ -180,8 +189,11 @@ class ScenarioConnector(TableToDialogConnector):
         self.feedback = dlg.feedback
         super().__init__(model,self.dlg.scenarioView,
                          addButton=self.dlg.scenarioAdd,
-                         removeButton=self.dlg.scenarioRemove,
-                         runButton=self.dlg.scLanduseRun)
+                         removeButton=self.dlg.scenarioRemove)
+        # super().__init__(model,self.dlg.scenarioView,
+                         # addButton=self.dlg.scenarioAdd,
+                         # removeButton=self.dlg.scenarioRemove,
+                         # runButton=self.dlg.scLanduseRun)
 
     def connectComponents(self):
         super().connectComponents()
@@ -189,7 +201,7 @@ class ScenarioConnector(TableToDialogConnector):
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
         self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
         self.dlg.speciesSelection.setModel(self.model.pluginModel.speciesModel)
-        # self.dlg.scLanduseRun.clicked.connect(self.landuseRun)
+        self.dlg.scLanduseRun.clicked.connect(self.landuseRun)
         self.dlg.scFrictionRun.clicked.connect(self.frictionRun)
         self.dlg.scGraphRun.clicked.connect(self.graphRun)
         
@@ -283,13 +295,14 @@ class ScenarioConnector(TableToDialogConnector):
             if not scenarioNames:
                 msg = self.tr("No scenario in model : please create base scenario from landuse")
                 self.feedback.user_error(msg)
-            item_copy = item.__deepcopy__()
-            scenarioDlg = ScenarioDialog(self.dlg,item_copy,scenarioModel=self.model,feedback=self.feedback)
+            item_copy = item.__deepcopy__() if item else None
+            scenarioDlg = ScenarioDialog(self.dlg,item_copy,
+                scenarioModel=self.model,feedback=self.feedback)
             # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
             self.feedback.pushDebugInfo("k2")
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
-                feedback=self.feedback)
+                feedback=self.feedback,luModel=self.model.pluginModel.landuseModel)
         return scenarioDlg
                         
     def openDialogLanduseNew(self):

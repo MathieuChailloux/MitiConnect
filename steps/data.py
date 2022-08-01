@@ -161,11 +161,11 @@ class ImportModel(DictModel):
         out_bname = item.getName() + ".tif"
         out_dir = self.pluginModel.getImportsDir()
         return utils.joinPath(out_dir,out_bname)
-    def getItemFromName(self,name):
-        for i in self.items:
-            if i.getName() == name:
-                return i
-        return None
+    # def getItemFromName(self,name):
+        # for i in self.items:
+            # if i.getName() == name:
+                # return i
+        # return None
         
     def getImportNames(self):
         return [i.getBaseName() for i in self.items]
@@ -344,7 +344,7 @@ class LanduseModel(DictModel):
         out_path = self.getItemOutPath(item)
         qgsTreatments.applyMergeRaster(paths,out_path,
             out_type=Qgis.Int16,context=context,feedback=feedback)
-        qgsUtils.loadLayer(out_path,loadProject=True)
+        qgsUtils.loadRasterLayer(out_path,loadProject=True)
         
     def mkItemFromDict(self,dict,feedback=None):
         return LanduseItem(dict)

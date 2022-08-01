@@ -342,15 +342,17 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 
 
 class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
-    def __init__(self, parent, dlgItem, feedback=None):
+    def __init__(self, parent, dlgItem, feedback=None, luModel=None):
         """Constructor."""
         super(ScenarioLanduseDialog, self).__init__(parent)
         self.feedback = feedback
+        self.luModel = luModel
         self.setupUi(self)
-        # self.connectComponents()
+        self.connectComponents()
         self.updateUi(dlgItem)
         
-    # def connectComponents(self):
+    def connectComponents(self):
+        self.scLanduseCombo.setModel(self.luModel)
         # self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             # self.scLayerCombo,self.scLayer)
                 
@@ -368,12 +370,16 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             if not name:
                 self.errorDialog(self.tr("Empty name"))
                 continue
-            layer = self.scLayer.filePath()
-            if not layer:
-                self.errorDialog(self.tr("Empty layer"))
+            base = self.scLanduseCombo.currentText()
+            if not base:
+                self.errorDialog(self.tr("Empty landuse"))
                 continue
-            dlgItem = ScenarioItem.fromValues(name=name,base=None,
-                layer=layer,feedback=self.feedback)
+            # layer = self.scLayer.filePath()
+            # if not layer:
+                # self.errorDialog(self.tr("Empty layer"))
+                # continue
+            dlgItem = ScenarioItem.fromValues(name=name,base=base,
+                layer=None,feedback=self.feedback)
             return dlgItem
         return None
                 

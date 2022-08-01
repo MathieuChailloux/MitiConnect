@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>388</width>
-    <height>111</height>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,7 +50,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="label_4">
      <property name="minimumSize">
       <size>
        <width>90</width>
@@ -69,7 +69,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QgsFileWidget" name="scLayer">
+    <widget class="QComboBox" name="scLanduseCombo">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -84,7 +84,48 @@
      </property>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>90</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Landuse layer</string>
+     </property>
+    </widget>
+   </item>
    <item row="2" column="1">
+    <widget class="QgsFileWidget" name="scLayer">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>20</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

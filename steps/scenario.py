@@ -79,6 +79,8 @@ class ScenarioModel(DictModel):
         return joinPath(out_dir,out_bname)
     def getItemLanduse(self,item):
         return self.getItemOutBase(item,suffix="_landuse")
+    def getItemFrictionSpecie(self,item,specie):
+        return self.getItemOutBase(item,suffix="_" + str(specie))
     def getItemFriction(self,item):
         return self.getItemOutBase(item,suffix="_friction")
     # def getItemGraphabDir(self,item):
@@ -173,7 +175,17 @@ class ScenarioModel(DictModel):
             self.feedback.pushWarning(msg + str(name))
         else:
             # GetLanduse
+            in_path = self.getItemLanduse(item)
             # Reclassify
+            frictionModel = self.pluginModel.frictionModel
+            reclass_matrixes = frictionModel.getReclassifyMatrixes(species)
+            nb_items = len(reclass_matrixes)
+            step_feedback = feedbacks.ProgressMultiStepFeedback(nb_items,feedback)
+            for specie, matrix in reclass_matrixes.items():
+                out_path = self.getItemFrictionSpecie(item,specie.getName())
+                qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
+                    out_type=Qgis.Float32,boundaries_mode=2,
+                    context=context,feedback=step_feedback)
             self.feedback.pushInfo("About to apply rm")
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }

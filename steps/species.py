@@ -47,7 +47,7 @@ from ..ui.species_dialog import SpeciesItem, SpeciesDialog
             # self.dlg_item = dlg_item
             
     # def getName(self):
-        # return self.dict[self.ID]
+        # return self.dict[self.ID]  
 
 class SpeciesModel(DictModel):
 
@@ -101,7 +101,7 @@ class SpeciesConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("item = " + str(item))
         # dlg_item = item.dlg_item if item else None
         species_dlg = SpeciesDialog(self.dlg,item,
-            landuseModel=self.model.pluginModel.landuseModel,
+            pluginModel=self.model.pluginModel,
             feedback=self.feedback)
         return species_dlg 
     

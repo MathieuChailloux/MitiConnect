@@ -24,6 +24,7 @@
 
 import os, sys, shutil
 
+import qgis
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
@@ -36,6 +37,12 @@ from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 
 # Graphab utils
+
+def checkGraphabInstalled(feedback):
+    plugins = qgis.utils.available_plugins
+    installed = 'graphab4qgis' in plugins
+    if not installed:
+        feedback.user_error("Graphab is not installed")
 
 #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
 # TODO : grapha wrappers in erc_tvb_algs_provider ?
@@ -72,19 +79,29 @@ class ScenarioModel(DictModel):
                         
     # Returns absolute path of 'item' output layer
     # def getItemSubElement
-    def getItemOutBase(self,item,suffix=""):
-        sc_name = item.getName()
-        out_bname = sc_name + suffix + ".tif"
-        out_dir = self.pluginModel.getScenarioDir(sc_name)
-        return joinPath(out_dir,out_bname)
-    def getItemLanduse(self,item):
-        return self.getItemOutBase(item,suffix="_landuse")
-    def getItemFrictionSpecie(self,item,specie):
-        return self.getItemOutBase(item,suffix="_" + str(specie))
-    def getItemFriction(self,item):
-        return self.getItemOutBase(item,suffix="_friction")
-    # def getItemGraphabDir(self,item):
-        # return self.getItemOutBase(item,suffix="_landuse")
+    # def getScenarioDir(self,name)
+    def getItemBaseDir(self,scName,spName):
+        scDir = self.pluginModel.getSubDir(scName)
+        spDir = self.pluginModel.getSubDir(spName,baseDir=scDir)
+        return spDir
+    def getItemOutBase(self,scName,spName,suffix=""):
+        spDir = self.getItemBaseDir(scName,spName)
+        out_bname = scName + "_" + spName+ "_" + suffix + ".tif"
+        return joinPath(spDir,out_bname)
+    def getItemLanduse(self,scName,spName):
+        return self.getItemOutBase(scName,spName,suffix="landuse")
+    def getItemFriction(self,scName,spName):
+        return self.getItemOutBase(scName,spName,suffix="friction")
+    def getItemGraphabProjectName(self,scName,spName):
+        return scName + "_" + spName + "_graphab"
+    def getItemGraphabProjectDir(self,scName,spName):
+        spDir = self.getItemBaseDir(scName,spName)
+        out_bname = self.getItemGraphabProjectName(scName,spName)
+        return joinPath(spDir,out_bname)
+    def getItemGraphabProjectFile(self,scName,spName):
+        baseDir = self.getItemGraphabProjectDir(scName,spName)
+        out_bname = self.getItemGraphabProjectName(scName,spName)
+        return joinPath(baseDir,out_bname)
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -112,13 +129,14 @@ class ScenarioModel(DictModel):
     def applyItemLanduse(self, scItem, spItem,context=None):
         self.feedback.pushDebugInfo("applyItemLanduse " + str(scItem))
         name = scItem.getName()
+        spName = spItem.getName()
         if scItem.getStatusLanduse():
             msg = self.tr("Landuse layer already computed for scenario ")
             self.feedback.pushWarning(msg + str(name))
             return
         base = scItem.getBase()
         # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
-        out_path = self.getItemLanduse(scItem)
+        out_path = self.getItemLanduse(name,spName)
         # out_path = QgsProcessingUtils.generateTempFilename("out.tif")
         # out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
         # out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
@@ -136,7 +154,7 @@ class ScenarioModel(DictModel):
             # assert(False)
         else:
             baseItem = self.getItemFromName(base)
-            in_path = self.getItemLanduse(baseItem)
+            in_path = self.getItemLanduse(base,spName)
             # Rasterize
             vector_rel_path = scItem.getLayer()
             vector_path = self.pluginModel.getOrigPath(vector_rel_path)
@@ -174,9 +192,6 @@ class ScenarioModel(DictModel):
             msg = self.tr("Friction layer already computed for scenario ")
             self.feedback.pushWarning(msg + str(name))
         else:
-            # GetLanduse
-            in_path = self.getItemLanduse(item)
-            self.feedback.pushDebugInfo("in_path = " + str(in_path))
             # Reclassify
             frictionModel = self.pluginModel.frictionModel
             species_names = [sp.getName() for sp in species]
@@ -186,7 +201,9 @@ class ScenarioModel(DictModel):
             for specie, matrix in reclass_matrixes.items():
                 self.feedback.pushDebugInfo("specie = " + str(specie))
                 self.feedback.pushDebugInfo("matrix = " + str(matrix))
-                out_path = self.getItemFrictionSpecie(item,specie)
+                in_path = self.getItemLanduse(name,specie)
+                self.feedback.pushDebugInfo("in_path = " + str(in_path))
+                out_path = self.getItemFriction(name,specie)
                 self.feedback.pushDebugInfo("out_path = " + str(out_path))
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
                     out_type=Qgis.Int16,boundaries_mode=2,
@@ -195,9 +212,20 @@ class ScenarioModel(DictModel):
             styles.setRendererPalettedGnYlRd(loaded_layer)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
-    def applyItemGraph(self, item):
+    def applyItemGraph(self, item,spItem,context=None):
         self.feedback.pushDebugInfo("applyItemGraph")
         name = item.getName()
+        spName = spItem.getName()
+        checkGraphabInstalled(self.feedback)
+        projectName = self.getItemGraphabProjectName(name,spName)
+        project = self.getItemGraphabProjectFile(name,spName)
+        landuse = self.getItemLanduse(name,spName)
+        friction = self.getItemFriction(name,spName)
+        codes = spItem.getCodes()
+        minArea = item.getMinArea()
+        outDir = getItemBaseDir()
+        createGraphabProject(landuse,codes,outDir,projectName,
+            nodata=-9999,patch_size=minArea,feedback=self.feedback)
 
 
 class ScenarioConnector(TableToDialogConnector):
@@ -267,6 +295,7 @@ class ScenarioConnector(TableToDialogConnector):
             for sp in species:
                 self.feedback.pushDebugInfo("TODO : graph Run "
                     + sc.getName() + " - " + sp.getName())
+                self.model.applyItemGraph(sc,sp)
     
     def preDlg(self,item):
         self.feedback.pushDebugInfo("preDlg = " + str(item))

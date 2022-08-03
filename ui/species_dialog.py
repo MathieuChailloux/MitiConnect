@@ -22,16 +22,44 @@
  ***************************************************************************/
 """
 
-import os
+import os, ast
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+# from qgis.gui import QgsCheckableItemModel
 
 from ..qgis_lib_mc import abstract_model
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'species_dialog.ui'))
+    
+
+# class TestModel(QgsCheckableItemModel):
+
+    # def __init__(self,values=[]):
+        # super().__init__()
+        # if not values:
+            # values = range(5)
+        # self.values = values
+        
+    # def columnCount(self):
+        # return 1
+        
+    # def rowCount(self):
+        # return len(self.values)
+        
+    # def data(self,index,role):
+        # if not index.isValid():
+            # return QVariant()
+        # row = index.row()
+        # item = self.values[row]
+        # if role != Qt.DisplayRole:
+            # return QVariant()
+        # elif row < self.rowCount():
+            # return(QVariant(item))
+        # else:
+            # return QVariant()
     
 class SpeciesItem(abstract_model.DictItem):
 
@@ -40,6 +68,7 @@ class SpeciesItem(abstract_model.DictItem):
     MAX_DISP = 'MAX_DISP'
     MIN_AREA = 'MIN_AREA'
     LANDUSE = 'LANDUSE'
+    CODES = 'CODES'
     EXTENT_MODE = 'EXTENT_MODE'
     EXTENT_VAL = 'EXTENT_VAL'
     FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
@@ -47,13 +76,14 @@ class SpeciesItem(abstract_model.DictItem):
     
     @classmethod
     def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,
-                 patch_unit,landuse,extent_mode,extent_val,
+                 patch_unit,landuse,codes,extent_mode,extent_val,
                  feedback=None):
         dict = { cls.ID : name,
                  cls.FULL_NAME : full_name,
                  cls.MAX_DISP : max_disp,
                  cls.MIN_AREA : min_patch,
                  cls.LANDUSE : landuse,
+                 cls.CODES : codes,
                  cls.EXTENT_MODE : extent_mode,
                  cls.EXTENT_VAL : extent_val }
         return cls(dict,feedback=feedback)
@@ -62,14 +92,21 @@ class SpeciesItem(abstract_model.DictItem):
         
     def getName(self):
         return self.dict[self.ID]
+    def getMinArea(self):
+        return self.dict[self.MIN_AREA]
+    def getMaxDisp(self):
+        return self.dict[self.MAX_DISP]
+    def getCodes(self):
+        return ast.literal_eval(self.dict[self.CODES])
+    
                 
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent, dlg_item, landuseModel=None,feedback=None):
+    def __init__(self, parent, dlg_item, pluginModel=None,feedback=None):
         """Constructor."""
         super(SpeciesDialog, self).__init__(parent)
         self.feedback=feedback
-        self.landuseModel = landuseModel
+        self.pluginModel = pluginModel
         self.setupUi(self)
         self.updateUi(dlg_item)
         self.connectComponents()
@@ -78,10 +115,12 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         # super().connectComponents()
         self.speciesBufferMode.clicked.connect(self.switchBufferMode)
         self.speciesLayerMode.clicked.connect(self.switchLayerMode)
-        self.speciesLanduse.setModel(self.landuseModel)
-        self.feedback.pushInfo("LANDUSE MODEL NB ITEMS " + str(len(self.landuseModel.items)))
+        self.speciesLanduse.setModel(self.pluginModel.landuseModel)
+        # testModel = TestModel()
+        self.feedback.pushInfo("LANDUSE MODEL NB ITEMS " + str(len(self.pluginModel.landuseModel.items)))
         # assert(False)
-        self.landuseModel.layoutChanged.emit()
+        self.pluginModel.landuseModel.layoutChanged.emit()
+        # self.pluginModel.frictionModel.layoutChanged.emit()
         
     def switchMode(self,buffer_mode):
         self.speciesBufferMode.setChecked(buffer_mode)
@@ -103,6 +142,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             patch_unit = self.speciesPatchUnit.currentIndex()
             # landuse = self.speciesLanduse.currentLayer()
             landuse = self.speciesLanduse.currentIndex()
+            codes = self.habitatCodes.checkedItems()
             # group = self.speciesGroup.currentIndex()
             buffer_mode = self.speciesBufferMode.isChecked()
             layer_mode = self.speciesLayerMode.isChecked()
@@ -111,18 +151,23 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             buffer_layer = self.speciesExtentLayer.filePath()
             extent_val = buffer_val if buffer_mode else buffer_layer
             item = SpeciesItem.fromValues(name,full_name,max_disp,disp_unit,
-                min_patch,patch_unit,landuse,extent_mode,extent_val,
+                min_patch,patch_unit,landuse,codes,extent_mode,extent_val,
                 feedback=self.feedback)
             return item
         return None
         
     def updateUi(self,dlg_item):
+        l = self.pluginModel.frictionModel.getCodesStr()
+        self.feedback.pushDebugInfo("l = " + str(l))
+        self.habitatCodes.insertItems(0,l)
+        # self.habitatCodes.model.layoutChanged.emit()
         if dlg_item:
             self.speciesID.setText(dlg_item.dict[SpeciesItem.ID])
             self.speciesFullName.setText(dlg_item.dict[SpeciesItem.FULL_NAME])
-            self.speciesMaxDisp.setValue(dlg_item.dict[SpeciesItem.MAX_DISP])
+            self.speciesMaxDisp.setValue(dlg_item.getMaxDisp())
             self.speciesDispUnit.setCurrentIndex(0)
             self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesItem.LANDUSE])
+            self.habitatCodes.setCheckedItems(dlg_item.getCodes())
             # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesItem.GROUP])
             extent_mode = dlg_item.dict[SpeciesItem.EXTENT_MODE]
             extent_val = dlg_item.dict[SpeciesItem.EXTENT_VAL]

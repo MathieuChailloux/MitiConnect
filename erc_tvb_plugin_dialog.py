@@ -77,10 +77,14 @@ class PluginModel(abstract_model.MainModel):
         import_names = [i.getName() for i in self.importModel.items]
         self.frictionModel.reloadFriction(imports=import_names)
         
+    def getSubDir(self,name,baseDir=None):
+        if baseDir is None:
+            baseDir = self.paramsModel.workspace
+        return utils.createSubdir(baseDir,name)
     def getImportsDir(self):
-        return utils.createSubdir(self.paramsModel.workspace,"Imports")
-    def getScenarioDir(self,sc_name):
-        return utils.createSubdir(self.paramsModel.workspace,sc_name)
+        return self.getSubDir("Imports")
+    # def getScenarioDir(self,sc_name):
+        # return utils.createSubdir(self.paramsModel.workspace,sc_name)
         
     def getImportOutLayerFromName(self,name):
         layer = self.getOutLayerFromName(name,self.importModel)

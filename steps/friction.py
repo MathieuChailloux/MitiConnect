@@ -34,9 +34,14 @@ from ..qgis_lib_mc import qgsUtils
 
 class FrictionModel(ExtensiveTableModel):
 
+    IMPORT = 'import'
+    IMPORT_VAL = 'initVal'
+    BASE_FIELDS = [ExtensiveTableModel.ROW_CODE, IMPORT, IMPORT_VAL, 
+        ExtensiveTableModel.ROW_DESCR]
+
     def __init__(self,parentModel):
         self.parser_name = "FrictionModel"
-        ExtensiveTableModel.__init__(self,parentModel)
+        ExtensiveTableModel.__init__(self,parentModel,baseFields=self.BASE_FIELDS)
         self.feedback.pushInfo("FM1 " + str(self.__class__.__name__))
         self.feedback.pushInfo("FM2 " + str(self.itemClass.__class__.__name__))
         
@@ -45,8 +50,50 @@ class FrictionModel(ExtensiveTableModel):
         
     def getFreeVals(self,nbVals):
         codes = [ i.dict[self.ROW_CODE] for i in self.items ]
-        freeVals = getIntValues(nbVals)
+        freeVals = getIntValues(nbVals,exclude_values=codes)
         return freeVals
+        
+    def addRowFromImport(self,values,name):
+        nbVals = len(values)
+        freeVals = self.getFreeVals(nbVals)
+        for oldVal, newVal in zip(values,freeVals):
+            d = { self.ROW_CODE : newVal,
+                self.IMPORT : name,
+                self.IMPORT_VAL : str(oldVal),
+                self.ROW_DESCR : "" }
+            rowItem = self.createRowFromDict(d)
+            self.addRowItem(rowItem)
+        self.layoutChanged.emit()
+        
+    def getReclassTable(self,importName):
+        table = []
+        for i in self.items:
+            if self.getItemImport(i) == importName:
+                outVal = i.dict[self.idField]
+                inVal = i.dict[self.IMPORT_VAL]
+                table += [inVal,inVal,outVal]
+        return table
+    def getReclassDict(self,importName):
+        table = {}
+        for i in self.items:
+            if self.getItemImport(i) == importName:
+                outVal = i.dict[self.idField]
+                inVal = i.dict[self.IMPORT_VAL]
+                table[inVal] = outVal
+        return table
+        
+    def getItemImport(self,item):
+        return item.dict[self.IMPORT]
+        
+    def removeImports(self,importNames):
+        self.items = [i for i in self.items if self.getItemImport(i) not in importNames]
+        self.layoutChanged.emit()
+    def reloadFriction(self,imports=None,species=None):
+        if imports is not None:
+            self.items = [i for i in self.items if i.getName() in import_names]
+        if species is not None:
+            for i in self.items:
+               pass
         
     def getHeaderStr(self,col):
         if col < 2:

@@ -32,7 +32,7 @@ from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
 from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
-from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks
+from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 
 # Graphab utils
@@ -126,12 +126,12 @@ class ScenarioModel(DictModel):
         crs, extent, resolution = self.pluginModel.getRasterParams()
         if scItem.isLanduseMode():
             in_path = self.pluginModel.getLanduseOutLayerFromName(base)
+            self.feedback.pushDebugInfo("Copying " + in_path + " to " + out_path)
             shutil.copy(in_path,out_path)
             # self.pluginModel.paramsModel.normalizeRaster(
                 # in_path,out_path=out_path,
                 # context=context,
                 # feedback=self.feedback)
-            qgsUtils.loadRasterLayer(out_path,loadProject=True)
 
             # assert(False)
         else:
@@ -165,28 +165,34 @@ class ScenarioModel(DictModel):
             paths = [in_path, path]
             qgsTreatments.applyMergeRaster(paths,out_path,
                 out_type=Qgis.Int16,context=context,feedback=self.feedback)
-            qgsUtils.loadRasterLayer(out_path,loadProject=True)
+        qgsUtils.loadRasterLayer(out_path,loadProject=True)
             
-    def applyItemFriction(self, item):
+    def applyItemFriction(self, item,species,context=None):
         self.feedback.pushDebugInfo("applyItemFriction")
         name = item.getName()
-        if self.item.getStatusFriction():
+        if item.getStatusFriction():
             msg = self.tr("Friction layer already computed for scenario ")
             self.feedback.pushWarning(msg + str(name))
         else:
             # GetLanduse
             in_path = self.getItemLanduse(item)
+            self.feedback.pushDebugInfo("in_path = " + str(in_path))
             # Reclassify
             frictionModel = self.pluginModel.frictionModel
-            reclass_matrixes = frictionModel.getReclassifyMatrixes(species)
+            species_names = [sp.getName() for sp in species]
+            reclass_matrixes = frictionModel.getReclassifyMatrixes(species_names)
             nb_items = len(reclass_matrixes)
-            step_feedback = feedbacks.ProgressMultiStepFeedback(nb_items,feedback)
+            step_feedback = feedbacks.ProgressMultiStepFeedback(nb_items,self.feedback)
             for specie, matrix in reclass_matrixes.items():
-                out_path = self.getItemFrictionSpecie(item,specie.getName())
+                self.feedback.pushDebugInfo("specie = " + str(specie))
+                self.feedback.pushDebugInfo("matrix = " + str(matrix))
+                out_path = self.getItemFrictionSpecie(item,specie)
+                self.feedback.pushDebugInfo("out_path = " + str(out_path))
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
-                    out_type=Qgis.Float32,boundaries_mode=2,
+                    out_type=Qgis.Int16,boundaries_mode=2,
                     context=context,feedback=step_feedback)
-            self.feedback.pushInfo("About to apply rm")
+            loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
+            styles.setRendererPalettedGnYlRd(loaded_layer)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
     def applyItemGraph(self, item):
@@ -250,9 +256,10 @@ class ScenarioConnector(TableToDialogConnector):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
         for sc in scenarios:
-            for sp in species:
-                self.feedback.pushDebugInfo("TODO : friction Run "
-                    + sc.getName() + " - " + sp.getName())
+            self.model.applyItemFriction(sc,species)
+            # for sp in species:
+                # self.feedback.pushDebugInfo("TODO : friction Run "
+                    # + sc.getName() + " - " + sp.getName())
     def graphRun(self):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
@@ -312,14 +319,14 @@ class ScenarioConnector(TableToDialogConnector):
                 scenarioModel=self.model,feedback=self.feedback)
             # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
-            self.feedback.pushDebugInfo("k2")
+            self.feedback.pushDebugInfo("k2")   
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
                 feedback=self.feedback,luModel=self.model.pluginModel.landuseModel)
         return scenarioDlg
                         
     def openDialogLanduseNew(self):
         item_dlg = ScenarioLanduseDialog(self.dlg,None,
-            feedback=self.feedback)
+            feedback=self.feedback,luModel=self.model.pluginModel.landuseModel)
         dlg_item = item_dlg.showDialog()
         if dlg_item:
             # item = self.mkItemFromDlgItem(dlg_item)

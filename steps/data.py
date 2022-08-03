@@ -83,6 +83,9 @@ class ImportItem(DictItemWithChild):
     def isVector(self):
         return self.dict[self.MODE]
         
+    def getReclassTable(self):
+        return self.child.getReclassTable()
+        
     def updateFromOther(self,other):
         for k in other.dict:
             self.dict[k] = other.dict[k]
@@ -118,40 +121,98 @@ class ImportModel(DictModel):
     @staticmethod
     def getItemClass(childTag):
         return getattr(sys.modules[__name__], childTag)      
+       
+    def getItemValues(self,item):
+        layer_path = self.pluginModel.getOrigPath(item.getInput())
+        if item.isVector():
+            if item.child.isBurnFieldMode():
+                layer = qgsUtils.loadVectorLayer(layer_path)
+                fieldname = item.child.getBurnField()
+                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+            else:
+                values = [None]
+        else:
+            values = qgsTreatments.getRasterUniqueVals(layer_path,self.feedback)
+        return values
+                   
+    def getReclassTableFromUniqueAssoc(assoc_path,inField,outField):
+        layer = qgsUtils.loadVectorLayer(assoc_path)
+        table = []
+        for f in layer.getFeatures():
+            inVal = f[inField]
+            table.append([inVal,inVal,f[outField]])
+        return table
+        
+    def addItem(self,item):
+        super().addItem(item)
+        values = self.getItemValues(item)
+        frictionModel = self.pluginModel.frictionModel
+        frictionModel.addRowFromImport(values,item.getName())
         
     def applyItemWithContext(self,item,context,feedback):
+        name = item.getName()
         input_rel_path = item.getInput()
         input_path = self.pluginModel.getOrigPath(input_rel_path)
         # input = qgsUtils.loadLayer(input_path)
         out_type = Qgis.Int16
         out_nodata = -1
-        out_rel_path = self.getItemOutPath(item)
-        out_path = self.pluginModel.getOrigPath(out_rel_path)
+        out_path = self.getItemOutPath(item)
+        # out_path = self.pluginModel.getOrigPath(out_rel_path)
+        qgsUtils.removeRaster(out_path)
+        crs, extent, resolution = self.pluginModel.getRasterParams()
         if item.isVector():
             childItem = item.getChild()
             all_touch = childItem.getAllTouch()
             expr = childItem.getExpression()
             if expr:
-                selected = QgsProcessingUtils.generateTempFilename('selection.gpkg')
+                selected = qgsUtils.mkTmpPath('selection.gpkg')
                 feedback.pushWarning("Selection expression not yet implemented")
             # at = childItem.getAllTouch()
             if childItem.getBurnMode():
                 burnField = childItem.getBurnField()
-                burnVal = None
+                name = item.getName()
+                # raster_path = qgsUtils.mkTmpPath(item.getName() + '_raster.tif')
+                unique_path = qgsUtils.mkTmpPath(name + '_unique.gpkg')
+                assoc_path = qgsUtils.mkTmpPath(name + '_assoc.gpkg')
+                outField = 'NUM_FIELD'
+                qgsTreatments.addUniqueValue(input_path,burnField,outField,
+                    unique_path,assoc_path,context=context,feedback=feedback)
+                # Rasterize
+                raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
+                qgsTreatments.applyRasterization(input_path,raster_path,
+                    extent,resolution,field=burnField,
+                    all_touch=all_touch,context=context,feedback=feedback)
+                # Reclassify
+                assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
+                reclassDict = self.pluginModel.frictionModel.getReclassDict(name)
+                reclassTable = []
+                for f in assoc_layer.getFeatures():
+                    initVal = f[burnField]
+                    tmpVal = f[outField]
+                    outVal = reclassDict[initVal]
+                    row = [tmpVal,tmpVal,outVal]
+                    reclassTable += row
+                qgsTreatments.applyReclassifyByTable(raster_path,reclassTable,
+                    out_path,out_type=Qgis.Int16,boundaries_mode=2,
+                    context=context,feedback=feedback)
             else:
-                burnField = None
                 burnVal = childItem.getBurnVal()
-            crs, extent, resolution = self.pluginModel.getRasterParams()
-            qgsTreatments.applyRasterization(input_path,out_path,
-                extent,resolution,field=burnField,burn_val=burnVal,
-                all_touch=all_touch,context=context,feedback=feedback)
+                qgsTreatments.applyRasterization(input_path,out_path,
+                    extent,resolution,burn_val=burnVal,
+                    all_touch=all_touch,context=context,feedback=feedback)
         else:
-            # reclassified = QgsProcessingUtils.generateTempFilename('reclassified.tif')
-            # qgsTreatments.applyReclassifyByTable(input,matrix,reclassified,
-                # out_type = out_type,boundaries_mode=2,nodata_missing=True,
-                # context=context,feedback=feedback)
+            keepValues = False
+            if keepValues:
+                to_norm_path = input_path
+            else:           
+                reclassified = qgsUtils.mkTmpPath('reclassified.tif')
+                table = self.pluginModel.frictionModel.getReclassTable(name)
+                qgsTreatments.applyReclassifyByTable(input_path,table,reclassified,
+                    out_type = out_type,boundaries_mode=2,nodata_missing=True,
+                    context=context,feedback=feedback)
+                to_norm_path = reclassified
             self.pluginModel.paramsModel.normalizeRaster(
-                input_path,out_path=out_path,
+                to_norm_path,out_path=out_path,
                 context=context,
                 feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
@@ -168,9 +229,15 @@ class ImportModel(DictModel):
         # return None
         
     def getImportNames(self):
-        return [i.getBaseName() for i in self.items]
+        return [i.getName() for i in self.items]
+        # return [i.getBaseName() for i in self.items]
     def getImportNamesAsStr(self):
-        return ",".join(self.getImportNames())     
+        return ",".join(self.getImportNames())
+        
+    def removeItems(self,indexes):
+        names = [self.items[ind.row()].getName() for ind in indexes]
+        super().removeItems(indexes)
+        self.pluginModel.removeImports(names)
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -263,23 +330,26 @@ class ImportConnector(TableToDialogConnector):
                 
     def addDlgItem(self,dlgItem,is_vector):
         if dlgItem:
-            self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
+            self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
             item = ImportItem.fromChildItem(dlgItem,feedback=self.feedback)
             item.setChild(dlgItem)
             self.model.addItem(item)
             self.model.layoutChanged.emit()
-            if not item.isVector():
-                codes = dlgItem.getReclassModel().getCodes()
-                for code in codes:
-                    basename = item.getBaseName()
-                    self.model.pluginModel.frictionModel.addRowFromCode(
-                        code,descr=basename)
+            # frictionModel = self.model.pluginModel.frictionModel
+            # self.feedback.pushDebugInfo("values = " + str(dlgItem.values))
+            # frictionModel.addRowFromImport(dlgItem.values,item.getName())
+            # if not item.isVector():
+                # codes = dlgItem.getReclassModel().getCodes()
+                # for code in codes:
+                    # basename = item.getBaseName()
+                    # self.model.pluginModel.frictionModel.addRowFromCode(
+                        # code,descr=basename)
                     
         else:
             self.feedback.pushDebugInfo("No dlgItem given")
         
     def updateItem(self,item,dlgItem):
-        self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
+        self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
         item.updateFromDlgItem(dlgItem)
         
 
@@ -324,11 +394,7 @@ class LanduseModel(DictModel):
         
     def getNames(self,item):  
         return [i.getName() for i in self.items]
-        
-    # def addItem(self,item):
-        # super().addItem()
-        # self.pluginModel.addLanduse(item)
-                            
+                                    
     def applyItemWithContext(self,item,context,feedback,indexes=None):
         names = item.getImportsAsList()
         feedback.pushDebugInfo("names = " + str(names))
@@ -342,6 +408,7 @@ class LanduseModel(DictModel):
                 feedback.user_error("Please launch imports first, file '"
                     + str(p) + " does not exist")
         out_path = self.getItemOutPath(item)
+        qgsUtils.removeRaster(out_path)
         qgsTreatments.applyMergeRaster(paths,out_path,
             out_type=Qgis.Int16,context=context,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)

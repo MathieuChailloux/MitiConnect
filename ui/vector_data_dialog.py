@@ -29,6 +29,7 @@ from qgis.PyQt import QtWidgets
 # from qgis.core import QgsMapLayerProxyModel
 
 from ..qgis_lib_mc import utils, qgsUtils, abstract_model
+from ..ui.raster_data_dialog import ReclassItem, ReclassModel
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -59,6 +60,8 @@ class VectorDlgItem(abstract_model.DictItem):
         return self.dict[self.EXPRESSION]
     def getBurnMode(self):
         return self.dict[self.BURN_MODE]
+    def isBurnFieldMode(self):
+        return self.getBurnMode()
     def getBurnField(self):
         return self.dict[self.BURN_FIELD]
     def getBurnVal(self):
@@ -95,6 +98,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.vectorDefaultSetting.currentIndexChanged.connect(
             self.setDefaultSetting)
         self.vectorFieldMode.clicked.connect(self.setFieldMode)
+        self.vectorFieldCombo.fieldChanged.connect(self.setField)
         self.vectorFixedMode.clicked.connect(self.setFixedMode)
         self.vectorBufferMode.clicked.connect(self.setBufferMode)
         
@@ -134,8 +138,13 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def setFieldMode(self,checked):
         self.setBurnMode(checked)
         
+    def setField(self,fieldname):
+        layer = self.vectorLayerCombo.currentLayer()
+        self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        
     def setFixedMode(self,checked):
         self.setBurnMode(not checked)
+        self.values = [self.vectorFixedValue.value()]
         
     def setBufferMode(self,checked):
         self.vectorBufferValue.setEnabled(checked)
@@ -158,12 +167,22 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
             burn_field_mode = self.vectorFieldMode.isChecked()
             dict[VectorDlgItem.BURN_MODE] = burn_field_mode
-            dict[VectorDlgItem.BURN_FIELD] = self.vectorFieldCombo.currentField()
+            fieldname = self.vectorFieldCombo.currentField()
+            dict[VectorDlgItem.BURN_FIELD] = fieldname
+            if not fieldname:
+                self.feedback.user_error("No field selected")
             dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
             dict[VectorDlgItem.BUFFER_EXPR] = self.vectorBufferValue.value()
             self.data_item = VectorDlgItem(dict)
+            if burn_field_mode:
+                layer = self.vectorLayerCombo.currentLayer()
+                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+            else:
+                values = [self.vectorFixedValue.value()]
+            self.feedback.pushDebugInfo("values sd = " + str(values))
+            self.data_item.values = values
             self.feedback.pushDebugInfo("dict = " + str(dict))
             return self.data_item
         return None

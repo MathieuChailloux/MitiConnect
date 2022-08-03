@@ -45,6 +45,11 @@ class ReclassItem(abstract_model.DictItem):
         d = { cls.INPUT : in_val, cls.OUTPUT : out_val }
         return cls(d,feedback=feedback)
         
+    def getInVal(self):
+        return self.dict[self.INPUT]
+    def getOutVal(self):
+        return self.dict[self.OUTPUT]
+        
         
 class ReclassModel(abstract_model.DictModel):
     
@@ -55,6 +60,14 @@ class ReclassModel(abstract_model.DictModel):
     
     def getCodes(self):
         return [i.dict[ReclassItem.OUTPUT] for i in self.items]
+        
+    def getReclassTable(self):
+        table = []
+        for i in self.items:
+            inVal = i.getInVal()
+            line = [inVal, inVal, i.getOutVal()]
+            table.append(line)
+        return table
 
 
 class RasterDlgItem(abstract_model.DictItemWithChild):
@@ -66,10 +79,13 @@ class RasterDlgItem(abstract_model.DictItemWithChild):
 
     def __init__(self, dict, feedback=None):
         super().__init__(dict,feedback=feedback)
+    def getName(self):
+        return self.dict[self.NAME]
     def getLayerPath(self):
         return self.dict[self.INPUT]
     def getReclassModel(self):
         return self.getChild()
+        
     @staticmethod
     def getItemClass(childTag):
         return getattr(sys.modules[__name__], ReclassModel.__name__)
@@ -100,6 +116,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def setLayer(self,layer):
         vals = qgsUtils.getRasterValsBis(layer)
+        self.values = vals
         nb_vals = len(vals)
         free_vals = self.class_model.getFreeVals(nb_vals)
         self.reclass_model.items = [ReclassItem.fromValues(in_val,out_val,feedback=self.feedback)
@@ -136,6 +153,10 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             # dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)
             self.data_item.setChild(self.rasterDataDialogView.model())
+            self.data_item.values = self.values
             # self.data_item.setChild(self.reclass_model)
             return self.data_item
         return None
+        
+    def getReclassTable(self):
+        return self.reclass_model.getReclassTable()

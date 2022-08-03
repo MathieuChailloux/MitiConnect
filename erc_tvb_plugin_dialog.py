@@ -71,10 +71,11 @@ class PluginModel(abstract_model.MainModel):
         self.frictionModel.addCol(item_name)
         # self.landuseModel.addItem()
         # self.frictionModel.addImport(import_item)
-    def removeImport(import_item):
-        #self.landuseModel.
-        # self.frictionModel.removeImport(import_item)
-        pass
+    def removeImports(self,importNames):
+        self.frictionModel.removeImports(importNames)
+    def reloadFriction(self):
+        import_names = [i.getName() for i in self.importModel.items]
+        self.frictionModel.reloadFriction(imports=import_names)
         
     def getImportsDir(self):
         return utils.createSubdir(self.paramsModel.workspace,"Imports")
@@ -171,7 +172,7 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
             self.frictionConnector, self.scenarioConnector ]
             
     def connectComponents(self):
-        super().connectComponents(saveAsFlag=False)
+        super().connectComponents(saveAsFlag=True)
         self.initializeProject.clicked.connect(self.createNewProject)
         
     def createNewProject(self):

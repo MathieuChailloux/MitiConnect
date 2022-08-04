@@ -48,14 +48,33 @@ def checkGraphabInstalled(feedback):
 # TODO : grapha wrappers in erc_tvb_algs_provider ?
 def createGraphabProject(landuse,codes,out_dir,project_name,
         nodata=None,patch_size=0,feedback=None):
+    code_str = ",".join(codes)
     params = {
         'DIRPATH' : out_dir,
         'INPUT' : landuse,
-        'LANDCODE' : codes,
+        'LANDCODE' : code_str,
         'NAMEPROJECT' : project_name,
         'NODATA' : nodata,
         'SIZEPATCHES' : 0 }
-    applyProcessingAlg('erc_tvb','create_graph',params,feedback=feedback)
+    applyProcessingAlg('erc_tvb','create_project',params,feedback=feedback)
+def createGraphabLinkset(project,name,frictionPath,feedback=None):
+    params = { 'CODE' : '',
+        'EXTCOST' : frictionPath,
+        'INPUT' : project,
+        'NAME' : name,
+        'TYPE' : 1 }
+    applyProcessingAlg('erc_tvb','create_linkset',params,feedback=feedback)
+# def createGraphabGraph(landuse,codes,out_dir,project_name,
+        # nodata=None,patch_size=0,feedback=None):
+    # code_str = ",".join(codes)
+    # params = {
+        # 'DIRPATH' : out_dir,
+        # 'INPUT' : landuse,
+        # 'LANDCODE' : code_str,
+        # 'NAMEPROJECT' : project_name,
+        # 'NODATA' : nodata,
+        # 'SIZEPATCHES' : 0 }
+    # applyProcessingAlg('erc_tvb','create_project',params,feedback=feedback)
 
 # Scenario
         
@@ -222,8 +241,8 @@ class ScenarioModel(DictModel):
         landuse = self.getItemLanduse(name,spName)
         friction = self.getItemFriction(name,spName)
         codes = spItem.getCodes()
-        minArea = item.getMinArea()
-        outDir = getItemBaseDir()
+        minArea = spItem.getMinArea()
+        outDir = self.getItemBaseDir(name,spName)
         createGraphabProject(landuse,codes,outDir,projectName,
             nodata=-9999,patch_size=minArea,feedback=self.feedback)
 

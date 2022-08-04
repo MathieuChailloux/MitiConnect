@@ -142,7 +142,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             patch_unit = self.speciesPatchUnit.currentIndex()
             # landuse = self.speciesLanduse.currentLayer()
             landuse = self.speciesLanduse.currentIndex()
-            codes = self.habitatCodes.checkedItems()
+            codes = str(self.habitatCodes.checkedItems())
             # group = self.speciesGroup.currentIndex()
             buffer_mode = self.speciesBufferMode.isChecked()
             layer_mode = self.speciesLayerMode.isChecked()
@@ -168,6 +168,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.speciesDispUnit.setCurrentIndex(0)
             self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesItem.LANDUSE])
             self.habitatCodes.setCheckedItems(dlg_item.getCodes())
+            # self.habitatCodes.setCheckedItems(dlg_item.dict[SpeciesItem.CODES])
             # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesItem.GROUP])
             extent_mode = dlg_item.dict[SpeciesItem.EXTENT_MODE]
             extent_val = dlg_item.dict[SpeciesItem.EXTENT_VAL]

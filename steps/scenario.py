@@ -30,7 +30,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
 
 from ..qgis_lib_mc.utils import CustomException, joinPath
-from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
+from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector, CheckableComboDelegate
 from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
@@ -62,19 +62,17 @@ def createGraphabLinkset(project,name,frictionPath,feedback=None):
         'EXTCOST' : frictionPath,
         'INPUT' : project,
         'NAME' : name,
-        'TYPE' : 1 }
+        #'TYPE' : 1 }
+        'TYPE' : 0 }
     applyProcessingAlg('erc_tvb','create_linkset',params,feedback=feedback)
-# def createGraphabGraph(landuse,codes,out_dir,project_name,
-        # nodata=None,patch_size=0,feedback=None):
-    # code_str = ",".join(codes)
-    # params = {
-        # 'DIRPATH' : out_dir,
-        # 'INPUT' : landuse,
-        # 'LANDCODE' : code_str,
-        # 'NAMEPROJECT' : project_name,
-        # 'NODATA' : nodata,
-        # 'SIZEPATCHES' : 0 }
-    # applyProcessingAlg('erc_tvb','create_project',params,feedback=feedback)
+def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
+        feedback=None):
+    params = { 'DIST' : dist,
+        'DISTUNIT' : unit,
+        'INPUT' : project,
+        'NAMEGRAPH' : graphName,
+        'NAMELINKSET' : linkset }
+    applyProcessingAlg('erc_tvb','create_graph',params,feedback=feedback)
 
 # Scenario
         
@@ -99,6 +97,9 @@ class ScenarioModel(DictModel):
     # Returns absolute path of 'item' output layer
     # def getItemSubElement
     # def getScenarioDir(self,name)
+    def getItemNameSuffix(self,scName,spName,suffix):
+        res = scName + "_" + spName + "_" + suffix
+        return res
     def getItemBaseDir(self,scName,spName):
         scDir = self.pluginModel.getSubDir(scName)
         spDir = self.pluginModel.getSubDir(spName,baseDir=scDir)
@@ -112,15 +113,19 @@ class ScenarioModel(DictModel):
     def getItemFriction(self,scName,spName):
         return self.getItemOutBase(scName,spName,suffix="friction")
     def getItemGraphabProjectName(self,scName,spName):
-        return scName + "_" + spName + "_graphab"
+        return self.getItemNameSuffix(scName,spName,"graphab")
     def getItemGraphabProjectDir(self,scName,spName):
         spDir = self.getItemBaseDir(scName,spName)
         out_bname = self.getItemGraphabProjectName(scName,spName)
         return joinPath(spDir,out_bname)
     def getItemGraphabProjectFile(self,scName,spName):
         baseDir = self.getItemGraphabProjectDir(scName,spName)
-        out_bname = self.getItemGraphabProjectName(scName,spName)
+        out_bname = self.getItemGraphabProjectName(scName,spName) + ".xml"
         return joinPath(baseDir,out_bname)
+    def getItemLinksetName(self,scName,spName):
+        return self.getItemNameSuffix(scName,spName,"linkset")
+    def getItemGraphName(self,scName,spName):
+        return self.getItemNameSuffix(scName,spName,"graph")
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -231,7 +236,7 @@ class ScenarioModel(DictModel):
             styles.setRendererPalettedGnYlRd(loaded_layer)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
-    def applyItemGraph(self, item,spItem,context=None):
+    def applyItemGraphabProject(self, item,spItem,context=None):
         self.feedback.pushDebugInfo("applyItemGraph")
         name = item.getName()
         spName = spItem.getName()
@@ -247,6 +252,30 @@ class ScenarioModel(DictModel):
             nodata=-9999,patch_size=minArea,feedback=self.feedback)
 
 
+    def applyItemGraphabLinkset(self, item,spItem,context=None):
+            self.feedback.pushDebugInfo("applyItemGraphabLinkset")
+            name = item.getName()
+            spName = spItem.getName()
+            checkGraphabInstalled(self.feedback)
+            project = self.getItemGraphabProjectFile(name,spName)
+            linksetName = self.getItemLinksetName(name,spName)
+            friction = self.getItemFriction(name,spName)
+            createGraphabLinkset(project,linksetName,friction,
+                feedback=self.feedback)
+            
+            
+    def applyItemGraphabGraph(self, item,spItem,context=None):
+            self.feedback.pushDebugInfo("applyItemGraphabGraph")
+            name = item.getName()
+            spName = spItem.getName()
+            checkGraphabInstalled(self.feedback)
+            project = self.getItemGraphabProjectFile(name,spName)
+            graphName = self.getItemGraphName(name,spName)
+            linksetName = self.getItemLinksetName(name,spName)
+            createGraphabGraph(project,linksetName,
+                graphName=graphName,
+                feedback=self.feedback)
+
 class ScenarioConnector(TableToDialogConnector):
 
     def __init__(self,dlg,model):
@@ -260,15 +289,26 @@ class ScenarioConnector(TableToDialogConnector):
                          # removeButton=self.dlg.scenarioRemove,
                          # runButton=self.dlg.scLanduseRun)
 
+    def refreshSpecies(self):   
+        names = self.model.pluginModel.speciesModel.getNames()
+        self.dlg.speciesSelection.clear()
+        self.dlg.speciesSelection.insertItems(0,names)
+
     def connectComponents(self):
         super().connectComponents()
         self.dlg.scenarioUp.clicked.connect(self.upgradeItem)
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
         self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
-        self.dlg.speciesSelection.setModel(self.model.pluginModel.speciesModel)
+        self.model.pluginModel.speciesModel.layoutChanged.connect(self.refreshSpecies)
+        # speciesNames = [s.getName() for si in self.model.pluginModel.speciesModel.items]
+        # self.dlg.speciesSelection.addItems(speciesNames)
+        # model = CheckableComboDelegate(self.model.pluginModel.speciesModel)
+        # self.dlg.speciesSelection.setModel(model)
         self.dlg.scLanduseRun.clicked.connect(self.landuseRun)
         self.dlg.scFrictionRun.clicked.connect(self.frictionRun)
-        self.dlg.scGraphRun.clicked.connect(self.graphRun)
+        self.dlg.scProjectRun.clicked.connect(self.graphabProjectRun)
+        self.dlg.scLinksetRun.clicked.connect(self.graphabLinksetRun)
+        self.dlg.scGraphRun.clicked.connect(self.graphabGraphRun)
         
     def getSelectedScenarios(self):
         indexes = self.view.selectedIndexes()
@@ -279,11 +319,11 @@ class ScenarioConnector(TableToDialogConnector):
         return res
         
     def getSelectedSpecies(self):
-        specie = self.dlg.speciesSelection.currentText()
-        if not specie:
+        speciesNames = self.dlg.speciesSelection.checkedItems()
+        if not speciesNames:
             self.feedback.user_error("No specie selected")
-        speciesItem = self.model.pluginModel.speciesModel.getItemFromName(specie)
-        return [speciesItem]
+        items = [self.model.pluginModel.speciesModel.getItemFromName(s) for s in speciesNames]
+        return items
         
     def landuseRun(self):
         scenarios = self.getSelectedScenarios()
@@ -307,14 +347,30 @@ class ScenarioConnector(TableToDialogConnector):
             # for sp in species:
                 # self.feedback.pushDebugInfo("TODO : friction Run "
                     # + sc.getName() + " - " + sp.getName())
-    def graphRun(self):
+    def graphabProjectRun(self):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
         for sc in scenarios:
             for sp in species:
                 self.feedback.pushDebugInfo("TODO : graph Run "
                     + sc.getName() + " - " + sp.getName())
-                self.model.applyItemGraph(sc,sp)
+                self.model.applyItemGraphabProject(sc,sp)
+    def graphabLinksetRun(self):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        for sc in scenarios:
+            for sp in species:
+                self.feedback.pushDebugInfo("TODO : graph Run "
+                    + sc.getName() + " - " + sp.getName())
+                self.model.applyItemGraphabLinkset(sc,sp)
+    def graphabGraphRun(self):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        for sc in scenarios:
+            for sp in species:
+                self.feedback.pushDebugInfo("TODO : graph Run "
+                    + sc.getName() + " - " + sp.getName())
+                self.model.applyItemGraphabGraph(sc,sp)
     
     def preDlg(self,item):
         self.feedback.pushDebugInfo("preDlg = " + str(item))

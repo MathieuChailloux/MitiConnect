@@ -61,7 +61,7 @@ class SpeciesModel(DictModel):
         
     def addItem(self,item):
         super().addItem(item)
-        self.pluginModel.addSpecies(item)
+        self.pluginModel.addSpecie(item)
                         
     # Returns absolute path of 'item' output layer
     def getItemOutPath(self,item):

@@ -66,13 +66,18 @@ class PluginModel(abstract_model.MainModel):
             
     def addImport(self,import_item):
         self.frictionModel.addRowItem(import_item)
-    def addSpecies(self,species_item):
-        item_name = species_item.getName()
+    def addSpecie(self,specie_item):
+        item_name = specie_item.getName()
         self.frictionModel.addCol(item_name)
+        # self.scenarioModel.speciesSelection.addItems(item_name)
         # self.landuseModel.addItem()
         # self.frictionModel.addImport(import_item)
     def removeImports(self,importNames):
         self.frictionModel.removeImports(importNames)
+    def removeSpecies(self,speciesName):
+        #TODO ; friction
+        # self.scenarioModel.speciesSelection.removeItem(idx)
+        pass
     def reloadFriction(self):
         import_names = [i.getName() for i in self.importModel.items]
         self.frictionModel.reloadFriction(imports=import_names)

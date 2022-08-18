@@ -46,10 +46,11 @@ CREATE_PROJECT_CLASS, _ = uic.loadUiType(os.path.join(
 
 class PluginModel(abstract_model.MainModel):
 
-    def __init__(self,feedback):
+    def __init__(self,graphabPlugin,feedback):
         self.parser_name = "ERC-TVB"
         self.feedback = feedback
         self.feedback.pushDebugInfo("feedback bd = " + str(feedback))
+        self.graphabPlugin = graphabPlugin
         self.paramsModel = params.ParamsModel(self)
         self.importModel = data.ImportModel(self)
         self.importModel.feedback.pushInfo("PM OK")
@@ -121,6 +122,8 @@ class PluginModel(abstract_model.MainModel):
         resolution = self.paramsModel.getResolution()
         return (crs, extent, resolution)
         
+    def loadProject(self, filename):
+        self.graphabPlugin.loadProject(filename)
 
 class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
 
@@ -147,7 +150,7 @@ class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
             
 
 class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, graphabPlugin,parent=None):
         """Constructor."""
         super(ErcTvbPluginDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
@@ -157,6 +160,7 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
         self.pluginName = 'ERC-TVB'
+        self.graphabPlugin = graphabPlugin
             
     def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
@@ -166,7 +170,7 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.context.setFeedback(self.feedback)
         # self.feedback.switchDebugMode()
         # self.feedback.pushInfo("hey")
-        self.pluginModel = PluginModel(self.feedback)
+        self.pluginModel = PluginModel(self.graphabPlugin,self.feedback)
         self.pluginModel.feedback.pushInfo("ERC2 OK")
         self.paramsConnector = params.ParamsConnector(self,self.pluginModel.paramsModel)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)

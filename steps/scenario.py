@@ -56,7 +56,7 @@ def createGraphabProject(landuse,codes,out_dir,project_name,
         'NAMEPROJECT' : project_name,
         'NODATA' : nodata,
         'SIZEPATCHES' : 0 }
-    applyProcessingAlg('erc_tvb','create_project',params,feedback=feedback)
+    return applyProcessingAlg('erc_tvb','create_project',params,feedback=feedback)
 def createGraphabLinkset(project,name,frictionPath,feedback=None):
     params = { 'CODE' : '',
         'EXTCOST' : frictionPath,
@@ -64,7 +64,7 @@ def createGraphabLinkset(project,name,frictionPath,feedback=None):
         'NAME' : name,
         #'TYPE' : 1 }
         'TYPE' : 0 }
-    applyProcessingAlg('erc_tvb','create_linkset',params,feedback=feedback)
+    return applyProcessingAlg('erc_tvb','create_linkset',params,feedback=feedback)
 def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         feedback=None):
     params = { 'DIST' : dist,
@@ -72,7 +72,27 @@ def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         'INPUT' : project,
         'NAMEGRAPH' : graphName,
         'NAMELINKSET' : linkset }
-    applyProcessingAlg('erc_tvb','create_graph',params,feedback=feedback)
+    return applyProcessingAlg('erc_tvb','create_graph',params,feedback=feedback)
+def computeMetric(project,graphName,metricName=0,unit=0,
+        d=1000,p=0,localMetric=True,feedback=None):
+    params = { 'DISTUNIT' : 0,
+        'DPARAMETER' : d,
+        'GRAPHNAME' : graphName,
+        'INPUT' : project,
+        'METRICSNAME' : 0,
+        'PPARAMETER' : p }
+    alg_name = 'local_metric' if localMetric else 'global_metric'
+    return applyProcessingAlg('erc_tvb',alg_name,params,feedback=feedback)
+def computeLocalMetric(project,graphName,metricName=0,unit=0,
+        d=1000,p=0,feedback=None):
+    return computeMetric(project,graphName,metricName=metricName,unit=unit,
+        d=d,p=p,localMetric=True,feedback=feedback)
+def computeGlobalMetric(project,graphName,metricName=0,unit=0,
+        d=1000,p=0,feedback=None):
+    return computeMetric(project,graphName,metricName=metricName,unit=unit,
+        d=d,p=p,localMetric=False,feedback=feedback)
+        
+
 
 # Scenario
         
@@ -253,28 +273,38 @@ class ScenarioModel(DictModel):
 
 
     def applyItemGraphabLinkset(self, item,spItem,context=None):
-            self.feedback.pushDebugInfo("applyItemGraphabLinkset")
-            name = item.getName()
-            spName = spItem.getName()
-            checkGraphabInstalled(self.feedback)
-            project = self.getItemGraphabProjectFile(name,spName)
-            linksetName = self.getItemLinksetName(name,spName)
-            friction = self.getItemFriction(name,spName)
-            createGraphabLinkset(project,linksetName,friction,
-                feedback=self.feedback)
+        self.feedback.pushDebugInfo("applyItemGraphabLinkset")
+        name = item.getName()
+        spName = spItem.getName()
+        checkGraphabInstalled(self.feedback)
+        project = self.getItemGraphabProjectFile(name,spName)
+        linksetName = self.getItemLinksetName(name,spName)
+        friction = self.getItemFriction(name,spName)
+        self.pluginModel.loadProject(project)
+        createGraphabLinkset(project,linksetName,friction,
+            feedback=self.feedback)
             
             
     def applyItemGraphabGraph(self, item,spItem,context=None):
-            self.feedback.pushDebugInfo("applyItemGraphabGraph")
-            name = item.getName()
-            spName = spItem.getName()
-            checkGraphabInstalled(self.feedback)
-            project = self.getItemGraphabProjectFile(name,spName)
-            graphName = self.getItemGraphName(name,spName)
-            linksetName = self.getItemLinksetName(name,spName)
-            createGraphabGraph(project,linksetName,
-                graphName=graphName,
-                feedback=self.feedback)
+        self.feedback.pushDebugInfo("applyItemGraphabGraph")
+        name = item.getName()
+        spName = spItem.getName()
+        checkGraphabInstalled(self.feedback)
+        project = self.getItemGraphabProjectFile(name,spName)
+        graphName = self.getItemGraphName(name,spName)
+        linksetName = self.getItemLinksetName(name,spName)
+        self.pluginModel.loadProject(project)
+        createGraphabGraph(project,linksetName,
+            graphName=graphName,
+            feedback=self.feedback)
+                
+    def computeLocalMetric(self,item,spItem,context=None):
+        name = item.getName()
+        spName = spItem.getName()
+        project = self.getItemGraphabProjectFile(name,spName)
+        graphName = self.getItemGraphName(name,spName)
+        self.pluginModel.loadProject(project)
+        computeLocalMetric(project,graphName,feedback=self.feedback)
 
 class ScenarioConnector(TableToDialogConnector):
 
@@ -309,6 +339,7 @@ class ScenarioConnector(TableToDialogConnector):
         self.dlg.scProjectRun.clicked.connect(self.graphabProjectRun)
         self.dlg.scLinksetRun.clicked.connect(self.graphabLinksetRun)
         self.dlg.scGraphRun.clicked.connect(self.graphabGraphRun)
+        self.dlg.localMetricsRun.clicked.connect(self.computeLocalMetric)
         
     def getSelectedScenarios(self):
         indexes = self.view.selectedIndexes()
@@ -371,6 +402,13 @@ class ScenarioConnector(TableToDialogConnector):
                 self.feedback.pushDebugInfo("TODO : graph Run "
                     + sc.getName() + " - " + sp.getName())
                 self.model.applyItemGraphabGraph(sc,sp)
+    def computeLocalMetric(self):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        for sc in scenarios:
+            for sp in species:
+                self.model.computeLocalMetric(sc,sp)
+        
     
     def preDlg(self,item):
         self.feedback.pushDebugInfo("preDlg = " + str(item))

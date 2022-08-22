@@ -27,9 +27,8 @@ import os
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from ..qgis_lib_mc.utils import CustomException, getIntValues
-from ..qgis_lib_mc.abstract_model import DictItem, ExtensiveTableModel, AbstractConnector
-from ..qgis_lib_mc import qgsUtils
+from ..qgis_lib_mc.abstract_model import ExtensiveTableModel, AbstractConnector
+from ..qgis_lib_mc import utils, qgsUtils
 
 
 class FrictionModel(ExtensiveTableModel):
@@ -50,7 +49,7 @@ class FrictionModel(ExtensiveTableModel):
         
     def getFreeVals(self,nbVals):
         codes = [ i.dict[self.ROW_CODE] for i in self.items ]
-        freeVals = getIntValues(nbVals,exclude_values=codes)
+        freeVals = utils.getIntValues(nbVals,exclude_values=codes)
         return freeVals
         
     def addRowFromImport(self,values,name):

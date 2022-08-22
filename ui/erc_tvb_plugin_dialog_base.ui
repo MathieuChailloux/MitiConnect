@@ -1920,10 +1920,16 @@
                   </item>
                   <item row="3" column="0">
                    <widget class="QFrame" name="frame_16">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>130</height>
+                     </size>
+                    </property>
                     <property name="maximumSize">
                      <size>
                       <width>16777215</width>
-                      <height>117</height>
+                      <height>130</height>
                      </size>
                     </property>
                     <property name="frameShape">
@@ -1957,11 +1963,20 @@
                      </item>
                      <item row="0" column="1" colspan="3">
                       <widget class="QgsCheckableComboBox" name="speciesSelection">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>23</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
-                         <height>20</height>
+                         <height>16777215</height>
                         </size>
+                       </property>
+                       <property name="sizeAdjustPolicy">
+                        <enum>QComboBox::AdjustToMinimumContentsLength</enum>
                        </property>
                       </widget>
                      </item>
@@ -1974,16 +1989,22 @@
                         </sizepolicy>
                        </property>
                        <property name="text">
-                        <string>Bas layers</string>
+                        <string>Base layers</string>
                        </property>
                       </widget>
                      </item>
                      <item row="1" column="1" colspan="3">
                       <widget class="QFrame" name="frame_4">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>23</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
-                         <height>22</height>
+                         <height>23</height>
                         </size>
                        </property>
                        <property name="frameShape">
@@ -2015,15 +2036,20 @@
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>23</width>
-                            <height>0</height>
+                            <width>0</width>
+                            <height>23</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
                             <width>16777215</width>
-                            <height>20</height>
+                            <height>23</height>
                            </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>7</pointsize>
+                           </font>
                           </property>
                           <property name="text">
                            <string>1 - Land Use </string>
@@ -2048,11 +2074,22 @@
                             <verstretch>0</verstretch>
                            </sizepolicy>
                           </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>23</height>
+                           </size>
+                          </property>
                           <property name="maximumSize">
                            <size>
                             <width>16777215</width>
-                            <height>20</height>
+                            <height>23</height>
                            </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>7</pointsize>
+                           </font>
                           </property>
                           <property name="text">
                            <string>2 - Friction</string>
@@ -2093,11 +2130,22 @@
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>23</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
-                         <height>20</height>
+                         <height>23</height>
                         </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>7</pointsize>
+                        </font>
                        </property>
                        <property name="text">
                         <string>3 - Project</string>
@@ -2122,11 +2170,22 @@
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>23</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
-                         <height>20</height>
+                         <height>23</height>
                         </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>7</pointsize>
+                        </font>
                        </property>
                        <property name="text">
                         <string>4 - Linkset</string>
@@ -2151,11 +2210,22 @@
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>23</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
-                         <height>20</height>
+                         <height>23</height>
                         </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>7</pointsize>
+                        </font>
                        </property>
                        <property name="text">
                         <string>5 - Graph</string>
@@ -2232,6 +2302,11 @@
                             <height>23</height>
                            </size>
                           </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>7</pointsize>
+                           </font>
+                          </property>
                           <property name="text">
                            <string>6 - Spatialize</string>
                           </property>
@@ -2260,6 +2335,11 @@
                             <width>0</width>
                             <height>23</height>
                            </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>7</pointsize>
+                           </font>
                           </property>
                           <property name="text">
                            <string>7 - Compare scenarios</string>

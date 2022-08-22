@@ -94,14 +94,61 @@ def computeGlobalMetric(project,graphName,metricName=0,unit=0,
         
 
 
+class GraphabWrapper:
+    
+    def __init__(self, pluginModel,scItem,spItem):
+        self.pluginModel = pluginModel
+        self.scItem = scItem
+        self.spItem = spItem
+        self.scName = scItem.getName()
+        self.spName = scItem.getName()
+        self.frictionFlag = False
+        self.projectFlag = False
+        self.linksetFlag = False
+        self.graphFlag = False
+        self.localFlag = False
+        self.globalFlag = False
+        
+    def getNameSuffix(self,suffix):
+        res = self.scName + "_" + self.spName + "_" + suffix
+        return res
+    def getBaseDir(self):
+        scDir = self.pluginModel.getSubDir(self.scName)
+        spDir = self.pluginModel.getSubDir(self.spName,baseDir=scDir)
+        return spDir
+    def getOutBase(self,suffix):
+        spDir = self.getBaseDir()
+        out_bname = self.getNameSuffix(suffix) + ".tif"
+        return joinPath(spDir,out_bname)
+    def getLandusePath(self):
+        return self.getOutBase("landuse")
+    def getFrictionPath(self):
+        return self.getOutBase("friction")
+    def getProjectName(self):
+        return self.getNameSuffix("graphab")
+    def getProjectDir(self):
+        spDir = self.getBaseDir()
+        out_bname = self.getProjectName()
+        return joinPath(spDir,out_bname)
+    def getProjectPath(self):
+        baseDir = self.getProjectDir()
+        out_bname = self.getProjectName() + ".xml"
+        return joinPath(baseDir,out_bname)
+    def getLinksetName(self):
+        return self.getNameSuffix("linkset")
+    def getGraphName(self):
+        return self.getNameSuffix("graph")
+
 # Scenario
         
 class ScenarioModel(DictModel):
 
     def __init__(self, pluginModel):
         itemClass = getattr(sys.modules[__name__], ScenarioItem.__name__)
-        super().__init__(itemClass,feedback=pluginModel.feedback,
-            fields=ScenarioItem.FIELDS,display_fields=ScenarioItem.DISPLAY_FIELDS)
+        super().__init__(itemClass,
+            feedback=pluginModel.feedback,
+            fields=ScenarioItem.FIELDS,
+            display_fields=ScenarioItem.DISPLAY_FIELDS)
         # super().__init__(self,itemClass,feedback=pluginModel.feedback,
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.pluginModel = pluginModel
@@ -166,17 +213,19 @@ class ScenarioModel(DictModel):
             self.pluginModel.paramsModel.normalizeRaster(
                 in_path,out_path=out_path,
                 context=context,
-                feedback=self.feedback)
+                feedback=feedback)
         else:
             assert(False)
         
-    def applyItemLanduse(self, scItem, spItem,context=None):
-        self.feedback.pushDebugInfo("applyItemLanduse " + str(scItem))
+    def applyItemLanduse(self, scItem, spItem,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
+        feedback.pushDebugInfo("applyItemLanduse " + str(scItem))
         name = scItem.getName()
         spName = spItem.getName()
         if scItem.getStatusLanduse():
             msg = self.tr("Landuse layer already computed for scenario ")
-            self.feedback.pushWarning(msg + str(name))
+            feedback.pushWarning(msg + str(name))
             return
         base = scItem.getBase()
         # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
@@ -188,7 +237,7 @@ class ScenarioModel(DictModel):
         crs, extent, resolution = self.pluginModel.getRasterParams()
         if scItem.isLanduseMode():
             in_path = self.pluginModel.getLanduseOutLayerFromName(base)
-            self.feedback.pushDebugInfo("Copying " + in_path + " to " + out_path)
+            feedback.pushDebugInfo("Copying " + in_path + " to " + out_path)
             shutil.copy(in_path,out_path)
             # self.pluginModel.paramsModel.normalizeRaster(
                 # in_path,out_path=out_path,
@@ -208,59 +257,66 @@ class ScenarioModel(DictModel):
                 # Fixed mode
                 qgsTreatments.applyRasterization(vector_path,raster_path,
                     extent,resolution,burn_val=scItem.getBurnVal(),
-                    context=context,feedback=self.feedback)
+                    feedback=feedback)
                 path = raster_path
             elif mode == 2:
                 # Field mode
                 reclass_path = qgsUtils.mkTmpPath(name + "_reclass.tif")
                 qgsTreatments.applyRasterization(vector_path,raster_path,
                     extent,resolution,field=scItem.getBurnField(),
-                    context=context,feedback=self.feedback)
+                    feedback=feedback)
                 qgsTreatments.applyReclassifyByTable(raster_path,
                     scItem.getReclassTable(),reclass_path,
-                    context=context,feedback=self.feedback)
+                    feedback=feedback)
                 path = reclass_path
             else:
-                self.feedback.user_error("Unexpected scenario mode : " + str(mode))
+                feedback.user_error("Unexpected scenario mode : " + str(mode))
                 # Reclassify
             # Merge
             paths = [in_path, path]
             qgsTreatments.applyMergeRaster(paths,out_path,
-                out_type=Qgis.Int16,context=context,feedback=self.feedback)
+                out_type=Qgis.Int16,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
             
-    def applyItemFriction(self, item,species,context=None):
-        self.feedback.pushDebugInfo("applyItemFriction")
+    def applyItemFriction(self, item,species,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
+        feedback.pushDebugInfo("applyItemFriction")
         name = item.getName()
         if item.getStatusFriction():
             msg = self.tr("Friction layer already computed for scenario ")
-            self.feedback.pushWarning(msg + str(name))
+            feedback.pushWarning(msg + str(name))
         else:
             # Reclassify
             frictionModel = self.pluginModel.frictionModel
             species_names = [sp.getName() for sp in species]
             reclass_matrixes = frictionModel.getReclassifyMatrixes(species_names)
             nb_items = len(reclass_matrixes)
-            step_feedback = feedbacks.ProgressMultiStepFeedback(nb_items,self.feedback)
+            step_feedback = feedbacks.ProgressMultiStepFeedback(nb_items,feedback)
+            cpt=0
             for specie, matrix in reclass_matrixes.items():
-                self.feedback.pushDebugInfo("specie = " + str(specie))
-                self.feedback.pushDebugInfo("matrix = " + str(matrix))
+                feedback.pushDebugInfo("specie = " + str(specie))
+                feedback.pushDebugInfo("matrix = " + str(matrix))
                 in_path = self.getItemLanduse(name,specie)
-                self.feedback.pushDebugInfo("in_path = " + str(in_path))
+                feedback.pushDebugInfo("in_path = " + str(in_path))
                 out_path = self.getItemFriction(name,specie)
-                self.feedback.pushDebugInfo("out_path = " + str(out_path))
+                feedback.pushDebugInfo("out_path = " + str(out_path))
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
                     out_type=Qgis.Int16,boundaries_mode=2,
-                    context=context,feedback=step_feedback)
-            loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
-            styles.setRendererPalettedGnYlRd(loaded_layer)
+                    feedback=step_feedback)
+                loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
+                styles.setRendererPalettedGnYlRd(loaded_layer)
+                cpt+=1
+                step_feedback.setCurrentStep(cpt)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
-    def applyItemGraphabProject(self, item,spItem,context=None):
-        self.feedback.pushDebugInfo("applyItemGraph")
+    def applyItemGraphabProject(self, item,spItem,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
+        feedback.pushDebugInfo("applyItemGraph")
         name = item.getName()
         spName = spItem.getName()
-        checkGraphabInstalled(self.feedback)
+        checkGraphabInstalled(feedback)
         projectName = self.getItemGraphabProjectName(name,spName)
         project = self.getItemGraphabProjectFile(name,spName)
         landuse = self.getItemLanduse(name,spName)
@@ -269,42 +325,56 @@ class ScenarioModel(DictModel):
         minArea = spItem.getMinArea()
         outDir = self.getItemBaseDir(name,spName)
         createGraphabProject(landuse,codes,outDir,projectName,
-            nodata=-9999,patch_size=minArea,feedback=self.feedback)
+            nodata=-9999,patch_size=minArea,feedback=feedback)
 
 
-    def applyItemGraphabLinkset(self, item,spItem,context=None):
-        self.feedback.pushDebugInfo("applyItemGraphabLinkset")
+    def applyItemGraphabLinkset(self, item,spItem,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
+        feedback.pushDebugInfo("applyItemGraphabLinkset")
         name = item.getName()
         spName = spItem.getName()
-        checkGraphabInstalled(self.feedback)
+        checkGraphabInstalled(feedback)
         project = self.getItemGraphabProjectFile(name,spName)
         linksetName = self.getItemLinksetName(name,spName)
         friction = self.getItemFriction(name,spName)
         self.pluginModel.loadProject(project)
-        createGraphabLinkset(project,linksetName,friction,
-            feedback=self.feedback)
+        createGraphabLinkset(project,linksetName,friction,feedback=feedback)
             
             
-    def applyItemGraphabGraph(self, item,spItem,context=None):
-        self.feedback.pushDebugInfo("applyItemGraphabGraph")
+    def applyItemGraphabGraph(self, item,spItem,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
+        feedback.pushDebugInfo("applyItemGraphabGraph")
         name = item.getName()
         spName = spItem.getName()
-        checkGraphabInstalled(self.feedback)
+        checkGraphabInstalled(feedback)
         project = self.getItemGraphabProjectFile(name,spName)
         graphName = self.getItemGraphName(name,spName)
         linksetName = self.getItemLinksetName(name,spName)
         self.pluginModel.loadProject(project)
         createGraphabGraph(project,linksetName,
-            graphName=graphName,
-            feedback=self.feedback)
+            graphName=graphName,feedback=feedback)
                 
-    def computeLocalMetric(self,item,spItem,context=None):
+    def computeLocalMetric(self,item,spItem,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
         name = item.getName()
         spName = spItem.getName()
         project = self.getItemGraphabProjectFile(name,spName)
         graphName = self.getItemGraphName(name,spName)
         self.pluginModel.loadProject(project)
-        computeLocalMetric(project,graphName,feedback=self.feedback)
+        computeLocalMetric(project,graphName,feedback=feedback)
+                
+    def computeGlobalMetric(self,item,spItem,feedback=None):
+        if feedback is None:    
+            feedback = self.feedback
+        name = item.getName()
+        spName = spItem.getName()
+        project = self.getItemGraphabProjectFile(name,spName)
+        graphName = self.getItemGraphName(name,spName)
+        self.pluginModel.loadProject(project)
+        return computeGlobalMetric(project,graphName,feedback=feedback)
 
 class ScenarioConnector(TableToDialogConnector):
 
@@ -340,6 +410,7 @@ class ScenarioConnector(TableToDialogConnector):
         self.dlg.scLinksetRun.clicked.connect(self.graphabLinksetRun)
         self.dlg.scGraphRun.clicked.connect(self.graphabGraphRun)
         self.dlg.localMetricsRun.clicked.connect(self.computeLocalMetric)
+        self.dlg.compareScenariosRun.clicked.connect(self.computeGlobalMetric)
         
     def getSelectedScenarios(self):
         indexes = self.view.selectedIndexes()
@@ -356,7 +427,7 @@ class ScenarioConnector(TableToDialogConnector):
         items = [self.model.pluginModel.speciesModel.getItemFromName(s) for s in speciesNames]
         return items
         
-    def landuseRun(self):
+    def iterateRun(self,func):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
         nb_steps = len(scenarios) * len(species)
@@ -365,11 +436,13 @@ class ScenarioConnector(TableToDialogConnector):
         step_feedback.setCurrentStep(cpt)
         for sc in scenarios:
             for sp in species:
-                self.feedback.pushDebugInfo("TODO : landuse Run "
-                    + sc.getName() + " - " + sp.getName())
-                self.model.applyItemLanduse(sc,sp,context=None)
+                func(sc,sp,feedback=step_feedback)
                 cpt+=1
                 step_feedback.setCurrentStep(cpt)
+        
+    def landuseRun(self):
+        self.iterateRun(self.model.applyItemLanduse)
+        
     def frictionRun(self):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
@@ -379,35 +452,34 @@ class ScenarioConnector(TableToDialogConnector):
                 # self.feedback.pushDebugInfo("TODO : friction Run "
                     # + sc.getName() + " - " + sp.getName())
     def graphabProjectRun(self):
-        scenarios = self.getSelectedScenarios()
-        species = self.getSelectedSpecies()
-        for sc in scenarios:
-            for sp in species:
-                self.feedback.pushDebugInfo("TODO : graph Run "
-                    + sc.getName() + " - " + sp.getName())
-                self.model.applyItemGraphabProject(sc,sp)
+        self.feedback.beginSection("Creating Graphab project(s)")
+        self.iterateRun(self.model.applyItemGraphabProject)
+        self.feedback.endSection()
     def graphabLinksetRun(self):
-        scenarios = self.getSelectedScenarios()
-        species = self.getSelectedSpecies()
-        for sc in scenarios:
-            for sp in species:
-                self.feedback.pushDebugInfo("TODO : graph Run "
-                    + sc.getName() + " - " + sp.getName())
-                self.model.applyItemGraphabLinkset(sc,sp)
+        self.feedback.beginSection("Creating linkset(s)")
+        self.iterateRun(self.model.applyItemGraphabLinkset)
+        self.feedback.endSection()
     def graphabGraphRun(self):
-        scenarios = self.getSelectedScenarios()
-        species = self.getSelectedSpecies()
-        for sc in scenarios:
-            for sp in species:
-                self.feedback.pushDebugInfo("TODO : graph Run "
-                    + sc.getName() + " - " + sp.getName())
-                self.model.applyItemGraphabGraph(sc,sp)
+        self.feedback.beginSection("Creating graphs(s)")
+        self.iterateRun(self.model.applyItemGraphabGraph)
+        self.feedback.endSection()
     def computeLocalMetric(self):
+        self.feedback.beginSection("Computing local metric(s)")
+        self.iterateRun(self.model.computeLocalMetric)
+        self.feedback.endSection()
+    def computeGlobalMetric(self):
+        self.feedback.beginSection("Computing global metric(s)")
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
+        nb_steps = len(scenarios) * len(species)
+        step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
         for sc in scenarios:
             for sp in species:
-                self.model.computeLocalMetric(sc,sp)
+                res = self.model.computeGlobalMetric(sc,sp)
+                feedbacks.launchDialog(self.dlg,"Result",str(res))
+                cpt+=1
+                step_feedback.setCurrentStep(cpt)
+        self.feedback.endSection()
         
     
     def preDlg(self,item):

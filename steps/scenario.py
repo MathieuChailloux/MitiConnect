@@ -35,6 +35,7 @@ from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
+from ..ui.plot_window import PlotWindow
 
 # Graphab utils
 
@@ -367,9 +368,9 @@ class ScenarioModel(DictModel):
         computeLocalMetric(project,graphName,feedback=feedback)
                 
     def computeGlobalMetric(self,item,spItem,feedback=None):
-        if feedback is None:    
+        if feedback is None:
             feedback = self.feedback
-        name = item.getName()
+        name = item.getName() 
         spName = spItem.getName()
         project = self.getItemGraphabProjectFile(name,spName)
         graphName = self.getItemGraphName(name,spName)
@@ -473,13 +474,22 @@ class ScenarioConnector(TableToDialogConnector):
         species = self.getSelectedSpecies()
         nb_steps = len(scenarios) * len(species)
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
+        # res = { sc.getName() : {sp.getName() : None for sp in species} for sc in scenarios }
+        values = {}
+        cpt = 0
         for sc in scenarios:
+            values[sc.getName()] = {} 
             for sp in species:
-                res = self.model.computeGlobalMetric(sc,sp)
-                feedbacks.launchDialog(self.dlg,"Result",str(res))
+                val = self.model.computeGlobalMetric(sc,sp,
+                    feedback=step_feedback) 
+                values[sc.getName()][sp.getName()] = val
                 cpt+=1
                 step_feedback.setCurrentStep(cpt)
         self.feedback.endSection()
+        window = PlotWindow(values,self.feedback)
+        window.show()
+        while window.exec_():
+            pass
         
     
     def preDlg(self,item):

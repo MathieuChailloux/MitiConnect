@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
@@ -76,7 +75,6 @@ class PlotWindow(QtWidgets.QDialog):
                 # self.feedback.pushDebugInfo("val = " + str(val))
             # toPlot.append(list(spDict.values()))
         # self.feedback.pushDebugInfo("toPlot = " + str(toPlot))
-        # df = pd.DataFrame.from_dict(self.values)
         # self.feedback.pushDebugInfo("df = " + str(df))
         bins = list(range(1,self.nbSc + 1))
         self.feedback.pushDebugInfo("bins = " + str(bins))

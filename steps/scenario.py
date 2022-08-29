@@ -64,7 +64,7 @@ def createGraphabLinkset(project,name,frictionPath,feedback=None):
         'INPUT' : project,
         'NAME' : name,
         #'TYPE' : 1 }
-        'TYPE' : 0 }
+        'TYPE' : 1 }
     return applyProcessingAlg('erc_tvb','create_linkset',params,feedback=feedback)
 def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         feedback=None):
@@ -302,8 +302,9 @@ class ScenarioModel(DictModel):
                 feedback.pushDebugInfo("in_path = " + str(in_path))
                 out_path = self.getItemFriction(name,specie)
                 feedback.pushDebugInfo("out_path = " + str(out_path))
+                nodata = 65535
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
-                    out_type=Qgis.Int16,boundaries_mode=2,
+                    out_type=Qgis.UInt16,nodata_val=65535,boundaries_mode=2,
                     feedback=step_feedback)
                 loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 styles.setRendererPalettedGnYlRd(loaded_layer)
@@ -325,8 +326,9 @@ class ScenarioModel(DictModel):
         codes = spItem.getCodes()
         minArea = spItem.getMinArea()
         outDir = self.getItemBaseDir(name,spName)
+        nodata = 65535
         createGraphabProject(landuse,codes,outDir,projectName,
-            nodata=-9999,patch_size=minArea,feedback=feedback)
+            nodata=-nodata,patch_size=minArea,feedback=feedback)
 
 
     def applyItemGraphabLinkset(self, item,spItem,feedback=None):
@@ -340,6 +342,9 @@ class ScenarioModel(DictModel):
         linksetName = self.getItemLinksetName(name,spName)
         friction = self.getItemFriction(name,spName)
         self.pluginModel.loadProject(project)
+        classes,array,nodata = qgsUtils.getRasterValsArrayND(friction)
+        feedback.pushDebugInfo("classes = " + str(classes))
+        feedback.pushDebugInfo("nodata = " + str(nodata))
         createGraphabLinkset(project,linksetName,friction,feedback=feedback)
             
             
@@ -442,13 +447,19 @@ class ScenarioConnector(TableToDialogConnector):
                 step_feedback.setCurrentStep(cpt)
         
     def landuseRun(self):
+        self.feedback.beginSection("Computing land use layer(s)")
         self.iterateRun(self.model.applyItemLanduse)
+        self.feedback.endSection()
         
     def frictionRun(self):
+        self.feedback.beginSection("Computing friction layer(s)")
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
-        for sc in scenarios:
-            self.model.applyItemFriction(sc,species)
+        step_feedback = feedbacks.ProgressMultiStepFeedback(len(scenarios),self.feedback)
+        for cpt, sc in enumerate(scenarios,start=1):
+            self.model.applyItemFriction(sc,species,feedback=step_feedback)
+            step_feedback.setCurrentStep(cpt)
+        self.feedback.endSection()
             # for sp in species:
                 # self.feedback.pushDebugInfo("TODO : friction Run "
                     # + sc.getName() + " - " + sp.getName())

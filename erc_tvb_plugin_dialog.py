@@ -31,7 +31,7 @@ from qgis.core import QgsProcessingContext
 import traceback
 from io import StringIO
 
-from .qgis_lib_mc import feedbacks, log, utils, abstract_model
+from .qgis_lib_mc import feedbacks, log, utils, abstract_model, qgsTreatments
 from .steps import (params, data, species, friction, scenario)#, species, friction, scenarios)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -166,6 +166,7 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.feedback =  feedbacks.ProgressFeedback(self)
         self.feedback.pushInfo("ERC1 OK")
         utils.print_func = self.feedback.print_func
+        qgsTreatments.nodata_val = 0
         self.context = QgsProcessingContext()
         self.context.setFeedback(self.feedback)
         # self.feedback.switchDebugMode()

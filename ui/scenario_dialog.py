@@ -46,6 +46,10 @@ class ScenarioReclassItem(abstract_model.DictItem):
         dict = { cls.VAL : val, cls.CLASS : reclass }
         return cls(dict,feedback=feedback)
         # self.feedback=feedback
+    def getValue(self):
+        return self.dict[self.VAL]
+    def getClass(self):
+        return self.dict[self.CLASS]
         
     def __deepcopy__(self):
         return ScenarioReclassItem(copy.deepcopy(self.dict),feedback=self.feedback)
@@ -57,21 +61,35 @@ class ScenarioReclassModel(abstract_model.DictModel):
         super().__init__(itemClass=itemClass,fields=ScenarioReclassItem.FIELDS,feedback=feedback)
 
     @classmethod
-    def fromValues(cls,values=[],feedback=None):
+    def fromValues(cls,values=[],codes=[],feedback=None):
         utils.debug("values = " +str(values))
         assert(feedback is not None)
         feedback.pushInfo("values = " +str(values))
         res = cls(feedback=feedback)
         # self.feedback=feedback
-        res.loadValues(values)
+        res.loadValues(values,codes=codes)
         return res
             
-    def loadValues(self,values):
+    def loadValues(self,values,codes=[]):
         self.items=[]
-        for v in values:
-            i = ScenarioReclassItem.fromValues(v,feedback=self.feedback)
-            self.addItem(i)
+        if codes:
+            assert(len(codes) == len(values))
+            for v, c in zip(values,codes):
+                i = ScenarioReclassItem.fromValues(v,reclass=c,
+                    feedback=self.feedback)
+                self.addItem(i)
+        else:
+            assert(False)
+            # for v in zip(values):
+                # i = ScenarioReclassItem.fromValues(v,reclass=c,
+                    # feedback=self.feedback)
+                # self.addItem(i)
         self.layoutChanged.emit()
+        
+    def getValuesAndClasses(self):
+        values = [i.getValue() for i in self.items]
+        classes = [i.getClass() for i in self.items]
+        return values, classes
         
     def __deepcopy__(self):
         model = ScenarioReclassModel(feedback=self.feedback)
@@ -117,7 +135,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     
     @classmethod
     def fromValues(cls, name, layer=None, base=None,baseLayer=None,
-            mode=0, reclassField=None, burnVal=0,
+            mode=0, reclassField=None, burnVal=1,
             statusLanduse=False,statusFrict=False,statusGraph=False,
             feedback=None):
         dict = { cls.NAME : name, cls.BASE : base, cls.BASE_LAYER : baseLayer,
@@ -214,7 +232,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     
 
 class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
-    def __init__(self, parent, dlgItem, scenarioModel=None, feedback=None):
+    def __init__(self, parent, dlgItem, model=None, feedback=None):
         """Constructor."""
         super(ScenarioDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
@@ -229,7 +247,11 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # self.reclassModel.feedback = feedback
         # self.feedback.pushDebugInfo("TESTES")
         # self.reclassModel.feedback.pushDebugInfo("TESTTTT")
-        self.scModel = scenarioModel
+        if model is None:
+            assert(False)
+        self.scModel = model.scenarioModel
+        self.frictionModel = model.frictionModel
+        # self.scModel = scenarioModel
         # self.scenarioList = scenarioList
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
@@ -271,7 +293,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.feedback.pushDebugInfo("field values = " + str(values))
         self.feedback.pushDebugInfo("reload flag = " + str(self.reloadFlag))
         if self.reloadFlag:
-            self.reclassModel.loadValues(values)
+            nbVals = len(values)
+            freeCodes = self.frictionModel.getFreeVals(nbVals)
+            self.reclassModel.loadValues(values,freeCodes)
             self.reclassModel.layoutChanged.emit()
         
     def errorDialog(self,msg):
@@ -338,8 +362,12 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 self.scDialogView.setModel(self.reclassModel)
                 self.reclassModel.layoutChanged.emit()
             else:
-                self.scBurnVal.setText(str(dlgItem.dict[ScenarioItem.BURN_VAL]))
-                
+                burnVal = str(dlgItem.dict[ScenarioItem.BURN_VAL])
+                self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
+                self.scBurnVal.setText(burnVal)
+        else:
+            burnVal = str(self.model.getFreeVals(1)[0])
+            self.scBurnVal.setText(burnVal)
 
 class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
     def __init__(self, parent, dlgItem, feedback=None, luModel=None):

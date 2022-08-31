@@ -551,7 +551,7 @@ class ScenarioConnector(TableToDialogConnector):
                 self.feedback.user_error(msg)
             item_copy = item.__deepcopy__() if item else None
             scenarioDlg = ScenarioDialog(self.dlg,item_copy,
-                scenarioModel=self.model,feedback=self.feedback)
+                model=self.model.pluginModel,feedback=self.feedback)
             # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
             self.feedback.pushDebugInfo("k2")   
@@ -568,11 +568,22 @@ class ScenarioConnector(TableToDialogConnector):
             # self.model.addItem(item)
             self.model.addItem(dlg_item)
             self.model.layoutChanged.emit()
+            self.updateFrictionFromDlg(dlg_item)
+            
     
     def updateFromDlgItem(self,item,dlg_item):
         item.updateFromDlgItem(dlg_item)
+        # if item.getMode() != dlg_item.getMode():
+        self.updateFrictionFromDlg(dlg_item)
+            
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)
+        
+    def updateFrictionFromDlg(self,item):
+        values, classes = item.reclassModel.getValuesAndClasses()
+        self.model.pluginModel.frictionModel.updateScenario(item.getName(),values,classes)
+        self.model.pluginModel.frictionModel.layoutChanged.emit()
+        
      
 
         

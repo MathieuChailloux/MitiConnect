@@ -94,6 +94,17 @@ class FrictionModel(ExtensiveTableModel):
             for i in self.items:
                pass
         
+    def updateScenario(scName,initVals,codes):
+        assert(len(initVals) == len(codes))
+        self.items = [i for i in self.items if self.getItemImport(i) != scName or self.getItemValue(i) in codes]
+        valuesToAdd = []
+        for initVal, code in zip(initVals,codes):
+            if code in self.getCodesStr():
+                self.feedback.pushDebugInfo("Ignoring existing code " + str(code))
+            else:
+                valuesToAdd.append(initVal)
+        self.addRowFromImport(valuesToAdd,scName)
+        
     def getHeaderStr(self,col):
         if col < 2:
             h = [self.tr('Value'),self.tr('Description')]

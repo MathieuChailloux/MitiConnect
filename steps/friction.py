@@ -83,6 +83,11 @@ class FrictionModel(ExtensiveTableModel):
         
     def getItemImport(self,item):
         return item.dict[self.IMPORT]
+    def importExists(self,name):
+        for i in self.items:
+            if self.getItemImpor() == name:
+                return True
+        return False
         
     def removeImports(self,importNames):
         self.items = [i for i in self.items if self.getItemImport(i) not in importNames]
@@ -94,15 +99,20 @@ class FrictionModel(ExtensiveTableModel):
             for i in self.items:
                pass
         
-    def updateScenario(scName,initVals,codes):
+    def updateScenario(self,scName,initVals,codes):
+        self.feedback.pushDebugInfo("updateScenario " + str(scName))
+        self.feedback.pushDebugInfo("updateScenario " + str(initVals))
+        self.feedback.pushDebugInfo("updateScenario " + str(codes))
         assert(len(initVals) == len(codes))
         self.items = [i for i in self.items if self.getItemImport(i) != scName or self.getItemValue(i) in codes]
         valuesToAdd = []
         for initVal, code in zip(initVals,codes):
+            self.feedback.pushDebugInfo("updateScenario iterate " + str(code))
             if code in self.getCodesStr():
                 self.feedback.pushDebugInfo("Ignoring existing code " + str(code))
             else:
                 valuesToAdd.append(initVal)
+        self.feedback.pushDebugInfo("valuesToAdd " + str(valuesToAdd))
         self.addRowFromImport(valuesToAdd,scName)
         
     def getHeaderStr(self,col):

@@ -161,6 +161,9 @@ class ScenarioModel(DictModel):
             if i.getName() == name:
                 return i
         return None
+    def scExists(self,name):
+        i = self.getItemFromName(name)
+        return (i is not None)
                         
     # Returns absolute path of 'item' output layer
     # def getItemSubElement
@@ -278,7 +281,7 @@ class ScenarioModel(DictModel):
             qgsTreatments.applyMergeRaster(paths,out_path,
                 out_type=Qgis.Int16,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
-            
+         
     def applyItemFriction(self, item,species,feedback=None):
         if feedback is None:
             feedback = self.feedback
@@ -303,6 +306,12 @@ class ScenarioModel(DictModel):
                 out_path = self.getItemFriction(name,specie)
                 feedback.pushDebugInfo("out_path = " + str(out_path))
                 nodata = 65535
+                inVals = qgsUtils.getRasterValsFromPath(in_path)
+                mInVals, mOutVals = matrix[::3], matrix[2::3]
+                feedback.pushDebugInfo("mInVals = " + str(mInVals))
+                feedback.pushDebugInfo("mOutVals = " + str(mOutVals))
+                naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
+                self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
                     out_type=Qgis.UInt16,nodata_val=65535,boundaries_mode=2,
                     feedback=step_feedback)
@@ -381,6 +390,11 @@ class ScenarioModel(DictModel):
         graphName = self.getItemGraphName(name,spName)
         self.pluginModel.loadProject(project)
         return computeGlobalMetric(project,graphName,feedback=feedback)
+        
+    def removeItems(self,indexes):
+        names = [self.items[ind.row()].getName() for ind in indexes]
+        super().removeItems(indexes)
+        self.pluginModel.removeImports(names)
 
 class ScenarioConnector(TableToDialogConnector):
 
@@ -516,6 +530,7 @@ class ScenarioConnector(TableToDialogConnector):
             self.pathFieldToRel(dlg_item,ScenarioItem.LAYER)
             if dlg_item.isLanduseMode():
                  self.pathFieldToRel(dlg_item,ScenarioItem.BASE)
+            self.updateFrictionFromDlg(dlg_item)
     
     # def openDialog(self,item): 
         # self.feedback.pushDebugInfo("item = " + str(item))
@@ -535,16 +550,12 @@ class ScenarioConnector(TableToDialogConnector):
         # self.feedback.pushDebugInfo("itemBase = " + str((b is None)))
         # if (item is None) or (item.getBase() is None):
         if (item is None):
+            # Specific openDialogLanduseNew otherwise 
             luFlag = False
         else:
             luFlag = item.isLanduseMode()
-            # b = item.getBase()
-            # if (b is None) or (b == "None"):
-                # luFlag = True
-            # else:
-                # luFlag = False
         if not luFlag:
-            self.feedback.pushDebugInfo("k1")
+            self.feedback.pushDebugInfo("openDialog overlap")
             scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
                 msg = self.tr("No scenario in model : please create base scenario from landuse")
@@ -554,7 +565,7 @@ class ScenarioConnector(TableToDialogConnector):
                 model=self.model.pluginModel,feedback=self.feedback)
             # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
-            self.feedback.pushDebugInfo("k2")   
+            self.feedback.pushDebugInfo("openDialog landuse")   
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
                 feedback=self.feedback,luModel=self.model.pluginModel.landuseModel)
         return scenarioDlg
@@ -568,21 +579,27 @@ class ScenarioConnector(TableToDialogConnector):
             # self.model.addItem(item)
             self.model.addItem(dlg_item)
             self.model.layoutChanged.emit()
-            self.updateFrictionFromDlg(dlg_item)
             
     
     def updateFromDlgItem(self,item,dlg_item):
         item.updateFromDlgItem(dlg_item)
-        # if item.getMode() != dlg_item.getMode():
-        self.updateFrictionFromDlg(dlg_item)
             
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)
         
     def updateFrictionFromDlg(self,item):
-        values, classes = item.reclassModel.getValuesAndClasses()
-        self.model.pluginModel.frictionModel.updateScenario(item.getName(),values,classes)
-        self.model.pluginModel.frictionModel.layoutChanged.emit()
+        if item:
+            if item.isLanduseMode():
+                pass
+            elif item.isFixedMode():
+                burnVal = str(item.getBurnVal())
+                self.model.pluginModel.frictionModel.updateScenario(item.getName(),[""],[burnVal])
+            elif item.isFieldMode():
+                values, classes = item.reclassModel.getValuesAndClasses()
+                self.model.pluginModel.frictionModel.updateScenario(item.getName(),values,classes)
+            self.model.pluginModel.frictionModel.layoutChanged.emit()
+        else:
+            self.feedback.pushDebugInfo("Empty item")
         
      
 

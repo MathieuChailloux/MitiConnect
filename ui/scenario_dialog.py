@@ -91,6 +91,13 @@ class ScenarioReclassModel(abstract_model.DictModel):
         classes = [i.getClass() for i in self.items]
         return values, classes
         
+    def getReclassTable(self):
+        res = []
+        for i in self.items:
+            init = i.getValue()
+            res += [ init, init, i.getClass() ]
+        return res
+        
     def __deepcopy__(self):
         model = ScenarioReclassModel(feedback=self.feedback)
         for i in self.items:
@@ -173,6 +180,10 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return bool(self.dict[self.STATUS_GRAPH])
     def isLanduseMode(self):
         return self.getMode() == 0
+    def isFixedMode(self):
+        return self.getMode() == 1
+    def isFieldMode(self):
+        return self.getMode() == 2
         
     def getReclassTable(self):
         return self.reclassModel.getReclassTable()
@@ -240,7 +251,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
-        self.reclassModel = dlgItem.reclassModel.__deepcopy__() if dlgItem else ScenarioReclassModel(feedback=feedback)
+        self.newFlag = dlgItem is None
+        self.reclassModel = ScenarioReclassModel(feedback=feedback) if self.newFlag else dlgItem.reclassModel.__deepcopy__()
         self.reloadFlag = False
         # self.reclassModel = ScenarioReclassModel(feedback=feedback)
         self.feedback = feedback
@@ -307,6 +319,12 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if not name:
                 self.errorDialog(self.tr("Empty name"))
                 continue
+            if self.newFlag and self.scModel.scExists(name):
+                self.errorDialog(self.tr("Scenario already exists : " + name))
+                continue
+            if self.newFlag and self.frictionModel.importExists(name):
+                self.errorDialog(self.tr("Import already exists : " + name))
+                continue
             base = self.scBase.currentText()
             self.feedback.pushDebugInfo("base = " + str(base))
             if base is None:
@@ -366,7 +384,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
                 self.scBurnVal.setText(burnVal)
         else:
-            burnVal = str(self.model.getFreeVals(1)[0])
+            burnVal = str(self.frictionModel.getFreeVals(1)[0])
             self.scBurnVal.setText(burnVal)
 
 class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):

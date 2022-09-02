@@ -31,7 +31,7 @@ from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
 
 from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector, CheckableComboDelegate
-from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
+# from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog

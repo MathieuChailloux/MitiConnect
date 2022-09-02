@@ -154,7 +154,7 @@ class ImportModel(DictModel):
         input_rel_path = item.getInput()
         input_path = self.pluginModel.getOrigPath(input_rel_path)
         # input = qgsUtils.loadLayer(input_path)
-        # out_type = Qgis.UInt8
+        # out_type = Qgis.Byte
         out_path = self.getItemOutPath(item)
         # out_path = self.pluginModel.getOrigPath(out_rel_path)
         qgsUtils.removeRaster(out_path)
@@ -179,7 +179,7 @@ class ImportModel(DictModel):
                 # Rasterize
                 raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
                 qgsTreatments.applyRasterization(unique_path,raster_path,
-                    extent,resolution,field=burnField,out_type=Qgis.UInt8,
+                    extent,resolution,field=burnField,out_type=Qgis.UInt16,nodata_val=0,
                     all_touch=all_touch,context=context,feedback=feedback)
                 # Reclassify
                 assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
@@ -191,15 +191,15 @@ class ImportModel(DictModel):
                     outVal = reclassDict[initVal]
                     row = [tmpVal,tmpVal,outVal]
                     reclassTable += row
-                min_type = Qgis.UInt8
+                min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(raster_path,reclassTable,
-                    out_path,out_type=min_type,
+                    out_path,out_type=min_type,nodata_val=nodata_val,
                     boundaries_mode=2,context=context,feedback=feedback)
             else:
                 burnVal = childItem.getBurnVal()
-                min_type = Qgis.UInt8
+                min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyRasterization(input_path,out_path,
-                    extent,resolution,burn_val=burnVal,out_type=min_type,
+                    extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
         else:
             keepValues = False
@@ -208,9 +208,11 @@ class ImportModel(DictModel):
             else:           
                 reclassified = qgsUtils.mkTmpPath('reclassified.tif')
                 table = self.pluginModel.frictionModel.getReclassTable(name)
-                min_type = Qgis.UInt8
+                min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(input_path,table,
-                    reclassified,out_type=min_type,boundaries_mode=2,nodata_missing=True,context=context,feedback=feedback)
+                    reclassified,out_type=min_type,nodata_val=nodata_val,
+                    boundaries_mode=2,nodata_missing=True,
+                    context=context,feedback=feedback)
                 to_norm_path = reclassified
             self.pluginModel.paramsModel.normalizeRaster(
                 to_norm_path,out_path=out_path,
@@ -410,9 +412,9 @@ class LanduseModel(DictModel):
                     + str(p) + " does not exist")
         out_path = self.getItemOutPath(item)
         qgsUtils.removeRaster(out_path)
-        min_type = Qgis.UInt8
-        qgsTreatments.applyMergeRaster(paths,out_path,
-            out_type=min_type,context=context,feedback=feedback)
+        min_type, nodata_val = Qgis.UInt16, 0
+        qgsTreatments.applyMergeRaster(paths,out_path,out_type=min_type,
+            nodata_val=nodata_val,context=context,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
         
     def mkItemFromDict(self,dict,feedback=None):

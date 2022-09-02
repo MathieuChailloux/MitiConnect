@@ -210,6 +210,12 @@ class ErcTvbPlugin:
         self.dlg.connectComponents()
         # show the dialog
         self.dlg.show()
+        # Debug java paths
+        
+        print("java homes = " + str(self.provider.getJavaHomesWin()))
+        self.dlg.feedback.pushInfo("java homes = " + str(self.provider.getJavaHomesWin()))
+        self.dlg.feedback.pushInfo("PATH = " + str(self.provider.getenv_system("PATH").split(os.pathsep)))
+        self.dlg.feedback.pushInfo("java = " + str(self.provider.getJavaWin('javaw.exe')))
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed

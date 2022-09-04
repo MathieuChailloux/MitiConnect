@@ -40,10 +40,11 @@ from ..ui.plot_window import PlotWindow
 # Graphab utils
 
 def checkGraphabInstalled(feedback):
-    plugins = qgis.utils.available_plugins
-    installed = 'graphab4qgis' in plugins
-    if not installed:
-        feedback.user_error("Graphab is not installed")
+    return True
+    # plugins = qgis.utils.available_plugins
+    # installed = 'graphab4qgis' in plugins
+    # if not installed:
+        # feedback.user_error("Graphab is not installed")
 
 #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
 # TODO : grapha wrappers in erc_tvb_algs_provider ?

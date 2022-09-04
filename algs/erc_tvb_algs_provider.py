@@ -49,10 +49,7 @@ class ErcTvbAlgorithmsProvider(GraphabProvider):
             CalculateGlobalMetric(self.plugin)]
         # for a in self.alglist:
             # self.addAlgorithm(a)
-        
-    def unload(self):
-        pass
-        
+                
     def id(self):
         return "erc_tvb"
         

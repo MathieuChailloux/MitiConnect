@@ -21,7 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-import os.path
+import os.path, sys
 
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
@@ -37,6 +37,78 @@ from .erc_tvb_plugin_dialog import ErcTvbPluginDialog
 
 from .algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from .graphab4qgis.GraphabPlugin import GraphabPlugin
+from .graphab4qgis.GraphabStyle import GraphabStyle
+from .graphab4qgis.graph_symbology_dialog import GraphSymbologyDialog
+from .graphab4qgis.create_graph_dialog import CreateGraphDialog
+from .graphab4qgis.create_linkset_dialog import CreateLinksetDialog
+from .graphab4qgis.calculate_metrics_dialog import CalculateMetricDialog
+from .graphab4qgis.corridor_dialog import CorridorDialog
+from .graphab4qgis.OsRaster.OsRaster import OsRaster
+
+class GraphabPluginOverride(GraphabPlugin):
+
+    def __init__(self, iface):
+        """Constructor.
+
+        :param iface: An interface instance that will be passed to this class
+            which provides the hook by which you can manipulate the QGIS
+            application at run time.
+        :type iface: QgsInterface
+        """
+        # Save reference to the QGIS interface
+        self.iface = iface
+
+        # initialize plugin directory
+        self.plugin_dir = os.path.dirname(__file__)
+
+        # initialize locale
+        locale = QSettings().value('locale/userLocale')[0:2]
+        locale_path = os.path.join(
+            self.plugin_dir,
+            'i18n',
+            '{}.qm'.format(locale))
+
+        if os.path.exists(locale_path):
+            self.translator = QTranslator()
+            self.translator.load(locale_path)
+            QCoreApplication.installTranslator(self.translator)
+
+        
+        # all available styles for Graph circles
+        self.stylesTabUnabled = ["Red","Blue"]
+        
+        # csv prefix that is important to know because it's in imported fieldnames
+        self.prefix = '_'
+
+        self.UNITS = [self.translate('py', 'Meter'), self.translate('py', 'Cost')]
+
+        # All necessary objects
+        self.GraphabStyle = GraphabStyle(self)
+        self.GraphSymbologyDialog = GraphSymbologyDialog(self)
+        self.CreateGraphDialog = CreateGraphDialog(self)
+        self.CreateLinksetDialog = CreateLinksetDialog(self)
+        self.CalculateMetricDialogGlobal = CalculateMetricDialog(self.GMETRICS, 0, self)
+        self.CalculateMetricDialogLocal = CalculateMetricDialog(self.LMETRICS, 1, self)
+        self.CorridorDialog = CorridorDialog(self)
+
+        # Initialization of OsRaster
+        self.OsRaster = OsRaster(self)
+
+        self.actions = []
+        # self.graphabProvider = GraphabProvider(self)
+        # QgsApplication.processingRegistry().addProvider(self.graphabProvider)
+
+
+    # def checkJavaInstalled(self):
+        # javaExec = self.provider.getJavaCommand()
+        # try:
+            # ret = subprocess.run([javaExec, '-version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            # self.java = ret.returncode == 0
+        # except:
+            # self.java = False
+
+        # if not self.java:
+            # QgsMessageLog.logMessage("Java not found for Graphab plugin.\n" + javaExec + "\n", 'Extensions', Qgis.Warning)
 
 class ErcTvbPlugin:
     """QGIS Plugin Implementation."""
@@ -75,8 +147,13 @@ class ErcTvbPlugin:
         
         # Intialize alg provider
         # self.dlg = ErcTvbPluginDialog()
-        self.graphabPlugin = GraphabPlugin(self.iface)
+        print("ErcTvbPlugin modules " + str(sys.modules))
+        # self.graphabPlugin = GraphabPlugin(self.iface)
+        # self.provider = ErcTvbAlgorithmsProvider(self)
+        self.graphabPlugin = GraphabPluginOverride(self.iface)
         self.provider = ErcTvbAlgorithmsProvider(self)
+        # self.provider.unload()
+        # self.provider.load()
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -188,13 +265,18 @@ class ErcTvbPlugin:
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
+        # self.provider.unload()
+        print("unload")
+        print("unload 1 modules " + str(sys.modules))
         for action in self.actions:
             self.iface.removePluginMenu(
                 self.tr(u'&ERC-TVB'),
                 action)
             self.iface.removeToolBarIcon(action)
         if self.provider:
+            self.provider.unload()
             QgsApplication.processingRegistry().removeProvider(self.provider)
+        print("unload 2 modules " + str(sys.modules))
 
 
     def run(self):
@@ -204,6 +286,7 @@ class ErcTvbPlugin:
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         # if self.first_start == True:
             # self.first_start = False
+        self.provider.checkJavaInstalled()
         self.dlg = ErcTvbPluginDialog(self.graphabPlugin)
         
         self.dlg.initTabs()

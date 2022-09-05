@@ -22,10 +22,12 @@
  ***************************************************************************/
 """
 
-import os
+import os, sys
 
 from PyQt5.QtGui import QIcon
-from qgis.core import QgsApplication, QgsProcessingProvider
+from qgis.core import QgsApplication, QgsProcessingProvider, QgsMessageLog, Qgis
+from processing.core.ProcessingConfig import Setting, ProcessingConfig
+
 
 from ..graphab4qgis.processing.CreateProject import CreateProject
 from ..graphab4qgis.processing.CreateLinkset import CreateLinkset
@@ -65,6 +67,57 @@ class ErcTvbAlgorithmsProvider(GraphabProvider):
         # print("icon_path = " + str(icon_path))
         return QIcon(icon_path)
         
+    def load(self):
+        """In this method we add settings needed to configure our
+        provider.
+        """
+        # ProcessingConfig.readSettings()
+        ProcessingConfig.settingIcons[self.name()] = self.icon()
+
+        ProcessingConfig.addSetting(Setting(self.name(), 'ACTIVATE_GRAPHAB',
+                                            self.plugin.translate('py', 'Activate'), True))
+        ProcessingConfig.addSetting(Setting(self.name(), 'GRAPHAB_VERSION',
+                                            self.plugin.translate('py', 'Graphab version'), self.DEFAULT_VERSION))
+        ProcessingConfig.addSetting(Setting(self.name(), 'MEMORY_GRAPHAB',
+                                            self.plugin.translate('py', 'Max memory for Java in Gb'), 0))
+        ProcessingConfig.addSetting(Setting(self.name(), 'PROC_GRAPHAB',
+                                            self.plugin.translate('py', 'Processors/Cores used'), 0))
+        javacmd = self.getJavaCommand(False)
+        ProcessingConfig.addSetting(Setting(self.name(), 'JAVA_GRAPHAB',
+                                            self.plugin.translate('py', 'Java path executable'), javacmd))
+        self.refreshAlgorithms()
+        return True
+
+    def unload(self):
+        """Setting should be removed here, so they do not appear anymore
+        when the plugin is unloaded.
+        """
+        print("unload GP")
+        if ProcessingConfig.getSetting('ACTIVATE_GRAPHAB'):
+            ProcessingConfig.removeSetting('ACTIVATE_GRAPHAB')
+        if ProcessingConfig.getSetting('GRAPHAB_VERSION'):
+            ProcessingConfig.removeSetting('GRAPHAB_VERSION')
+        if ProcessingConfig.getSetting('MEMORY_GRAPHAB'):
+            ProcessingConfig.removeSetting('MEMORY_GRAPHAB')
+        if ProcessingConfig.getSetting('PROC_GRAPHAB'):
+            ProcessingConfig.removeSetting('PROC_GRAPHAB')
+        if ProcessingConfig.getSetting('JAVA_GRAPHAB'):
+            ProcessingConfig.removeSetting('JAVA_GRAPHAB')
+        
     def loadAlgorithms(self):
+        # super().load()
+        print("loadAlgorithms")
+        print("loadAlgorithms modules " + str(sys.modules))
         for a in self.alglist:
             self.addAlgorithm(a)
+            
+    def checkJavaInstalled(self):
+        javaExec = self.getJavaCommand()
+        try:
+            ret = subprocess.run([javaExec, '-version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            self.java = ret.returncode == 0
+        except:
+            self.java = False
+
+        if not self.java:
+            QgsMessageLog.logMessage("Java not found for Graphab plugin.\n" + javaExec + "\n", 'Extensions', Qgis.Warning)

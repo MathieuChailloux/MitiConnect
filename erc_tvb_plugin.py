@@ -45,6 +45,8 @@ from .graphab4qgis.calculate_metrics_dialog import CalculateMetricDialog
 from .graphab4qgis.corridor_dialog import CorridorDialog
 from .graphab4qgis.OsRaster.OsRaster import OsRaster
 
+# backup_modules = None
+
 class GraphabPluginOverride(GraphabPlugin):
 
     def __init__(self, iface):
@@ -150,10 +152,15 @@ class ErcTvbPlugin:
         print("ErcTvbPlugin modules " + str(sys.modules))
         # self.graphabPlugin = GraphabPlugin(self.iface)
         # self.provider = ErcTvbAlgorithmsProvider(self)
+        
+        # global sys.modules
+        # if backup_modules is None:
+            # sys.modules = backup_modules
+        
         self.graphabPlugin = GraphabPluginOverride(self.iface)
         self.provider = ErcTvbAlgorithmsProvider(self)
         # self.provider.unload()
-        # self.provider.load()
+        # self.provider.loadAlgorithms()
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -277,6 +284,8 @@ class ErcTvbPlugin:
             self.provider.unload()
             QgsApplication.processingRegistry().removeProvider(self.provider)
         print("unload 2 modules " + str(sys.modules))
+        # global backup_modules
+        # backup_modules = sys.modules
 
 
     def run(self):
@@ -287,7 +296,9 @@ class ErcTvbPlugin:
         # if self.first_start == True:
             # self.first_start = False
         self.provider.checkJavaInstalled()
+        from .erc_tvb_plugin_dialog import ErcTvbPluginDialog
         self.dlg = ErcTvbPluginDialog(self.graphabPlugin)
+        print("reload modules = " + str(sys.modules))
         
         self.dlg.initTabs()
         self.dlg.connectComponents()

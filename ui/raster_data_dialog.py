@@ -88,11 +88,12 @@ class RasterDlgItem(abstract_model.DictItemWithChild):
         
     @staticmethod
     def getItemClass(childTag):
-        print("sys.modules " + str(sys.modules))
-        print("__name__ " + str(__name__))
-        print("ReclassModel.__name__ " + str(ReclassModel.__name__))
-        print("sys.modules[__name__] " + str(sys.modules[__name__]))
-        return getattr(sys.modules[__name__], ReclassModel.__name__)
+        return ReclassModel
+        # print("sys.modules " + str(sys.modules))
+        # print("__name__ " + str(__name__))
+        # print("ReclassModel.__name__ " + str(ReclassModel.__name__))
+        # print("sys.modules[__name__] " + str(sys.modules[__name__]))
+        # return getattr(sys.modules[__name__], ReclassModel.__name__)
 
 class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, raster_data_item, parent,class_model=None):

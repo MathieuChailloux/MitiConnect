@@ -71,6 +71,7 @@ class ErcTvbAlgorithmsProvider(GraphabProvider):
         """In this method we add settings needed to configure our
         provider.
         """
+        print("load")
         # ProcessingConfig.readSettings()
         ProcessingConfig.settingIcons[self.name()] = self.icon()
 
@@ -85,6 +86,7 @@ class ErcTvbAlgorithmsProvider(GraphabProvider):
         javacmd = self.getJavaCommand(False)
         ProcessingConfig.addSetting(Setting(self.name(), 'JAVA_GRAPHAB',
                                             self.plugin.translate('py', 'Java path executable'), javacmd))
+        # self.loadAlgorithms()
         self.refreshAlgorithms()
         return True
 
@@ -103,6 +105,7 @@ class ErcTvbAlgorithmsProvider(GraphabProvider):
             ProcessingConfig.removeSetting('PROC_GRAPHAB')
         if ProcessingConfig.getSetting('JAVA_GRAPHAB'):
             ProcessingConfig.removeSetting('JAVA_GRAPHAB')
+        print("unload 2 sys.modules = " + str(sys.modules))
         
     def loadAlgorithms(self):
         # super().load()

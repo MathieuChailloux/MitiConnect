@@ -57,7 +57,8 @@ class ScenarioReclassItem(abstract_model.DictItem):
 class ScenarioReclassModel(abstract_model.DictModel):
 
     def __init__(self,feedback=None):
-        itemClass = getattr(sys.modules[__name__], ScenarioReclassItem.__name__)
+        # itemClass = getattr(sys.modules[__name__], ScenarioReclassItem.__name__)
+        itemClass = ScenarioReclassItem
         super().__init__(itemClass=itemClass,fields=ScenarioReclassItem.FIELDS,feedback=feedback)
 
     @classmethod
@@ -226,7 +227,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             # childObj = ScenarioReclassModel(feedback=feedback)
             childTag = child.tag
             utils.debug("childTag str = " + str(childTag))
-            classObj = getattr(sys.modules[__name__], childTag)
+            # classObj = getattr(sys.modules[__name__], childTag)
+            classObj = ScenarioReclassModel
             childObj = classObj.fromXML(child,feedback=feedback)
             # childTag = child.tag
             # classObj = getattr(sys.modules[__name__], childTag)

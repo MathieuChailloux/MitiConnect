@@ -169,17 +169,19 @@ class ScenarioModel(DictModel):
     # Returns absolute path of 'item' output layer
     # def getItemSubElement
     # def getScenarioDir(self,name)
+    def normPath(self,fname):
+        return os.path.normcase(fname)
     def getItemNameSuffix(self,scName,spName,suffix):
         res = scName + "_" + spName + "_" + suffix
         return res
     def getItemBaseDir(self,scName,spName):
         scDir = self.pluginModel.getSubDir(scName)
         spDir = self.pluginModel.getSubDir(spName,baseDir=scDir)
-        return spDir
+        return self.normPath(spDir)
     def getItemOutBase(self,scName,spName,suffix=""):
         spDir = self.getItemBaseDir(scName,spName)
         out_bname = scName + "_" + spName+ "_" + suffix + ".tif"
-        return joinPath(spDir,out_bname)
+        return self.normPath(joinPath(spDir,out_bname))
     def getItemLanduse(self,scName,spName):
         return self.getItemOutBase(scName,spName,suffix="landuse")
     def getItemFriction(self,scName,spName):
@@ -189,11 +191,11 @@ class ScenarioModel(DictModel):
     def getItemGraphabProjectDir(self,scName,spName):
         spDir = self.getItemBaseDir(scName,spName)
         out_bname = self.getItemGraphabProjectName(scName,spName)
-        return joinPath(spDir,out_bname)
+        return self.normPath(joinPath(spDir,out_bname))
     def getItemGraphabProjectFile(self,scName,spName):
         baseDir = self.getItemGraphabProjectDir(scName,spName)
         out_bname = self.getItemGraphabProjectName(scName,spName) + ".xml"
-        return joinPath(baseDir,out_bname)
+        return self.normPath(joinPath(baseDir,out_bname))
     def getItemLinksetName(self,scName,spName):
         return self.getItemNameSuffix(scName,spName,"linkset")
     def getItemGraphName(self,scName,spName):
@@ -348,10 +350,16 @@ class ScenarioModel(DictModel):
         name = item.getName()
         spName = spItem.getName()
         checkGraphabInstalled(feedback)
+        projName = self.getItemGraphabProjectName(name,spName)
         project = self.getItemGraphabProjectFile(name,spName)
         linksetName = self.getItemLinksetName(name,spName)
         friction = self.getItemFriction(name,spName)
-        self.pluginModel.loadProject(project)
+        gProj = self.pluginModel.loadProject(project,retFlag=True)
+        gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        if gProj:
+            print("gproj")
+            gProj.removeLinkset(linksetName)
+        # assert(False)
         classes,array,nodata = qgsUtils.getRasterValsArrayND(friction)
         feedback.pushDebugInfo("classes = " + str(classes))
         feedback.pushDebugInfo("nodata = " + str(nodata))

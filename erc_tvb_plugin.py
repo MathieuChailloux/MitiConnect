@@ -33,6 +33,7 @@ from qgis.utils import qgis_excepthook
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
+from .qgis_lib_mc import utils
 from .erc_tvb_plugin_dialog import ErcTvbPluginDialog
 
 from .algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
@@ -100,6 +101,24 @@ class GraphabPluginOverride(GraphabPlugin):
         # self.graphabProvider = GraphabProvider(self)
         # QgsApplication.processingRegistry().addProvider(self.graphabProvider)
 
+        # def loadProject(self, filename):
+            # print("loadPRoj 1 " + str(filename))
+            # d = {filename : None}
+            # print("loadPRoj dict " + str(d))
+            # normFname = utils.normPath(filename)
+            # print("loadPRoj 2 " + str(normFname))
+            # super().loadProject(normFname)
+            
+    def getProject(self, projectName):
+        print("projectName = " + str(projectName))
+        print("projects = " + str(self.projects))
+        for project in self.projects.values():
+            print("project.project.name = " + str(project.project.name))
+            if project.project.name == projectName:
+                print("lets go")
+                return project
+
+        return None
 
     # def checkJavaInstalled(self):
         # javaExec = self.provider.getJavaCommand()
@@ -149,7 +168,7 @@ class ErcTvbPlugin:
         
         # Intialize alg provider
         # self.dlg = ErcTvbPluginDialog()
-        print("ErcTvbPlugin modules " + str(sys.modules))
+        # print("ErcTvbPlugin modules " + str(sys.modules))
         # self.graphabPlugin = GraphabPlugin(self.iface)
         # self.provider = ErcTvbAlgorithmsProvider(self)
         
@@ -159,6 +178,8 @@ class ErcTvbPlugin:
         
         self.graphabPlugin = GraphabPluginOverride(self.iface)
         self.provider = ErcTvbAlgorithmsProvider(self)
+        self.graphabProvider = self.provider
+        self.graphabPlugin.graphabProvider = self.provider 
         # self.provider.unload()
         # self.provider.loadAlgorithms()
 
@@ -274,7 +295,7 @@ class ErcTvbPlugin:
         """Removes the plugin menu item and icon from QGIS GUI."""
         # self.provider.unload()
         print("unload")
-        print("unload 1 modules " + str(sys.modules))
+        # print("unload 1 modules " + str(sys.modules))
         for action in self.actions:
             self.iface.removePluginMenu(
                 self.tr(u'&ERC-TVB'),
@@ -283,7 +304,7 @@ class ErcTvbPlugin:
         if self.provider:
             self.provider.unload()
             QgsApplication.processingRegistry().removeProvider(self.provider)
-        print("unload 2 modules " + str(sys.modules))
+        # print("unload 2 modules " + str(sys.modules))
         # global backup_modules
         # backup_modules = sys.modules
 
@@ -298,7 +319,7 @@ class ErcTvbPlugin:
         self.provider.checkJavaInstalled()
         from .erc_tvb_plugin_dialog import ErcTvbPluginDialog
         self.dlg = ErcTvbPluginDialog(self.graphabPlugin)
-        print("reload modules = " + str(sys.modules))
+        # print("reload modules = " + str(sys.modules))
         
         self.dlg.initTabs()
         self.dlg.connectComponents()

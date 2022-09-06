@@ -122,8 +122,15 @@ class PluginModel(abstract_model.MainModel):
         resolution = self.paramsModel.getResolution()
         return (crs, extent, resolution)
         
-    def loadProject(self, filename):
+    def loadProject(self, filename,retFlag=False):
         self.graphabPlugin.loadProject(filename)
+        if retFlag:
+            project = self.graphabPlugin.getProject(filename)
+            print("retFlag True")
+            print("filename " + str(filename))
+            print("project = " + str(project))
+            print("projects = " + str(self.graphabPlugin.projects))
+            return project
 
 class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
 

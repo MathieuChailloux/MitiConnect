@@ -165,6 +165,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.speciesID.setText(dlg_item.dict[SpeciesItem.ID])
             self.speciesFullName.setText(dlg_item.dict[SpeciesItem.FULL_NAME])
             self.speciesMaxDisp.setValue(dlg_item.getMaxDisp())
+            self.speciesMinPatch.setValue(dlg_item.getMinArea())
             self.speciesDispUnit.setCurrentIndex(0)
             self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesItem.LANDUSE])
             self.habitatCodes.setCheckedItems(dlg_item.getCodes())

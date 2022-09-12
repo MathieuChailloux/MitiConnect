@@ -372,13 +372,14 @@ class ScenarioModel(DictModel):
         feedback.pushDebugInfo("applyItemGraphabGraph")
         name = item.getName()
         spName = spItem.getName()
+        maxDisp = spItem.getMaxDisp()
         checkGraphabInstalled(feedback)
         project = self.getItemGraphabProjectFile(name,spName)
         graphName = self.getItemGraphName(name,spName)
         linksetName = self.getItemLinksetName(name,spName)
         self.pluginModel.loadProject(project)
         createGraphabGraph(project,linksetName,
-            graphName=graphName,feedback=feedback)
+            dist=maxDisp,graphName=graphName,feedback=feedback)
                 
     def computeLocalMetric(self,item,spItem,feedback=None):
         if feedback is None:

@@ -220,6 +220,14 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
     # Ignores CustomException : exception raised from erc_tvb and already displayed.
     def exceptionHook(self,excType, excValue, tracebackobj):
         self.feedback.pushDebugInfo("exceptionHook")
+        tbinfofile = StringIO()
+        traceback.print_tb(tracebackobj, None, tbinfofile)
+        tbinfofile.seek(0)
+        tbinfo = tbinfofile.read()
+        errmsg = str(excType.__name__) + " : " + str(excValue)
+        separator = '-' * 80
+        msg = separator + "\n" + errmsg + "\n" + separator
+        self.feedback.pushDebugInfo("Traceback : " + tbinfo)
         if excType == utils.CustomException:
             self.feedback.pushDebugInfo("Ignoring custom exception : " + str(excValue))
         elif excType == utils.UserError:
@@ -229,15 +237,6 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         elif excType == utils.TodoError:
             self.feedback.todo_error(str(excValue))
         else:
-            tbinfofile = StringIO()
-            traceback.print_tb(tracebackobj, None, tbinfofile)
-            tbinfofile.seek(0)
-            tbinfo = tbinfofile.read()
-            errmsg = str(excType.__name__) + " : " + str(excValue)
-            separator = '-' * 80
-            msg = separator + "\n" + errmsg + "\n" + separator
-            self.feedback.pushDebugInfo(str(msg))
-            self.feedback.pushWarning("Traceback : " + tbinfo)
             self.feedback.error_msg(msg,prefix="Unexpected error")
         self.mTabWidget.setCurrentWidget(self.logTab)
         

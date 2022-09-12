@@ -530,15 +530,15 @@ class ScenarioConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("preDlg = " + str(item))
         if item is not None:
             self.pathFieldToAbs(item,ScenarioItem.LAYER)
-            if item.isLanduseMode():
-                 self.pathFieldToAbs(item,ScenarioItem.BASE)
+            # if item.isLanduseMode():
+                 # self.pathFieldToAbs(item,ScenarioItem.BASE)
 
     def postDlg(self,dlg_item):
         self.feedback.pushDebugInfo("postDlg = " + str(dlg_item))
         if dlg_item is not None:
             self.pathFieldToRel(dlg_item,ScenarioItem.LAYER)
-            if dlg_item.isLanduseMode():
-                 self.pathFieldToRel(dlg_item,ScenarioItem.BASE)
+            # if dlg_item.isLanduseMode():
+                 # self.pathFieldToRel(dlg_item,ScenarioItem.BASE)
             self.updateFrictionFromDlg(dlg_item)
     
     # def openDialog(self,item): 

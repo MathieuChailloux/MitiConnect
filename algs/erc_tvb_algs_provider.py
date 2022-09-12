@@ -105,12 +105,22 @@ class ErcTvbAlgorithmsProvider(GraphabProvider):
             ProcessingConfig.removeSetting('PROC_GRAPHAB')
         if ProcessingConfig.getSetting('JAVA_GRAPHAB'):
             ProcessingConfig.removeSetting('JAVA_GRAPHAB')
-        print("unload 2 sys.modules = " + str(sys.modules))
+        # print("unload 2 sys.modules = " + str(sys.modules))
+        
+    def getJavaCommand(self, useConfig = True):
+        cmd = super().getJavaCommand(useConfig=False)
+        print("getJavaCmd " + str(cmd))
+        return cmd
+        
+    def getJavaPath(self):
+        path = super().getJavaPath()
+        print("getJavaPath " + str(path))
+        return path
         
     def loadAlgorithms(self):
         # super().load()
         print("loadAlgorithms")
-        print("loadAlgorithms modules " + str(sys.modules))
+        # print("loadAlgorithms modules " + str(sys.modules))
         for a in self.alglist:
             self.addAlgorithm(a)
             

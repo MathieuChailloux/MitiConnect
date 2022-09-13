@@ -125,6 +125,7 @@ class PluginModel(abstract_model.MainModel):
     def loadProject(self, filename,retFlag=False):
         self.graphabPlugin.loadProject(filename)
         if retFlag:
+            assert(False)
             project = self.graphabPlugin.getProject(filename)
             print("retFlag True")
             print("filename " + str(filename))

@@ -237,6 +237,7 @@ class ScenarioModel(DictModel):
         base = scItem.getBase()
         # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         out_path = self.getItemLanduse(name,spName)
+        qgsUtils.removeLayerFromPath(out_path)
         # out_path = QgsProcessingUtils.generateTempFilename("out.tif")
         # out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
         # out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
@@ -308,6 +309,7 @@ class ScenarioModel(DictModel):
                 feedback.pushDebugInfo("in_path = " + str(in_path))
                 out_path = self.getItemFriction(name,specie)
                 feedback.pushDebugInfo("out_path = " + str(out_path))
+                qgsUtils.removeLayerFromPath(out_path)
                 nodata = 65535
                 inVals = qgsUtils.getRasterValsFromPath(in_path)
                 mInVals, mOutVals = matrix[::3], matrix[2::3]
@@ -339,6 +341,9 @@ class ScenarioModel(DictModel):
         minArea = spItem.getMinArea()
         outDir = self.getItemBaseDir(name,spName)
         nodata = 65535
+        qgsUtils.removeGroup(projectName)
+        projectFolder = os.path.dirname(project)
+        qgsUtils.removeFolder(projectFolder)
         createGraphabProject(landuse,codes,outDir,projectName,
             nodata=-nodata,patch_size=minArea,feedback=feedback)
 
@@ -354,7 +359,7 @@ class ScenarioModel(DictModel):
         project = self.getItemGraphabProjectFile(name,spName)
         linksetName = self.getItemLinksetName(name,spName)
         friction = self.getItemFriction(name,spName)
-        gProj = self.pluginModel.loadProject(project,retFlag=True)
+        self.pluginModel.loadProject(project)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
         if gProj:
             print("gproj")
@@ -374,10 +379,15 @@ class ScenarioModel(DictModel):
         spName = spItem.getName()
         maxDisp = spItem.getMaxDisp()
         checkGraphabInstalled(feedback)
+        projName = self.getItemGraphabProjectName(name,spName)
         project = self.getItemGraphabProjectFile(name,spName)
         graphName = self.getItemGraphName(name,spName)
         linksetName = self.getItemLinksetName(name,spName)
         self.pluginModel.loadProject(project)
+        gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        if gProj:
+            print("grpoj")
+            gProj.removeGraph(graphName)
         createGraphabGraph(project,linksetName,
             dist=maxDisp,graphName=graphName,feedback=feedback)
                 

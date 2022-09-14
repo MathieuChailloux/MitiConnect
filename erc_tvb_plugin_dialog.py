@@ -33,6 +33,7 @@ from io import StringIO
 
 from .qgis_lib_mc import feedbacks, log, utils, abstract_model, qgsTreatments
 from .steps import (params, data, species, friction, scenario)#, species, friction, scenarios)
+from . import tabs
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 PLUGIN_DIR = os.path.dirname(__file__)
@@ -188,10 +189,12 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.speciesConnector = species.SpeciesConnector(self,self.pluginModel.speciesModel)
         self.frictionConnector = friction.FrictionConnector(self,self.pluginModel.frictionModel)
         self.scenarioConnector = scenario.ScenarioConnector(self,self.pluginModel.scenarioModel)
+        self.tabConnector = tabs.TabConnector(self)
+        self.tabConnector.loadHelpFile()
         self.connectors = [ self.feedback,
             self.paramsConnector, self.importConnector,
             self.landuseConnector, self.speciesConnector,
-            self.frictionConnector, self.scenarioConnector ]
+            self.frictionConnector, self.scenarioConnector, self.tabConnector ]
             
     def connectComponents(self):
         super().connectComponents(saveAsFlag=True)

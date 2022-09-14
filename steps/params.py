@@ -47,6 +47,10 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
     def __init__(self,parentModel):
         self.parser_name = "ParamsModel"
         self.is_runnable = False
+        self.localMetric = 0
+        self.globalMetric = 0
+        self.distParam = 1000
+        self.probaParam = 0
         # self.workspace = None
         # self.extentLayer = None
         # self.resolution = 0.0
@@ -69,6 +73,22 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
         xmlStr += "/>"
         return xmlStr
         
+    def setLocalMetric(self,val):
+        self.feedback.pushDebugInfo("setLocalMetric " + str(val))
+        self.localMetric = val
+    def setGlobalMetric(self,val):
+        self.feedback.pushDebugInfo("setGlobalMetric")
+        self.globalMetric = val
+    def setDistParam(self,val):
+        self.feedback.pushDebugInfo("setDistParam")
+        self.distParam = val
+    def setProbaParam(self,val):
+        self.feedback.pushDebugInfo("setProbaParam")
+        self.probaParam = val
+        
+    def getGraphabParams(self):
+        return (self.localMetric, self.globalMetric, self.distParam, self.probaParam)
+        
 
 class ParamsConnector:
 
@@ -88,6 +108,12 @@ class ParamsConnector:
         self.dlg.workspace.setStorageMode(QgsFileWidget.GetDirectory)
         self.dlg.workspace.fileChanged.connect(self.model.setWorkspace)
         self.dlg.paramsCrs.crsChanged.connect(self.model.setCrs)
+        # graphab params connectors
+        self.dlg.localMetric.currentIndexChanged.connect(self.model.setLocalMetric)
+        self.dlg.globalMetric.currentIndexChanged.connect(self.model.setGlobalMetric)
+        self.dlg.probaParam.currentIndexChanged.connect(self.model.setProbaParam)
+        self.dlg.distParam.valueChanged.connect(self.model.setDistParam)
+        self.dlg.distParam.setValue(1000)
         header = self.dlg.paramsView.horizontalHeader()     
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         self.model.layoutChanged.emit()

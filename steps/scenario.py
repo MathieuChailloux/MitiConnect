@@ -57,7 +57,7 @@ def createGraphabProject(landuse,codes,out_dir,project_name,
         'LANDCODE' : code_str,
         'NAMEPROJECT' : project_name,
         'NODATA' : nodata,
-        'SIZEPATCHES' : 0 }
+        'SIZEPATCHES' : patch_size }
     return applyProcessingAlg('erc_tvb','create_project',params,feedback=feedback)
 def createGraphabLinkset(project,name,frictionPath,feedback=None):
     params = { 'CODE' : '',
@@ -77,11 +77,11 @@ def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
     return applyProcessingAlg('erc_tvb','create_graph',params,feedback=feedback)
 def computeMetric(project,graphName,metricName=0,unit=0,
         d=1000,p=0,localMetric=True,feedback=None):
-    params = { 'DISTUNIT' : 0,
+    params = { 'DISTUNIT' : unit,
         'DPARAMETER' : d,
         'GRAPHNAME' : graphName,
         'INPUT' : project,
-        'METRICSNAME' : 0,
+        'METRICSNAME' : metricName,
         'PPARAMETER' : p }
     alg_name = 'local_metric' if localMetric else 'global_metric'
     return applyProcessingAlg('erc_tvb',alg_name,params,feedback=feedback)
@@ -399,7 +399,9 @@ class ScenarioModel(DictModel):
         project = self.getItemGraphabProjectFile(name,spName)
         graphName = self.getItemGraphName(name,spName)
         self.pluginModel.loadProject(project)
-        computeLocalMetric(project,graphName,feedback=feedback)
+        l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
+        self.feedback.pushDebugInfo("l = " + str(l))
+        computeLocalMetric(project,graphName,metricName=l,d=d,p=p,feedback=feedback)
                 
     def computeGlobalMetric(self,item,spItem,feedback=None):
         if feedback is None:
@@ -409,7 +411,8 @@ class ScenarioModel(DictModel):
         project = self.getItemGraphabProjectFile(name,spName)
         graphName = self.getItemGraphName(name,spName)
         self.pluginModel.loadProject(project)
-        return computeGlobalMetric(project,graphName,feedback=feedback)
+        l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
+        return computeGlobalMetric(project,graphName,metricName=g,d=d,p=p,feedback=feedback)
         
     def removeItems(self,indexes):
         names = [self.items[ind.row()].getName() for ind in indexes]

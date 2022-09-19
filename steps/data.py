@@ -143,11 +143,12 @@ class ImportModel(DictModel):
             table.append([inVal,inVal,f[outField]])
         return table
         
-    def addItem(self,item):
+    def addItem(self,item,addValues=False):
         super().addItem(item)
-        values = self.getItemValues(item)
-        frictionModel = self.pluginModel.frictionModel
-        frictionModel.addRowFromImport(values,item.getName())
+        if addValues:
+            values = self.getItemValues(item)
+            frictionModel = self.pluginModel.frictionModel
+            frictionModel.addRowFromImport(values,item.getName())
         
     def applyItemWithContext(self,item,context,feedback):
         name = item.getName()
@@ -336,7 +337,7 @@ class ImportConnector(TableToDialogConnector):
             self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
             item = ImportItem.fromChildItem(dlgItem,feedback=self.feedback)
             item.setChild(dlgItem)
-            self.model.addItem(item)
+            self.model.addItem(item,addValues=False)
             self.model.layoutChanged.emit()
             # frictionModel = self.model.pluginModel.frictionModel
             # self.feedback.pushDebugInfo("values = " + str(dlgItem.values))

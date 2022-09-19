@@ -27,7 +27,7 @@ import os, sys
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from ..qgis_lib_mc import abstract_model
+from ..qgis_lib_mc import abstract_model, feedbacks
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -114,6 +114,9 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
         self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
             name = self.landuseDialogName.text()
+            if not name.isalnum():
+                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+                continue
             imports = [ i.getName() for i in self.model.items ]
             return (name, imports)
         return None

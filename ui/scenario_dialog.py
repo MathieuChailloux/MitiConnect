@@ -318,8 +318,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
     def showDialog(self):
         while self.exec_():
             name = self.scName.text()
-            if not name:
-                self.errorDialog(self.tr("Empty name"))
+            if not name.isalnum():
+                self.feedback.user_error("Name '" + str(name) + "' is not alphanumeric")
                 continue
             if self.newFlag and self.scModel.scExists(name):
                 self.errorDialog(self.tr("Scenario already exists : " + name))
@@ -410,17 +410,17 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             self.scLayer.setFilePath(dlgItem.getLayer())
         
     def errorDialog(self,msg):
-        feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
+        feedbacks.launchDialog(self,self.tr('Wrong parameter value'),msg)
         
     def showDialog(self):
         while self.exec_():
             name = self.scName.text()
-            if not name:
-                self.errorDialog(self.tr("Empty name"))
+            if not name.isalnum():
+                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
                 continue
             base = self.scLanduseCombo.currentText()
             if not base:
-                self.errorDialog(self.tr("Empty landuse"))
+                feedbacks.paramError(self.tr("Empty landuse"),parent=self)
                 continue
             # layer = self.scLayer.filePath()
             # if not layer:

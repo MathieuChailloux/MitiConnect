@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 # from qgis.gui import QgsCheckableItemModel
 
-from ..qgis_lib_mc import abstract_model
+from ..qgis_lib_mc import abstract_model, feedbacks
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -135,6 +135,9 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
     def showDialog(self):
         while self.exec_():
             name = self.speciesID.text()
+            if not name.isalnum():
+                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+                continue
             full_name = self.speciesFullName.text()
             max_disp = self.speciesMaxDisp.value()
             disp_unit = self.speciesDispUnit.currentIndex()

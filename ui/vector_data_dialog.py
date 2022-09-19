@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 # from qgis.core import QgsMapLayerProxyModel
 
-from ..qgis_lib_mc import utils, qgsUtils, abstract_model
+from ..qgis_lib_mc import utils, qgsUtils, abstract_model, feedbacks
 from ..ui.raster_data_dialog import ReclassItem, ReclassModel
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -154,15 +154,16 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         while self.exec_():
             dict = {}
             name = self.nameValue.text()
-            if not name:
-                self.feedback.user_error("Empty name")
+            if not name.isalnum():
+                feedbacks.paramNameError(name)
+                continue
             dict[VectorDlgItem.NAME] = name
             layer = self.vectorLayerCombo.currentLayer()
             if not layer:
-                self.feedback.user_error("No layer selected")
+                feedbacks.paramError("No layer selected",parent=self)
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
-                self.feedback.user_error("Could not load layer " + str(layer_path))
+                feedbacks.paramError("Could not load layer " + str(layer_path))
             dict[VectorDlgItem.INPUT] = layer_path
             dict[VectorDlgItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
             burn_field_mode = self.vectorFieldMode.isChecked()
@@ -170,7 +171,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             fieldname = self.vectorFieldCombo.currentField()
             dict[VectorDlgItem.BURN_FIELD] = fieldname
             if not fieldname:
-                self.feedback.user_error("No field selected")
+                feedbacks.paramError("No field selected")
             dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()

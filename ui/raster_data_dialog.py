@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 # from qgis.core import QgsMapLayerProxyModel
 
-from ..qgis_lib_mc import utils, qgsUtils, abstract_model
+from ..qgis_lib_mc import utils, qgsUtils, abstract_model, feedbacks
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -146,14 +146,16 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict = {}
             name = self.nameValue.text()
             dict[RasterDlgItem.NAME] = name
-            if not name:
-                self.feedback.user_error("Empty name")
+            if not name.isalnum():
+                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+                continue
             layer = self.rasterDataLayerCombo.currentLayer()
             if not layer:
-                self.feedback.user_error("No layer selected")
+                feedbacks.paramError("No layer selected",parent=self)
+                continue
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
-                self.feedback.user_error("Could not load layer " + str(layer_path))
+                feedbacks.paramError("Could not load layer " + str(layer_path),parent=self)
             dict[RasterDlgItem.INPUT] = layer_path
             # dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)

@@ -96,8 +96,13 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.MIN_AREA]
     def getMaxDisp(self):
         return self.dict[self.MAX_DISP]
-    def getCodes(self):
+    def getCodesFull(self):
         return ast.literal_eval(self.dict[self.CODES])
+    def getCodesVal(self):
+        descrList = self.getCodesFull()
+        codesList = [s.split(" - ")[0] for s in descrList]
+        return codesList
+        # return ast.literal_eval(codes)
     
                 
 
@@ -160,7 +165,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         return None
         
     def updateUi(self,dlg_item):
-        l = self.pluginModel.frictionModel.getCodesStr()
+        l = self.pluginModel.frictionModel.getCodesStrComplete()
         self.feedback.pushDebugInfo("l = " + str(l))
         self.habitatCodes.insertItems(0,l)
         # self.habitatCodes.model.layoutChanged.emit()
@@ -171,7 +176,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.speciesMinPatch.setValue(dlg_item.getMinArea())
             self.speciesDispUnit.setCurrentIndex(0)
             self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesItem.LANDUSE])
-            self.habitatCodes.setCheckedItems(dlg_item.getCodes())
+            self.habitatCodes.setCheckedItems(dlg_item.getCodesFull())
             # self.habitatCodes.setCheckedItems(dlg_item.dict[SpeciesItem.CODES])
             # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesItem.GROUP])
             extent_mode = dlg_item.dict[SpeciesItem.EXTENT_MODE]

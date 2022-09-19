@@ -29,6 +29,7 @@ from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
 
+from ..qgis_lib_mc import utils
 from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector, CheckableComboDelegate
 # from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
@@ -245,6 +246,9 @@ class ScenarioModel(DictModel):
         crs, extent, resolution = self.pluginModel.getRasterParams()
         if scItem.isLanduseMode():
             in_path = self.pluginModel.getLanduseOutLayerFromName(base)
+            if not utils.fileExists(in_path):
+                feedback.user_error("File '"+ str(in_path) + " does not exist"
+                    + ", launch landuse " + str(base) + " in step 2")
             feedback.pushDebugInfo("Copying " + in_path + " to " + out_path)
             shutil.copy(in_path,out_path)
             # self.pluginModel.paramsModel.normalizeRaster(
@@ -256,6 +260,9 @@ class ScenarioModel(DictModel):
         else:
             baseItem = self.getItemFromName(base)
             in_path = self.getItemLanduse(base,spName)
+            if not utils.fileExists(in_path):
+                feedback.user_error("File '"+ str(in_path) + " does not exist"
+                    + ", launch scenario " + str(base) + " landuse")
             # Rasterize
             vector_rel_path = scItem.getLayer()
             vector_path = self.pluginModel.getOrigPath(vector_rel_path)
@@ -337,7 +344,7 @@ class ScenarioModel(DictModel):
         project = self.getItemGraphabProjectFile(name,spName)
         landuse = self.getItemLanduse(name,spName)
         friction = self.getItemFriction(name,spName)
-        codes = spItem.getCodes()
+        codes = spItem.getCodesVal()
         minArea = spItem.getMinArea()
         outDir = self.getItemBaseDir(name,spName)
         nodata = 65535

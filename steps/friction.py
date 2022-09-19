@@ -51,6 +51,16 @@ class FrictionModel(ExtensiveTableModel):
         codes = [ i.dict[self.ROW_CODE] for i in self.items ]
         freeVals = utils.getIntValues(nbVals,exclude_values=codes)
         return freeVals
+    def getCodesStrComplete(self):
+        l = []
+        for i in self.items:
+            s = str(i.dict[self.idField])
+            s += " - "
+            s += str(i.dict[self.IMPORT])
+            s += " - "
+            s += str(i.dict[self.IMPORT_VAL])
+            l.append(s)
+        return l
         
     def addRowFromImport(self,values,name):
         nbVals = len(values)

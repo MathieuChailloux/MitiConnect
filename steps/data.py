@@ -182,7 +182,7 @@ class ImportModel(DictModel):
                 # Rasterize
                 raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
                 qgsTreatments.applyRasterization(unique_path,raster_path,
-                    extent,resolution,field=outField,out_type=Qgis.UInt16,nodata_val=0,
+                    extent,resolution,field=outField,out_type=Qgis.UInt16,nodata_val=65535,
                     all_touch=all_touch,context=context,feedback=feedback)
                 # Reclassify
                 assoc_layer = qgsUtils.loadVectorLayer(assoc_path)

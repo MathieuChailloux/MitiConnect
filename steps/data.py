@@ -410,6 +410,7 @@ class LanduseModel(DictModel):
                                     
     def applyItemWithContext(self,item,context,feedback,indexes=None):
         names = item.getImportsAsList()
+        names.reverse()
         feedback.pushDebugInfo("names = " + str(names))
         importModel = self.pluginModel.importModel
         all_names = [i.getName() for i in importModel.items]

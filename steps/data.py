@@ -186,9 +186,11 @@ class ImportModel(DictModel):
                 # Reclassify
                 assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
                 reclassDict = self.pluginModel.frictionModel.getReclassDict(name)
+                self.feedback.pushDebugInfo("reclassDict = " + str(reclassDict))
                 reclassTable = []
                 for f in assoc_layer.getFeatures():
-                    initVal = f[burnField]
+                    initVal = str(f[burnField])
+                    self.feedback.pushDebugInfo("initVal = " + str(initVal))
                     tmpVal = f[outField]
                     outVal = reclassDict[initVal]
                     row = [tmpVal,tmpVal,outVal]
@@ -338,7 +340,7 @@ class ImportConnector(TableToDialogConnector):
             self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
             item = ImportItem.fromChildItem(dlgItem,feedback=self.feedback)
             item.setChild(dlgItem)
-            self.model.addItem(item,addValues=False)
+            self.model.addItem(item,addValues=True)
             self.model.layoutChanged.emit()
             # frictionModel = self.model.pluginModel.frictionModel
             # self.feedback.pushDebugInfo("values = " + str(dlgItem.values))

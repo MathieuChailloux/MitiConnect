@@ -207,7 +207,7 @@ class ScenarioModel(DictModel):
         
     
     def applyItemWithContext(self,scItem,context,feedback):
-        feedback.pushDebugInfo("applyItemLanduse")
+        feedback.pushDebugInfo("applyItemWithContext")
         name = scItem.getName()
         if scItem.getStatusLanduse():
             msg = self.tr("Landuse layer already computed for scenario ")

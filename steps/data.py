@@ -158,6 +158,7 @@ class ImportModel(DictModel):
         # out_type = Qgis.Byte
         out_path = self.getItemOutPath(item)
         # out_path = self.pluginModel.getOrigPath(out_rel_path)
+        qgsUtils.removeLayerFromPath(out_path)
         qgsUtils.removeRaster(out_path)
         crs, extent, resolution = self.pluginModel.getRasterParams()
         if item.isVector():
@@ -180,7 +181,7 @@ class ImportModel(DictModel):
                 # Rasterize
                 raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
                 qgsTreatments.applyRasterization(unique_path,raster_path,
-                    extent,resolution,field=burnField,out_type=Qgis.UInt16,nodata_val=0,
+                    extent,resolution,field=outField,out_type=Qgis.UInt16,nodata_val=0,
                     all_touch=all_touch,context=context,feedback=feedback)
                 # Reclassify
                 assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
@@ -412,6 +413,7 @@ class LanduseModel(DictModel):
                 feedback.user_error("Please launch imports first, file '"
                     + str(p) + " does not exist")
         out_path = self.getItemOutPath(item)
+        qgsUtils.removeLayerFromPath(out_path)
         qgsUtils.removeRaster(out_path)
         min_type, nodata_val = Qgis.UInt16, 0
         qgsTreatments.applyMergeRaster(paths,out_path,out_type=min_type,

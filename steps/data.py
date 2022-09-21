@@ -156,6 +156,7 @@ class ImportModel(DictModel):
         input_path = self.pluginModel.getOrigPath(input_rel_path)
         # input = qgsUtils.loadLayer(input_path)
         # out_type = Qgis.Byte
+        reclassified = qgsUtils.mkTmpPath('reclassified.tif')
         out_path = self.getItemOutPath(item)
         # out_path = self.pluginModel.getOrigPath(out_rel_path)
         qgsUtils.removeLayerFromPath(out_path)
@@ -197,8 +198,9 @@ class ImportModel(DictModel):
                     reclassTable += row
                 min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(raster_path,reclassTable,
-                    out_path,out_type=min_type,nodata_val=nodata_val,
+                    reclassified,out_type=min_type,nodata_val=nodata_val,
                     boundaries_mode=2,context=context,feedback=feedback)
+                to_norm_path = reclassified
             else:
                 burnVal = childItem.getBurnVal()
                 min_type, nodata_val = Qgis.UInt16, 0
@@ -218,10 +220,10 @@ class ImportModel(DictModel):
                     boundaries_mode=2,nodata_missing=True,
                     context=context,feedback=feedback)
                 to_norm_path = reclassified
-            self.pluginModel.paramsModel.normalizeRaster(
-                to_norm_path,out_path=out_path,
-                context=context,
-                feedback=feedback)
+        self.pluginModel.paramsModel.normalizeRaster(
+            to_norm_path,out_path=out_path,
+            context=context,
+            feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 
     # Returns absolute path of 'item' output layer

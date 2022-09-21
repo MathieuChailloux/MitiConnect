@@ -87,7 +87,7 @@ class FrictionModel(ExtensiveTableModel):
         for i in self.items:
             if self.getItemImport(i) == importName:
                 outVal = i.dict[self.idField]
-                inVal = i.dict[self.IMPORT_VAL]
+                inVal = str(i.dict[self.IMPORT_VAL])
                 table[inVal] = outVal
         return table
         

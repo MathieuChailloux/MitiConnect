@@ -190,8 +190,12 @@ class ImportModel(DictModel):
                 self.feedback.pushDebugInfo("reclassDict = " + str(reclassDict))
                 reclassTable = []
                 for f in assoc_layer.getFeatures():
+                    # initVal = str(f[burnField])
                     initVal = str(f[burnField])
                     self.feedback.pushDebugInfo("initVal = " + str(initVal))
+                    self.feedback.pushDebugInfo("initVal type = " + str(initVal.__class__.__name__))
+                    if len(reclassDict) > 0:
+                        self.feedback.pushDebugInfo("reclassDict type = " + str(list(reclassDict)[0].__class__.__name__))
                     tmpVal = f[outField]
                     outVal = reclassDict[initVal]
                     row = [tmpVal,tmpVal,outVal]

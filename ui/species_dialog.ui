@@ -188,11 +188,6 @@
       </item>
       <item>
        <property name="text">
-        <string>kilomters</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
         <string>cost unit</string>
        </property>
       </item>
@@ -252,17 +247,7 @@
       </property>
       <item>
        <property name="text">
-        <string>m²</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>km²</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>pixels</string>
+        <string>ha</string>
        </property>
       </item>
      </widget>

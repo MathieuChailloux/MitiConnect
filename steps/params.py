@@ -97,11 +97,11 @@ class ParamsConnector:
         self.model = paramsModel
         
     def initGui(self):
-        self.dlg.paramsView.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        # self.dlg.paramsView.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.dlg.paramsCrs.setCrs(defaultCrs)
         
     def connectComponents(self):
-        self.dlg.paramsView.setModel(self.model)
+        # self.dlg.paramsView.setModel(self.model)
         self.dlg.rasterResolution.valueChanged.connect(self.model.setResolution)
         self.dlg.extentLayer.setStorageMode(QgsFileWidget.GetFile)
         self.dlg.extentLayer.fileChanged.connect(self.model.setExtentLayer)
@@ -111,11 +111,11 @@ class ParamsConnector:
         # graphab params connectors
         self.dlg.localMetric.currentIndexChanged.connect(self.model.setLocalMetric)
         self.dlg.globalMetric.currentIndexChanged.connect(self.model.setGlobalMetric)
-        self.dlg.probaParam.currentIndexChanged.connect(self.model.setProbaParam)
-        self.dlg.distParam.valueChanged.connect(self.model.setDistParam)
-        self.dlg.distParam.setValue(1000)
-        header = self.dlg.paramsView.horizontalHeader()     
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        # self.dlg.probaParam.currentIndexChanged.connect(self.model.setProbaParam)
+        # self.dlg.distParam.valueChanged.connect(self.model.setDistParam)
+        # self.dlg.distParam.setValue(1000)
+        # header = self.dlg.paramsView.horizontalHeader()     
+        # header.setSectionResizeMode(0, QHeaderView.Stretch)
         self.model.layoutChanged.emit()
         
     def tr(self, message):

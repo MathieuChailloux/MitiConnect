@@ -440,9 +440,9 @@ class LanduseConnector(AbstractConnector):
         self.feedback = landuseModel.feedback
         super().__init__(landuseModel,self.dlg.landuseView,
                         addButton=None,
-                        removeButton=self.dlg.landuseRemove,
-                        runButton=self.dlg.landuseRun,
-                        selectionCheckbox=self.dlg.landuseSelection)
+                        removeButton=self.dlg.landuseRemove)#,
+                        # runButton=self.dlg.landuseRun,
+                        #selectionCheckbox=self.dlg.landuseSelection)
     
     def connectComponents(self):
         super().connectComponents()

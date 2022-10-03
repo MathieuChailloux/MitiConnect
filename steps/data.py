@@ -152,6 +152,7 @@ class ImportModel(DictModel):
         
     def applyItemWithContext(self,item,context,feedback):
         name = item.getName()
+        self.pluginModel.paramsModel.checkInit()
         input_rel_path = item.getInput()
         input_path = self.pluginModel.getOrigPath(input_rel_path)
         # input = qgsUtils.loadLayer(input_path)

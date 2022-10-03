@@ -32,7 +32,7 @@ import traceback
 from io import StringIO
 
 from .qgis_lib_mc import feedbacks, log, utils, abstract_model, qgsTreatments
-from .steps import (params, data, species, friction, scenario)#, species, friction, scenarios)
+from .steps import (params, data, species, friction, scenario, launches)#, species, friction, scenarios)
 from . import tabs
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -59,9 +59,10 @@ class PluginModel(abstract_model.MainModel):
         self.speciesModel = species.SpeciesModel(self)
         self.frictionModel = friction.FrictionModel(self)
         self.scenarioModel = scenario.ScenarioModel(self)
+        self.launchModel = launches.LaunchModel(self)
         self.models = [ self.paramsModel, self.importModel,
             self.landuseModel, self.speciesModel, self.frictionModel,
-            self.scenarioModel ]
+            self.scenarioModel, self.launchModel ]
             
     def getLanduseNames(self):
         return self.landuseModel.getNames()
@@ -189,12 +190,14 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.speciesConnector = species.SpeciesConnector(self,self.pluginModel.speciesModel)
         self.frictionConnector = friction.FrictionConnector(self,self.pluginModel.frictionModel)
         self.scenarioConnector = scenario.ScenarioConnector(self,self.pluginModel.scenarioModel)
+        self.launchConnector = launches.LaunchConnector(self,self.pluginModel.launchModel)
         self.tabConnector = tabs.TabConnector(self)
         self.tabConnector.loadHelpFile()
         self.connectors = [ self.feedback,
             self.paramsConnector, self.importConnector,
             self.landuseConnector, self.speciesConnector,
-            self.frictionConnector, self.scenarioConnector, self.tabConnector ]
+            self.frictionConnector, self.scenarioConnector,
+            self.launchConnector, self.tabConnector ]
             
     def connectComponents(self):
         super().connectComponents(saveAsFlag=True)

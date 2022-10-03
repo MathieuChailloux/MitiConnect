@@ -81,7 +81,6 @@ class ScenarioConnector(TableToDialogConnector):
         self.dlg.scenarioUp.clicked.connect(self.upgradeItem)
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
         self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
-        self.model.pluginModel.speciesModel.layoutChanged.connect(self.refreshSpecies)
                 
     def preDlg(self,item):
         self.feedback.pushDebugInfo("preDlg = " + str(item))

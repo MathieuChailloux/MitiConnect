@@ -155,8 +155,15 @@ class FrictionConnector(AbstractConnector):
         super().connectComponents()
         # self.dlg.frictionLoadClass.clicked.connect(self.model.reload)
         # self.dlg.frictionRun.clicked.connect(self.applyItems)
+        self.dlg.classView.setModel(self.model)
+        self.model.layoutChanged.connect(self.hideSpeciesColumn)
         self.dlg.frictionSave.clicked.connect(self.saveCSVAction)
         self.dlg.frictionLoad.clicked.connect(self.loadCSVAction)
+        
+    def hideSpeciesColumn(self):
+        nbCol = self.model.columnCount()
+        for n in range(4,nbCol):
+            self.dlg.classView.hideColumn(n)
         
     # Return indexes currently selected in friction view
     def getSelectedIndexes(self):

@@ -460,8 +460,15 @@ class LaunchConnector(TableToDialogConnector):
         self.dlg.speciesSelection.clear()
         self.dlg.speciesSelection.insertItems(0,names)
 
+    def refreshScenarios(self):   
+        names = self.model.pluginModel.scenarioModel.getNames()
+        self.dlg.scenariosSelection.clear()
+        self.dlg.scenariosSelection.insertItems(0,names)
+
     def connectComponents(self):
         super().connectComponents()
+        self.model.pluginModel.speciesModel.layoutChanged.connect(self.refreshSpecies)
+        self.model.pluginModel.scenarioModel.layoutChanged.connect(self.refreshScenarios)
         self.dlg.landuseRun.clicked.connect(self.landuseRun)
         self.dlg.frictionRun.clicked.connect(self.frictionRun)
         self.dlg.projectRun.clicked.connect(self.graphabProjectRun)

@@ -54,6 +54,8 @@ class ScenarioModel(DictModel):
         
     def getScenarioNames(self):
         return [i.getName() for i in self.items]
+    def getNames(self):
+        return self.getScenarioNames()
     def getItemFromName(self,name):
         for i in self.items:
             if i.getName() == name:

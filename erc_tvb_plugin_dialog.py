@@ -204,10 +204,12 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.initializeProject.clicked.connect(self.createNewProject)
         
     def createNewProject(self):
-        createDlg = CreateProjectDialog(parent=self)
-        d, n, workspace = createDlg.showDialog()
-        if workspace:
-            self.initializeWorkspace(workspace,n)
+        dlgObj = CreateProjectDialog(parent=self)
+        createDlg = dlgObj.showDialog()
+        if createDlg:
+            d, n, workspace = createDlg
+            if workspace:
+                self.initializeWorkspace(workspace,n)
         
     # def getScenariosDir(self):
         # self.scDir = utils.joinPath(workspace,"Scenarios")

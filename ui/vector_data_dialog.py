@@ -72,6 +72,15 @@ class VectorDlgItem(abstract_model.DictItem):
         return self.dict[self.BUFFER_MODE]
     def getBufferExpr(self):
         return self.dict[self.BUFFER_EXPR]
+        
+    # def getValues(self):
+        # if self.isBurnFieldMode():
+            # layer = self.getLayerPath()
+            # fieldname = self.getBurnField()
+            # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        # else:
+            # values = [self.getBurnVal()]
+        # return values
 
 
 # TODO : idée : génération automatique XML depuis QDialog 
@@ -140,11 +149,11 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def setField(self,fieldname):
         layer = self.vectorLayerCombo.currentLayer()
-        self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        # self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
         
     def setFixedMode(self,checked):
         self.setBurnMode(not checked)
-        self.values = [self.vectorFixedValue.value()]
+        # self.values = [self.vectorFixedValue.value()]
         
     def setBufferMode(self,checked):
         self.vectorBufferValue.setEnabled(checked)
@@ -177,11 +186,11 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
             dict[VectorDlgItem.BUFFER_EXPR] = self.vectorBufferValue.value()
             self.data_item = VectorDlgItem(dict)
-            if burn_field_mode:
-                layer = self.vectorLayerCombo.currentLayer()
-                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
-            else:
-                values = [self.vectorFixedValue.value()]
+            # if burn_field_mode:
+                # layer = self.vectorLayerCombo.currentLayer()
+                # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+            # else:
+                # values = [self.vectorFixedValue.value()]
             self.feedback.pushDebugInfo("values sd = " + str(values))
             self.data_item.values = values
             self.feedback.pushDebugInfo("dict = " + str(dict))

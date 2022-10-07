@@ -85,6 +85,8 @@ class ImportItem(DictItemWithChild):
         
     def getReclassTable(self):
         return self.child.getReclassTable()
+    def getValues(self):
+        return self.child.getValues()
         
     def updateFromOther(self,other):
         for k in other.dict:
@@ -128,11 +130,15 @@ class ImportModel(DictModel):
             if item.child.isBurnFieldMode():
                 layer = qgsUtils.loadVectorLayer(layer_path)
                 fieldname = item.child.getBurnField()
-                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+                # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+                values = qgsUtils.getVectorUniqueVals(layer,fieldname,
+                    feedback=self.feedback)
             else:
                 values = [None]
         else:
-            values = qgsTreatments.getRasterUniqueVals(layer_path,self.feedback)
+            values = item.getValues()
+            self.feedback.pushDebugInfo("Raster values = " + str(values))
+            # values = qgsTreatments.getRasterUniqueVals(layer_path,self.feedback)
         return values
                    
     def getReclassTableFromUniqueAssoc(assoc_path,inField,outField):

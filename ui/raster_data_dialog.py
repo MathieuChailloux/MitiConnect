@@ -131,7 +131,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         if layer:
             vals = qgsTreatments.getRasterUniqueVals(layer,
                 feedback=self.feedback)
-            self.values = vals
+            # self.values = vals
             nb_vals = len(vals)
             free_vals = self.class_model.getFreeVals(nb_vals)
             self.reclass_model.items = [ReclassItem.fromValues(in_val,out_val,feedback=self.feedback)
@@ -170,7 +170,8 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             # dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)
             self.data_item.setChild(self.rasterDataDialogView.model())
-            self.data_item.values = self.values
+            # self.data_item.values = self.values
+            self.data_item.isScenario = self.isScenario.isChecked()
             # self.data_item.setChild(self.reclass_model)
             return self.data_item
         return None

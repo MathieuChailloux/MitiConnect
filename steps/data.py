@@ -150,11 +150,17 @@ class ImportModel(DictModel):
         return table
         
     def addItem(self,item,addValues=False):
+        name = item.getName()
+        # self.pluginModel.check
         super().addItem(item)
         if addValues:
             values = self.getItemValues(item)
             frictionModel = self.pluginModel.frictionModel
             frictionModel.addRowFromImport(values,item.getName())
+        # if item.child.isScenario:
+            # out_layer = self.getItemOutPath(item)
+            # self.pluginModel.scenarioModel.addScenarioFromLayer(name,out_layer)
+            # self.internal_error("TODO : isScenario")
         
     def applyItemWithContext(self,item,context,feedback):
         name = item.getName()

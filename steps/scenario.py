@@ -64,6 +64,13 @@ class ScenarioModel(DictModel):
     def scExists(self,name):
         i = self.getItemFromName(name)
         return (i is not None)
+
+    def addScenarioFromLayer(self,name,layer):
+        self.feedback.pushDebugInfo("addScenarioFromLayer")
+        item = ScenarioItem.fromValues(name,base=layer,
+            feedback=self.feedback)
+        self.addItem(item)
+        self.layoutChanged.emit()
                                 
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -133,20 +140,23 @@ class ScenarioConnector(TableToDialogConnector):
             # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
         else:
             self.feedback.pushDebugInfo("openDialog landuse")   
+            dataNames = self.model.pluginModel.getDataNames()
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
-                feedback=self.feedback,luModel=self.model.pluginModel.landuseModel)
+                feedback=self.feedback,dataNames=dataNames)
+                #luModel=self.model.pluginModel.landuseModel)
         return scenarioDlg
                         
     def openDialogLanduseNew(self):
+        dataNames = self.model.pluginModel.getDataNames()
         item_dlg = ScenarioLanduseDialog(self.dlg,None,
-            feedback=self.feedback,luModel=self.model.pluginModel.landuseModel)
+            feedback=self.feedback,dataNames=dataNames)
+            #luModel=self.model.pluginModel.landuseModel)
         dlg_item = item_dlg.showDialog()
         if dlg_item:
             # item = self.mkItemFromDlgItem(dlg_item)
             # self.model.addItem(item)
             self.model.addItem(dlg_item)
             self.model.layoutChanged.emit()
-            
     
     def updateFromDlgItem(self,item,dlg_item):
         item.updateFromDlgItem(dlg_item)

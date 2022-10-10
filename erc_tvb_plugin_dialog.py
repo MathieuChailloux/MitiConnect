@@ -123,6 +123,23 @@ class PluginModel(abstract_model.MainModel):
         extent = self.paramsModel.getExtentString()
         resolution = self.paramsModel.getResolution()
         return (crs, extent, resolution)
+
+    def getImportNames(self):
+        return [i.getName() for i in self.importModel.items]
+    def getDataNames(self):
+        dataItems = self.importModel.items + self.landuseModel.items
+        return [i.getName() for i in dataItems]
+    def getDataOutPathFromName(self,name):
+        importItem = self.importModel.getItemFromName(name)
+        if importItem:
+            return self.importModel.getItemOutPath(importItem)
+        else:
+            landuseItem = self.landuseModel.getItemFromName(name)
+            if landuseItem:
+                return self.landuseModel.getItemOutPath(landuseItem)
+            else:
+                self.feedback.pushDebugInfo("No data item named '"
+                    + str(name) + "'")
         
     def loadProject(self, filename,retFlag=False):
         self.graphabPlugin.loadProject(filename)

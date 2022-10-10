@@ -193,6 +193,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
                 # values = [self.vectorFixedValue.value()]
             self.feedback.pushDebugInfo("values sd = " + str(values))
             self.data_item.values = values
+            self.data_item.isScenario = self.isScenario.isChecked()
             self.feedback.pushDebugInfo("dict = " + str(dict))
             return self.data_item
         return None

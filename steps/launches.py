@@ -196,7 +196,13 @@ class LaunchModel(DictModel):
         out_bname = scName + "_" + spName+ "_" + suffix + ".tif"
         return self.normPath(joinPath(spDir,out_bname))
     def getItemLanduse(self,scName,spName):
-        return self.getItemOutBase(scName,spName,suffix="landuse")
+        scItem = self.pluginModel.scenarioModel.getItemFromName(scName)
+        if scItem.isLanduseMode():
+            base = scItem.getBase()
+            path = self.pluginModel.getDataOutPathFromName(base)
+        else:
+            path = self.getItemOutBase(scName,spName,suffix="landuse")
+        return path
     def getItemFriction(self,scName,spName):
         return self.getItemOutBase(scName,spName,suffix="friction")
     def getItemGraphabProjectName(self,scName,spName):
@@ -228,24 +234,23 @@ class LaunchModel(DictModel):
         self.layoutChanged.emit()
         # self.feedback.internal_error("reload not yet implemented")
     
-    def applyItemWithContext(self,scItem,context,feedback):
-        feedback.pushDebugInfo("applyItemWithContext")
-        name = scItem.getName()
-        if scItem.getStatusLanduse():
-            msg = self.tr("Landuse layer already computed for scenario ")
-            feedback.pushWarning(msg + str(name))
-            return
-        in_path = self.pluginModel.getOrigPath(scItem.getLayer())
-        out_path = self.getItemLanduse(scItem)
-        # out_path = 'C:/Users/mathieu.chailloux/Desktop/BousquetOrbExtended\\dummy.tif'
-        if scItem.isLanduseMode():
-            crs, extent, resolution = self.pluginModel.getRasterParams()
-            self.pluginModel.paramsModel.normalizeRaster(
-                in_path,out_path=out_path,
-                context=context,
-                feedback=feedback)
-        else:
-            assert(False)
+    # def applyItemWithContext(self,scItem,context,feedback):
+        # feedback.pushDebugInfo("applyItemWithContext")
+        # name = scItem.getName()
+        # if scItem.getStatusLanduse():
+            # msg = self.tr("Landuse layer already computed for scenario ")
+            # feedback.pushWarning(msg + str(name))
+            # return
+        # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
+        # out_path = self.getItemLanduse(scItem)
+        # if scItem.isLanduseMode():
+            # crs, extent, resolution = self.pluginModel.getRasterParams()
+            # self.pluginModel.paramsModel.normalizeRaster(
+                # in_path,out_path=out_path,
+                # context=context,
+                # feedback=feedback)
+        # else:
+            # assert(False)
         
     def applyItemLanduse(self, scItem, spItem,feedback=None):
         if feedback is None:
@@ -267,12 +272,14 @@ class LaunchModel(DictModel):
         # out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         crs, extent, resolution = self.pluginModel.getRasterParams()
         if scItem.isLanduseMode():
-            in_path = self.pluginModel.getLanduseOutLayerFromName(base)
+            # in_path = self.pluginModel.getLanduseOutLayerFromName(base)
+            in_path = self.pluginModel.getDataOutPathFromName(base)
             if not utils.fileExists(in_path):
                 feedback.user_error("File '"+ str(in_path) + " does not exist"
-                    + ", launch landuse " + str(base) + " in step 2")
-            feedback.pushDebugInfo("Copying " + in_path + " to " + out_path)
-            shutil.copy(in_path,out_path)
+                    + ", launch " + str(base) + " in step 2")
+            # feedback.pushDebugInfo("Copying " + in_path + " to " + out_path)
+            # shutil.copy(in_path,out_path)
+            # os.symlink(in_path,out_path)
             # self.pluginModel.paramsModel.normalizeRaster(
                 # in_path,out_path=out_path,
                 # context=context,
@@ -486,10 +493,13 @@ class LaunchConnector(TableToDialogConnector):
         self.model.layoutChanged.emit()
         
     def getSelectedScenarios(self):
-        scNames = self.dlg.speciesSelection.checkedItems()
+        scNames = self.dlg.scenariosSelection.checkedItems()
+        self.feedback.pushDebugInfo("scNames = " + str(scNames))
         if not scNames:
             self.feedback.user_error("No scenario selected")
         items = [self.model.pluginModel.scenarioModel.getItemFromName(s) for s in scNames]
+        self.feedback.pushDebugInfo("scNames 2 = " + str(len(items)))
+        self.feedback.pushDebugInfo("scNames 3 = " + str(items))
         return items
         # indexes = self.view.selectedIndexes()
         # if not indexes:
@@ -513,6 +523,7 @@ class LaunchConnector(TableToDialogConnector):
         cpt=0
         step_feedback.setCurrentStep(cpt)
         for sc in scenarios:
+            self.feedback.pushDebugInfo("sc " + str(sc))
             for sp in species:
                 func(sc,sp,feedback=step_feedback)
                 cpt+=1

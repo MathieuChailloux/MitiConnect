@@ -1917,7 +1917,7 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Upgrade scenario</string>
+                        <string>Reload scenarios</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -2472,6 +2472,12 @@
                         </item>
                         <item row="0" column="1">
                          <widget class="QComboBox" name="localMetric">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>18</height>
+                           </size>
+                          </property>
                           <item>
                            <property name="text">
                             <string>F</string>
@@ -2504,6 +2510,12 @@
                         </item>
                         <item row="1" column="1">
                          <widget class="QComboBox" name="globalMetric">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>18</height>
+                           </size>
+                          </property>
                           <item>
                            <property name="text">
                             <string>PC</string>

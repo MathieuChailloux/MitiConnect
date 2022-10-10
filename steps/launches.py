@@ -287,7 +287,7 @@ class LaunchModel(DictModel):
 
             # assert(False)
         else:
-            baseItem = self.getItemFromName(base)
+            # baseItem = self.pluginModel.scenarioModel.getItemFromName(base)
             in_path = self.getItemLanduse(base,spName)
             if not utils.fileExists(in_path):
                 feedback.user_error("File '"+ str(in_path) + " does not exist"

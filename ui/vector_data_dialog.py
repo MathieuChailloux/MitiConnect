@@ -181,6 +181,10 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.BURN_FIELD] = fieldname
             if not fieldname:
                 feedbacks.paramError("No field selected")
+            if not burn_field_mode:
+                burnVal = self.vectorFixedValue.value()
+                if burnVal <= 0:
+                    feedbacks.paramError("Burn value must be strictly positive")
             dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
@@ -191,9 +195,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
                 # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
             # else:
                 # values = [self.vectorFixedValue.value()]
-            self.feedback.pushDebugInfo("values sd = " + str(values))
-            self.data_item.values = values
-            self.data_item.isScenario = self.isScenario.isChecked()
+            # self.feedback.pushDebugInfo("values sd = " + str(values))
+            # self.data_item.values = values
+            # self.data_item.isScenario = self.isScenario.isChecked()
             self.feedback.pushDebugInfo("dict = " + str(dict))
             return self.data_item
         return None

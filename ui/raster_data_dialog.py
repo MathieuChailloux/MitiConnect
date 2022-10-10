@@ -171,7 +171,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)
             self.data_item.setChild(self.rasterDataDialogView.model())
             # self.data_item.values = self.values
-            self.data_item.isScenario = self.isScenario.isChecked()
+            # self.data_item.isScenario = self.isScenario.isChecked()
             # self.data_item.setChild(self.reclass_model)
             return self.data_item
         return None

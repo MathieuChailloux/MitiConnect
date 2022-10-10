@@ -45,7 +45,7 @@ class ImportItem(DictItemWithChild):
     MODE = 'MODE'
     VALUE = 'VALUE'
     STATUS = 'STATUS'
-    DISPLAY_FIELDS = [ NAME, STATUS, INPUT, VALUE ]
+    DISPLAY_FIELDS = [ NAME, INPUT, VALUE, STATUS ]
     FIELDS = DISPLAY_FIELDS
     
     INPUT_IDX = 0
@@ -80,6 +80,17 @@ class ImportItem(DictItemWithChild):
         return self.dict[ImportItem.INPUT]
     def getValue(self):
         return self.dict[ImportItem.VALUE]
+    # def getChildValue(self):
+        # dlgItem = self.child
+        # is_vector = type(dlgItem) is VectorDlgItem
+        # if is_vector:
+            # if dlgItem.getBurnMode():
+                # val = dlgItem.getBurnField()
+            # else:
+                # val = dlgItem.getBurnVal()
+        # else:
+            # val = None
+        # return val
     def isVector(self):
         return self.dict[self.MODE]
         
@@ -131,10 +142,11 @@ class ImportModel(DictModel):
                 layer = qgsUtils.loadVectorLayer(layer_path)
                 fieldname = item.child.getBurnField()
                 # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
-                values = qgsUtils.getVectorUniqueVals(layer,fieldname,
+                values = qgsTreatments.getVectorUniqueVals(layer,fieldname,
                     feedback=self.feedback)
             else:
-                values = [None]
+                val = item.child.getBurnVal()
+                values = [val]
         else:
             values = item.getValues()
             self.feedback.pushDebugInfo("Raster values = " + str(values))
@@ -154,13 +166,28 @@ class ImportModel(DictModel):
         # self.pluginModel.check
         super().addItem(item)
         if addValues:
-            values = self.getItemValues(item)
-            frictionModel = self.pluginModel.frictionModel
-            frictionModel.addRowFromImport(values,item.getName())
+            self.addValues(item)
+        
+    def addValues(self,item):
+        values = self.getItemValues(item)
+        frictionModel = self.pluginModel.frictionModel
+        frictionModel.addRowFromImport(values,item.getName())
         # if item.child.isScenario:
             # out_layer = self.getItemOutPath(item)
             # self.pluginModel.scenarioModel.addScenarioFromLayer(name,out_layer)
             # self.internal_error("TODO : isScenario")
+            
+    # def reloadValues(self,item):
+            
+    # def updateItem(self,item,dlgItem):
+        # diff_layer = item.getInput() != dlgItem.getLayerPath()
+        # diff_field = item.getValue() != .getLayerPath()
+        # if item.getInput() != dlgItem.getLayerPath():
+            # importName = item.getName()
+            # self.model.frictionModel.removeImports([importName])
+            # super().updateItem(item,dlgItem)
+            # self.addValues(item)
+        # assert(False)
         
     def applyItemWithContext(self,item,context,feedback):
         name = item.getName()

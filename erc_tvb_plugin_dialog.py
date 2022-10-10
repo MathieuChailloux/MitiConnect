@@ -259,11 +259,12 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         elif excType == utils.UserError:
             self.feedback.user_error(str(excValue))
         elif excType == utils.InternalError:
-            self.feedback.itnernal_error(str(excValue))
+            self.feedback.internal_error(str(excValue))
         elif excType == utils.TodoError:
             self.feedback.todo_error(str(excValue))
         else:
             self.feedback.error_msg(msg,prefix="Unexpected error")
         self.mTabWidget.setCurrentWidget(self.logTab)
+        self.feedback.focusLogTab()
         
         

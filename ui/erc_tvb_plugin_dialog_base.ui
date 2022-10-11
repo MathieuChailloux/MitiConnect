@@ -865,12 +865,6 @@
                           <enum>QFrame::Raised</enum>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_12">
-                          <property name="topMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="bottomMargin">
-                           <number>0</number>
-                          </property>
                           <item row="0" column="0">
                            <widget class="QLabel" name="label_113">
                             <property name="sizePolicy">
@@ -914,7 +908,7 @@
                            </spacer>
                           </item>
                           <item row="0" column="2">
-                           <widget class="QToolButton" name="landuseNew">
+                           <widget class="QToolButton" name="mergeNew">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -943,7 +937,7 @@
                            </widget>
                           </item>
                           <item row="0" column="3">
-                           <widget class="QToolButton" name="landuseRemove">
+                           <widget class="QToolButton" name="mergeRemove">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -972,7 +966,7 @@
                            </widget>
                           </item>
                           <item row="1" column="0" colspan="4">
-                           <widget class="QTableView" name="landuseView">
+                           <widget class="QTableView" name="mergeView">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -988,6 +982,93 @@
                             <property name="sortingEnabled">
                              <bool>true</bool>
                             </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="0" colspan="4">
+                           <widget class="QFrame" name="frame_16">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>24</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>24</height>
+                             </size>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_7">
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QCheckBox" name="importSelection_2">
+                               <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
+                                </sizepolicy>
+                               </property>
+                               <property name="minimumSize">
+                                <size>
+                                 <width>150</width>
+                                 <height>24</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>24</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>Apply only to selected lines</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QPushButton" name="mergeRun">
+                               <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
+                                </sizepolicy>
+                               </property>
+                               <property name="minimumSize">
+                                <size>
+                                 <width>100</width>
+                                 <height>24</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>24</height>
+                                </size>
+                               </property>
+                               <property name="layoutDirection">
+                                <enum>Qt::LeftToRight</enum>
+                               </property>
+                               <property name="text">
+                                <string>Merge</string>
+                               </property>
+                               <property name="icon">
+                                <iconset>
+                                 <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
                            </widget>
                           </item>
                          </layout>

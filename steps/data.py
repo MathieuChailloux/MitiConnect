@@ -250,6 +250,7 @@ class ImportModel(DictModel):
                 qgsTreatments.applyRasterization(input_path,out_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
+                to_norm_path = None
         else:
             keepValues = False
             if keepValues:
@@ -263,10 +264,11 @@ class ImportModel(DictModel):
                     boundaries_mode=2,nodata_missing=True,
                     context=context,feedback=feedback)
                 to_norm_path = reclassified
-        self.pluginModel.paramsModel.normalizeRaster(
-            to_norm_path,out_path=out_path,
-            context=context,
-            feedback=feedback)
+        if to_norm_path:
+            self.pluginModel.paramsModel.normalizeRaster(
+                to_norm_path,out_path=out_path,
+                context=context,
+                feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 
     # Returns absolute path of 'item' output layer
@@ -325,6 +327,11 @@ class ImportConnector(TableToDialogConnector):
         # self.dlg.importView.doubleClicked.connect(self.openImport)
         self.dlg.importVector.clicked.connect(self.openImportVectorNew)
         self.dlg.importRaster.clicked.connect(self.openImportRasterNew)
+        
+    def applyItems(self):
+        self.feedback.beginSection("Computing imports")
+        super().applyItems()
+        self.feedback.endSection()
     
     # def openImport(self,index):
         # row = index.row()
@@ -477,16 +484,21 @@ class LanduseConnector(AbstractConnector):
     def __init__(self,dlg,landuseModel):
         self.dlg = dlg
         self.feedback = landuseModel.feedback
-        super().__init__(landuseModel,self.dlg.landuseView,
+        super().__init__(landuseModel,self.dlg.mergeView,
                         addButton=None,
-                        removeButton=self.dlg.landuseRemove)#,
-                        # runButton=self.dlg.landuseRun,
+                        removeButton=self.dlg.mergeRemove,#,
+                        runButton=self.dlg.mergeRun)
                         #selectionCheckbox=self.dlg.landuseSelection)
     
     def connectComponents(self):
         super().connectComponents()
-        self.dlg.landuseView.doubleClicked.connect(self.openLanduse)
-        self.dlg.landuseNew.clicked.connect(self.openLanduseNew)
+        self.dlg.mergeView.doubleClicked.connect(self.openLanduse)
+        self.dlg.mergeNew.clicked.connect(self.openLanduseNew)
+        
+    def applyItems(self):
+        self.feedback.beginSection("Computing merge")
+        super().applyItems()
+        self.feedback.endSection()
     
     def openLanduseNew(self,checked):
         self.feedback.pushDebugInfo("checked = " + str(checked))

@@ -170,9 +170,11 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer = self.vectorLayerCombo.currentLayer()
             if not layer:
                 feedbacks.paramError("No layer selected",parent=self)
+                continue
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
                 feedbacks.paramError("Could not load layer " + str(layer_path))
+                continue
             dict[VectorDlgItem.INPUT] = layer_path
             dict[VectorDlgItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
             burn_field_mode = self.vectorFieldMode.isChecked()
@@ -181,10 +183,12 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.BURN_FIELD] = fieldname
             if not fieldname:
                 feedbacks.paramError("No field selected")
+                continue
             if not burn_field_mode:
                 burnVal = self.vectorFixedValue.value()
                 if burnVal <= 0:
                     feedbacks.paramError("Burn value must be strictly positive")
+                    continue
             dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()

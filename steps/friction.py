@@ -95,7 +95,7 @@ class FrictionModel(ExtensiveTableModel):
         return item.dict[self.IMPORT]
     def importExists(self,name):
         for i in self.items:
-            if self.getItemImpor() == name:
+            if self.getItemImport(i) == name:
                 return True
         return False
         

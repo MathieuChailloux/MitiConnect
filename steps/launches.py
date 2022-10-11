@@ -272,6 +272,7 @@ class LaunchModel(DictModel):
         # out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         crs, extent, resolution = self.pluginModel.getRasterParams()
         if scItem.isLanduseMode():
+            self.feedback.pushDebugInfo("LU1")
             # in_path = self.pluginModel.getLanduseOutLayerFromName(base)
             in_path = self.pluginModel.getDataOutPathFromName(base)
             if not utils.fileExists(in_path):
@@ -287,6 +288,7 @@ class LaunchModel(DictModel):
 
             # assert(False)
         else:
+            self.feedback.pushDebugInfo("LU2")
             # baseItem = self.pluginModel.scenarioModel.getItemFromName(base)
             in_path = self.getItemLanduse(base,spName)
             if not utils.fileExists(in_path):
@@ -301,14 +303,14 @@ class LaunchModel(DictModel):
                 # Fixed mode
                 qgsTreatments.applyRasterization(vector_path,raster_path,
                     extent,resolution,burn_val=scItem.getBurnVal(),
-                    feedback=feedback)
+                    nodata_val=0,out_type=Qgis.UInt16,feedback=feedback)
                 path = raster_path
             elif mode == 2:
                 # Field mode
                 reclass_path = qgsUtils.mkTmpPath(name + "_reclass.tif")
                 qgsTreatments.applyRasterization(vector_path,raster_path,
                     extent,resolution,field=scItem.getBurnField(),
-                    feedback=feedback)
+                    nodata_val=0,out_type=Qgis.UInt16,feedback=feedback)
                 qgsTreatments.applyReclassifyByTable(raster_path,
                     scItem.getReclassTable(),reclass_path,
                     feedback=feedback)
@@ -319,7 +321,7 @@ class LaunchModel(DictModel):
             # Merge
             paths = [in_path, path]
             qgsTreatments.applyMergeRaster(paths,out_path,
-                out_type=Qgis.Int16,feedback=feedback)
+                out_type=Qgis.UInt16,nodata_val=0,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
     def applyItemFriction(self, item,species,feedback=None):
@@ -346,7 +348,7 @@ class LaunchModel(DictModel):
                 out_path = self.getItemFriction(name,specie)
                 feedback.pushDebugInfo("out_path = " + str(out_path))
                 qgsUtils.removeLayerFromPath(out_path)
-                nodata = 65535
+                nodata = 0
                 inVals = qgsUtils.getRasterValsFromPath(in_path)
                 mInVals, mOutVals = matrix[::3], matrix[2::3]
                 feedback.pushDebugInfo("mInVals = " + str(mInVals))
@@ -354,7 +356,7 @@ class LaunchModel(DictModel):
                 naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
                 self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
-                    out_type=Qgis.UInt16,nodata_val=65535,boundaries_mode=2,
+                    out_type=Qgis.UInt16,nodata_val=nodata,boundaries_mode=2,
                     feedback=step_feedback)
                 loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 styles.setRendererPalettedGnYlRd(loaded_layer)
@@ -374,9 +376,12 @@ class LaunchModel(DictModel):
         landuse = self.getItemLanduse(name,spName)
         friction = self.getItemFriction(name,spName)
         codes = spItem.getCodesVal()
+        if not codes:
+            self.feedback.user_error("No habitat code specified for specie "
+                + str(spName))
         minArea = spItem.getMinArea()
         outDir = self.getItemBaseDir(name,spName)
-        nodata = 65535
+        nodata = 0
         qgsUtils.removeGroup(projectName)
         projectFolder = os.path.dirname(project)
         qgsUtils.removeFolder(projectFolder)

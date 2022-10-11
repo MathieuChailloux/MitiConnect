@@ -45,7 +45,7 @@ class ImportItem(DictItemWithChild):
     MODE = 'MODE'
     VALUE = 'VALUE'
     STATUS = 'STATUS'
-    DISPLAY_FIELDS = [ NAME, STATUS, INPUT, VALUE ]
+    DISPLAY_FIELDS = [ NAME, INPUT, VALUE, STATUS ]
     FIELDS = DISPLAY_FIELDS
     
     INPUT_IDX = 0
@@ -80,11 +80,24 @@ class ImportItem(DictItemWithChild):
         return self.dict[ImportItem.INPUT]
     def getValue(self):
         return self.dict[ImportItem.VALUE]
+    # def getChildValue(self):
+        # dlgItem = self.child
+        # is_vector = type(dlgItem) is VectorDlgItem
+        # if is_vector:
+            # if dlgItem.getBurnMode():
+                # val = dlgItem.getBurnField()
+            # else:
+                # val = dlgItem.getBurnVal()
+        # else:
+            # val = None
+        # return val
     def isVector(self):
         return self.dict[self.MODE]
         
     def getReclassTable(self):
         return self.child.getReclassTable()
+    def getValues(self):
+        return self.child.getValues()
         
     def updateFromOther(self,other):
         for k in other.dict:
@@ -128,11 +141,16 @@ class ImportModel(DictModel):
             if item.child.isBurnFieldMode():
                 layer = qgsUtils.loadVectorLayer(layer_path)
                 fieldname = item.child.getBurnField()
-                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+                # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+                values = qgsTreatments.getVectorUniqueVals(layer,fieldname,
+                    feedback=self.feedback)
             else:
-                values = [None]
+                val = item.child.getBurnVal()
+                values = [val]
         else:
-            values = qgsTreatments.getRasterUniqueVals(layer_path,self.feedback)
+            values = item.getValues()
+            self.feedback.pushDebugInfo("Raster values = " + str(values))
+            # values = qgsTreatments.getRasterUniqueVals(layer_path,self.feedback)
         return values
                    
     def getReclassTableFromUniqueAssoc(assoc_path,inField,outField):
@@ -144,11 +162,32 @@ class ImportModel(DictModel):
         return table
         
     def addItem(self,item,addValues=False):
+        name = item.getName()
+        # self.pluginModel.check
         super().addItem(item)
         if addValues:
-            values = self.getItemValues(item)
-            frictionModel = self.pluginModel.frictionModel
-            frictionModel.addRowFromImport(values,item.getName())
+            self.addValues(item)
+        
+    def addValues(self,item):
+        values = self.getItemValues(item)
+        frictionModel = self.pluginModel.frictionModel
+        frictionModel.addRowFromImport(values,item.getName())
+        # if item.child.isScenario:
+            # out_layer = self.getItemOutPath(item)
+            # self.pluginModel.scenarioModel.addScenarioFromLayer(name,out_layer)
+            # self.internal_error("TODO : isScenario")
+            
+    # def reloadValues(self,item):
+            
+    # def updateItem(self,item,dlgItem):
+        # diff_layer = item.getInput() != dlgItem.getLayerPath()
+        # diff_field = item.getValue() != .getLayerPath()
+        # if item.getInput() != dlgItem.getLayerPath():
+            # importName = item.getName()
+            # self.model.frictionModel.removeImports([importName])
+            # super().updateItem(item,dlgItem)
+            # self.addValues(item)
+        # assert(False)
         
     def applyItemWithContext(self,item,context,feedback):
         name = item.getName()
@@ -212,6 +251,7 @@ class ImportModel(DictModel):
                 qgsTreatments.applyRasterization(input_path,out_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
+                to_norm_path = None
         else:
             keepValues = False
             if keepValues:
@@ -225,10 +265,11 @@ class ImportModel(DictModel):
                     boundaries_mode=2,nodata_missing=True,
                     context=context,feedback=feedback)
                 to_norm_path = reclassified
-        self.pluginModel.paramsModel.normalizeRaster(
-            to_norm_path,out_path=out_path,
-            context=context,
-            feedback=feedback)
+        if to_norm_path:
+            self.pluginModel.paramsModel.normalizeRaster(
+                to_norm_path,out_path=out_path,
+                context=context,
+                feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 
     # Returns absolute path of 'item' output layer
@@ -287,6 +328,11 @@ class ImportConnector(TableToDialogConnector):
         # self.dlg.importView.doubleClicked.connect(self.openImport)
         self.dlg.importVector.clicked.connect(self.openImportVectorNew)
         self.dlg.importRaster.clicked.connect(self.openImportRasterNew)
+        
+    def applyItems(self):
+        self.feedback.beginSection("Computing imports")
+        super().applyItems()
+        self.feedback.endSection()
     
     # def openImport(self,index):
         # row = index.row()
@@ -439,16 +485,21 @@ class LanduseConnector(AbstractConnector):
     def __init__(self,dlg,landuseModel):
         self.dlg = dlg
         self.feedback = landuseModel.feedback
-        super().__init__(landuseModel,self.dlg.landuseView,
+        super().__init__(landuseModel,self.dlg.mergeView,
                         addButton=None,
-                        removeButton=self.dlg.landuseRemove,
-                        runButton=self.dlg.landuseRun,
-                        selectionCheckbox=self.dlg.landuseSelection)
+                        removeButton=self.dlg.mergeRemove,#,
+                        runButton=self.dlg.mergeRun)
+                        #selectionCheckbox=self.dlg.landuseSelection)
     
     def connectComponents(self):
         super().connectComponents()
-        self.dlg.landuseView.doubleClicked.connect(self.openLanduse)
-        self.dlg.landuseNew.clicked.connect(self.openLanduseNew)
+        self.dlg.mergeView.doubleClicked.connect(self.openLanduse)
+        self.dlg.mergeNew.clicked.connect(self.openLanduseNew)
+        
+    def applyItems(self):
+        self.feedback.beginSection("Computing merge")
+        super().applyItems()
+        self.feedback.endSection()
     
     def openLanduseNew(self,checked):
         self.feedback.pushDebugInfo("checked = " + str(checked))

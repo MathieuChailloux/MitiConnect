@@ -138,7 +138,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         super().__init__(dict,feedback=feedback,child=None)
         reclassModel = ScenarioReclassModel(feedback=feedback)
         self.setReclassModel(reclassModel)
-        # self.reclassModel = self.child
+        # self.reclassModel = se lf.child
         # self.setReclassModel(ScenarioReclassModel(feedback=self.feedback))
     
     @classmethod
@@ -390,17 +390,19 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.scBurnVal.setText(burnVal)
 
 class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
-    def __init__(self, parent, dlgItem, feedback=None, luModel=None):
+    def __init__(self, parent, dlgItem, feedback=None, dataNames=[]):
         """Constructor."""
         super(ScenarioLanduseDialog, self).__init__(parent)
         self.feedback = feedback
-        self.luModel = luModel
+        # self.luModel = luModel
+        self.dataNames=dataNames
         self.setupUi(self)
         self.connectComponents()
         self.updateUi(dlgItem)
         
     def connectComponents(self):
-        self.scLanduseCombo.setModel(self.luModel)
+        self.scLanduseCombo.insertItems(0,self.dataNames)
+        # self.scLanduseCombo.setModel(self.luModel)
         # self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             # self.scLayerCombo,self.scLayer)
                 
@@ -408,6 +410,7 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
         if dlgItem:
             self.scName.setText(dlgItem.getName())
             self.scLayer.setFilePath(dlgItem.getLayer())
+            self.scLanduseCombo.setCurrentText(dlgItem.getBase())
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(self,self.tr('Wrong parameter value'),msg)

@@ -111,11 +111,11 @@ class ParamsConnector:
         # graphab params connectors
         self.dlg.localMetric.currentIndexChanged.connect(self.model.setLocalMetric)
         self.dlg.globalMetric.currentIndexChanged.connect(self.model.setGlobalMetric)
-        self.dlg.probaParam.currentIndexChanged.connect(self.model.setProbaParam)
-        self.dlg.distParam.valueChanged.connect(self.model.setDistParam)
-        self.dlg.distParam.setValue(1000)
+        # self.dlg.probaParam.currentIndexChanged.connect(self.model.setProbaParam)
+        # self.dlg.distParam.valueChanged.connect(self.model.setDistParam)
+        # self.dlg.distParam.setValue(1000)
         header = self.dlg.paramsView.horizontalHeader()     
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        # header.setSectionResizeMode(0, QHeaderView.Stretch)
         self.model.layoutChanged.emit()
         
     def tr(self, message):

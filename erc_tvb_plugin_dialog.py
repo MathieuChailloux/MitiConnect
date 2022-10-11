@@ -32,7 +32,7 @@ import traceback
 from io import StringIO
 
 from .qgis_lib_mc import feedbacks, log, utils, abstract_model, qgsTreatments
-from .steps import (params, data, species, friction, scenario)#, species, friction, scenarios)
+from .steps import (params, data, species, friction, scenario, launches)#, species, friction, scenarios)
 from . import tabs
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -59,9 +59,10 @@ class PluginModel(abstract_model.MainModel):
         self.speciesModel = species.SpeciesModel(self)
         self.frictionModel = friction.FrictionModel(self)
         self.scenarioModel = scenario.ScenarioModel(self)
+        self.launchModel = launches.LaunchModel(self)
         self.models = [ self.paramsModel, self.importModel,
             self.landuseModel, self.speciesModel, self.frictionModel,
-            self.scenarioModel ]
+            self.scenarioModel, self.launchModel ]
             
     def getLanduseNames(self):
         return self.landuseModel.getNames()
@@ -122,6 +123,23 @@ class PluginModel(abstract_model.MainModel):
         extent = self.paramsModel.getExtentString()
         resolution = self.paramsModel.getResolution()
         return (crs, extent, resolution)
+
+    def getImportNames(self):
+        return [i.getName() for i in self.importModel.items]
+    def getDataNames(self):
+        dataItems = self.importModel.items + self.landuseModel.items
+        return [i.getName() for i in dataItems]
+    def getDataOutPathFromName(self,name):
+        importItem = self.importModel.getItemFromName(name)
+        if importItem:
+            return self.importModel.getItemOutPath(importItem)
+        else:
+            landuseItem = self.landuseModel.getItemFromName(name)
+            if landuseItem:
+                return self.landuseModel.getItemOutPath(landuseItem)
+            else:
+                self.feedback.pushDebugInfo("No data item named '"
+                    + str(name) + "'")
         
     def loadProject(self, filename,retFlag=False):
         self.graphabPlugin.loadProject(filename)
@@ -189,22 +207,26 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         self.speciesConnector = species.SpeciesConnector(self,self.pluginModel.speciesModel)
         self.frictionConnector = friction.FrictionConnector(self,self.pluginModel.frictionModel)
         self.scenarioConnector = scenario.ScenarioConnector(self,self.pluginModel.scenarioModel)
+        self.launchConnector = launches.LaunchConnector(self,self.pluginModel.launchModel)
         self.tabConnector = tabs.TabConnector(self)
         self.tabConnector.loadHelpFile()
         self.connectors = [ self.feedback,
             self.paramsConnector, self.importConnector,
             self.landuseConnector, self.speciesConnector,
-            self.frictionConnector, self.scenarioConnector, self.tabConnector ]
+            self.frictionConnector, self.scenarioConnector,
+            self.launchConnector, self.tabConnector ]
             
     def connectComponents(self):
         super().connectComponents(saveAsFlag=True)
         self.initializeProject.clicked.connect(self.createNewProject)
         
     def createNewProject(self):
-        createDlg = CreateProjectDialog(parent=self)
-        d, n, workspace = createDlg.showDialog()
-        if workspace:
-            self.initializeWorkspace(workspace,n)
+        dlgObj = CreateProjectDialog(parent=self)
+        createDlg = dlgObj.showDialog()
+        if createDlg:
+            d, n, workspace = createDlg
+            if workspace:
+                self.initializeWorkspace(workspace,n)
         
     # def getScenariosDir(self):
         # self.scDir = utils.joinPath(workspace,"Scenarios")
@@ -237,11 +259,12 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
         elif excType == utils.UserError:
             self.feedback.user_error(str(excValue))
         elif excType == utils.InternalError:
-            self.feedback.itnernal_error(str(excValue))
+            self.feedback.internal_error(str(excValue))
         elif excType == utils.TodoError:
             self.feedback.todo_error(str(excValue))
         else:
             self.feedback.error_msg(msg,prefix="Unexpected error")
         self.mTabWidget.setCurrentWidget(self.logTab)
+        self.feedback.focusLogTab()
         
         

@@ -49,6 +49,7 @@ dataTabItem = TabItem("dataHelp")
 spTabItem = TabItem("speciesHelp")
 frictionTabItem = TabItem("frictionHelp")
 scTabItem = TabItem("scenarioHelp")
+launchItem = TabItem("launchHelp")
 logTabItem = TabItem("logHelp")
         
 class TabConnector:
@@ -59,6 +60,7 @@ class TabConnector:
                      spTabItem,
                      frictionTabItem,
                      scTabItem,
+                     launchItem,
                      logTabItem]
         self.dlg = dlg
         self.curr_tab = 0

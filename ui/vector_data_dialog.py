@@ -72,6 +72,15 @@ class VectorDlgItem(abstract_model.DictItem):
         return self.dict[self.BUFFER_MODE]
     def getBufferExpr(self):
         return self.dict[self.BUFFER_EXPR]
+        
+    # def getValues(self):
+        # if self.isBurnFieldMode():
+            # layer = self.getLayerPath()
+            # fieldname = self.getBurnField()
+            # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        # else:
+            # values = [self.getBurnVal()]
+        # return values
 
 
 # TODO : idée : génération automatique XML depuis QDialog 
@@ -140,11 +149,11 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def setField(self,fieldname):
         layer = self.vectorLayerCombo.currentLayer()
-        self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        # self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
         
     def setFixedMode(self,checked):
         self.setBurnMode(not checked)
-        self.values = [self.vectorFixedValue.value()]
+        # self.values = [self.vectorFixedValue.value()]
         
     def setBufferMode(self,checked):
         self.vectorBufferValue.setEnabled(checked)
@@ -161,9 +170,11 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer = self.vectorLayerCombo.currentLayer()
             if not layer:
                 feedbacks.paramError("No layer selected",parent=self)
+                continue
             layer_path = qgsUtils.pathOfLayer(layer)
             if not layer_path:
                 feedbacks.paramError("Could not load layer " + str(layer_path))
+                continue
             dict[VectorDlgItem.INPUT] = layer_path
             dict[VectorDlgItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
             burn_field_mode = self.vectorFieldMode.isChecked()
@@ -172,18 +183,25 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.BURN_FIELD] = fieldname
             if not fieldname:
                 feedbacks.paramError("No field selected")
+                continue
+            if not burn_field_mode:
+                burnVal = self.vectorFixedValue.value()
+                if burnVal <= 0:
+                    feedbacks.paramError("Burn value must be strictly positive")
+                    continue
             dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
             dict[VectorDlgItem.BUFFER_EXPR] = self.vectorBufferValue.value()
             self.data_item = VectorDlgItem(dict)
-            if burn_field_mode:
-                layer = self.vectorLayerCombo.currentLayer()
-                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
-            else:
-                values = [self.vectorFixedValue.value()]
-            self.feedback.pushDebugInfo("values sd = " + str(values))
-            self.data_item.values = values
+            # if burn_field_mode:
+                # layer = self.vectorLayerCombo.currentLayer()
+                # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+            # else:
+                # values = [self.vectorFixedValue.value()]
+            # self.feedback.pushDebugInfo("values sd = " + str(values))
+            # self.data_item.values = values
+            # self.data_item.isScenario = self.isScenario.isChecked()
             self.feedback.pushDebugInfo("dict = " + str(dict))
             return self.data_item
         return None

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
-    <height>564</height>
+    <width>488</width>
+    <height>573</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -83,8 +83,8 @@
      <property name="title">
       <string>Add vector layer</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
        <widget class="QFrame" name="frame">
         <property name="minimumSize">
          <size>
@@ -168,8 +168,33 @@
         </layout>
        </widget>
       </item>
-      <item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="scShort_2">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>151</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>1660000</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Layer represents project extent</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
        <widget class="QRadioButton" name="scShort">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>151</width>
@@ -187,7 +212,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="3" column="0">
        <widget class="QRadioButton" name="scPerValue">
         <property name="enabled">
          <bool>false</bool>
@@ -209,7 +234,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="4" column="0">
        <widget class="QGroupBox" name="valueGroupBox_2">
         <property name="enabled">
          <bool>true</bool>
@@ -227,7 +252,7 @@
          </size>
         </property>
         <property name="title">
-         <string>Burn value</string>
+         <string>Values reclassification</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
@@ -236,7 +261,7 @@
             <bool>true</bool>
            </property>
            <property name="text">
-            <string>Field values</string>
+            <string>By field values</string>
            </property>
            <property name="checked">
             <bool>false</bool>

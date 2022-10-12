@@ -27,7 +27,7 @@ import os, sys
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.gui import QgsFileWidget
-from qgis.core import QgsProcessingContext
+from qgis.core import Qgis, QgsProcessingContext
 import traceback
 from io import StringIO
 
@@ -63,6 +63,8 @@ class PluginModel(abstract_model.MainModel):
         self.models = [ self.paramsModel, self.importModel,
             self.landuseModel, self.speciesModel, self.frictionModel,
             self.scenarioModel, self.launchModel ]
+        self.baseType = Qgis.UInt16
+        self.nodataVal = 65535
             
     def getLanduseNames(self):
         return self.landuseModel.getNames()

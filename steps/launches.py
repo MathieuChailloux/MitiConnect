@@ -41,6 +41,8 @@ from . import scenario
 
 # Graphab utils
 
+# nodata_val = 65535
+
 def checkGraphabInstalled(feedback):
     return True
     # plugins = qgis.utils.available_plugins
@@ -272,12 +274,12 @@ class LaunchModel(DictModel):
         base = scItem.getBase()
         # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         out_path = self.getItemLanduse(name,spName)
-        qgsUtils.removeLayerFromPath(out_path)
         # out_path = QgsProcessingUtils.generateTempFilename("out.tif")
         # out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
         # out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
         # out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         crs, extent, resolution = self.pluginModel.getRasterParams()
+        baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         if scItem.isInitialState() or scItem.isLanduseMode():
             pass
         # elif scItem.isLanduseMode():
@@ -288,6 +290,8 @@ class LaunchModel(DictModel):
                     # + ", launch " + str(base) + " in step 2")
         elif scItem.isStackedMode():
             self.feedback.pushDebugInfo("LU2")
+            qgsUtils.removeLayerFromPath(out_path)
+            qgsUtils.removeRaster(out_path)
             # baseItem = self.pluginModel.scenarioModel.getItemFromName(base)
             in_path = self.getItemLanduse(base,spName)
             if not utils.fileExists(in_path):
@@ -302,14 +306,14 @@ class LaunchModel(DictModel):
                 # Fixed mode
                 qgsTreatments.applyRasterization(vector_path,raster_path,
                     extent,resolution,burn_val=scItem.getBurnVal(),
-                    nodata_val=0,out_type=Qgis.UInt16,feedback=feedback)
+                    nodata_val=nodataVal,out_type=baseType,feedback=feedback)
                 path = raster_path
             elif scItem.isFieldMode():
                 # Field mode
                 reclass_path = qgsUtils.mkTmpPath(name + "_reclass.tif")
                 qgsTreatments.applyRasterization(vector_path,raster_path,
                     extent,resolution,field=scItem.getBurnField(),
-                    nodata_val=0,out_type=Qgis.UInt16,feedback=feedback)
+                    nodata_val=nodataVal,out_type=baseType,feedback=feedback)
                 qgsTreatments.applyReclassifyByTable(raster_path,
                     scItem.getReclassTable(),reclass_path,
                     feedback=feedback)
@@ -319,8 +323,8 @@ class LaunchModel(DictModel):
                 # Reclassify
             # Merge
             paths = [in_path, path]
-            qgsTreatments.applyMergeRaster(paths,out_path,
-                out_type=Qgis.UInt16,nodata_val=0,feedback=feedback)
+            qgsTreatments.applyMergeRaster(paths,out_path,#nodata_input=0,
+                out_type=baseType,nodata_val=nodataVal,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
     def applyItemFriction(self, item,species,feedback=None):
@@ -333,6 +337,7 @@ class LaunchModel(DictModel):
             feedback.pushWarning(msg + str(name))
         else:
             # Reclassify
+            baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
             frictionModel = self.pluginModel.frictionModel
             species_names = [sp.getName() for sp in species]
             reclass_matrixes = frictionModel.getReclassifyMatrixes(species_names)
@@ -347,7 +352,6 @@ class LaunchModel(DictModel):
                 out_path = self.getItemFriction(name,specie)
                 feedback.pushDebugInfo("out_path = " + str(out_path))
                 qgsUtils.removeLayerFromPath(out_path)
-                nodata = 0
                 inVals = qgsUtils.getRasterValsFromPath(in_path)
                 mInVals, mOutVals = matrix[::3], matrix[2::3]
                 feedback.pushDebugInfo("mInVals = " + str(mInVals))
@@ -355,7 +359,7 @@ class LaunchModel(DictModel):
                 naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
                 self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
-                    out_type=Qgis.UInt16,nodata_val=nodata,boundaries_mode=2,
+                    out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
                     feedback=step_feedback)
                 loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 styles.setRendererPalettedGnYlRd(loaded_layer)
@@ -380,12 +384,11 @@ class LaunchModel(DictModel):
                 + str(spName))
         minArea = spItem.getMinArea()
         outDir = self.getItemBaseDir(name,spName)
-        nodata = 0
         qgsUtils.removeGroup(projectName)
         projectFolder = os.path.dirname(project)
         qgsUtils.removeFolder(projectFolder)
         createGraphabProject(landuse,codes,outDir,projectName,
-            nodata=-nodata,patch_size=minArea,feedback=feedback)
+            nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=feedback)
 
 
     def applyItemGraphabLinkset(self, item,spItem,feedback=None):

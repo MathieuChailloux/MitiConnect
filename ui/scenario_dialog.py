@@ -187,7 +187,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.getMode() == 1
     def isFieldMode(self):
         return self.getMode() == 2
-    def isStackMode(self):
+    def isStackedMode(self):
         return self.isFixedMode() or self.isFieldMode()
         
     def getReclassTable(self):

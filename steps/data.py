@@ -202,6 +202,7 @@ class ImportModel(DictModel):
         qgsUtils.removeLayerFromPath(out_path)
         qgsUtils.removeRaster(out_path)
         crs, extent, resolution = self.pluginModel.getRasterParams()
+        min_type, nodata_val = self.pluginModel.baseType, self.pluginModel.nodataVal
         if item.isVector():
             childItem = item.getChild()
             all_touch = childItem.getAllTouch()
@@ -222,8 +223,9 @@ class ImportModel(DictModel):
                 # Rasterize
                 raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
                 qgsTreatments.applyRasterization(unique_path,raster_path,
-                    extent,resolution,field=outField,out_type=Qgis.UInt16,nodata_val=65535,
-                    all_touch=all_touch,context=context,feedback=feedback)
+                    extent,resolution,field=outField,out_type=min_type,
+                    nodata_val=nodata_val,all_touch=all_touch,
+                    context=context,feedback=feedback)
                 # Reclassify
                 assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
                 reclassDict = self.pluginModel.frictionModel.getReclassDict(name)
@@ -240,14 +242,14 @@ class ImportModel(DictModel):
                     outVal = reclassDict[initVal]
                     row = [tmpVal,tmpVal,outVal]
                     reclassTable += row
-                min_type, nodata_val = Qgis.UInt16, 0
+                # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(raster_path,reclassTable,
                     reclassified,out_type=min_type,nodata_val=nodata_val,
                     boundaries_mode=2,context=context,feedback=feedback)
                 to_norm_path = reclassified
             else:
                 burnVal = childItem.getBurnVal()
-                min_type, nodata_val = Qgis.UInt16, 0
+                # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyRasterization(input_path,out_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
@@ -259,7 +261,7 @@ class ImportModel(DictModel):
             else:           
                 reclassified = qgsUtils.mkTmpPath('reclassified.tif')
                 table = self.pluginModel.frictionModel.getReclassTable(name)
-                min_type, nodata_val = Qgis.UInt16, 0
+                # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(input_path,table,
                     reclassified,out_type=min_type,nodata_val=nodata_val,
                     boundaries_mode=2,nodata_missing=True,
@@ -471,7 +473,7 @@ class LanduseModel(DictModel):
         out_path = self.getItemOutPath(item)
         qgsUtils.removeLayerFromPath(out_path)
         qgsUtils.removeRaster(out_path)
-        min_type, nodata_val = Qgis.UInt16, 0
+        min_type, nodata_val = Qgis.UInt16, 65535
         qgsTreatments.applyMergeRaster(paths,out_path,out_type=min_type,
             nodata_val=nodata_val,context=context,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)

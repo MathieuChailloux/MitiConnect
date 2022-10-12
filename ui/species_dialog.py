@@ -92,12 +92,18 @@ class SpeciesItem(abstract_model.DictItem):
         
     def getName(self):
         return self.dict[self.ID]
+    def getLanduse(self):
+        return self.dict[self.LANDUSE]
     def getMinArea(self):
         return self.dict[self.MIN_AREA]
     def getMaxDisp(self):
         return self.dict[self.MAX_DISP]
     def getCodesFull(self):
         return ast.literal_eval(self.dict[self.CODES])
+    def getExtentMode(self):
+        return self.dict[self.EXTENT_MODE]
+    def getExtentVal(self):
+        return self.dict[self.EXTENT_VAL]
     def getCodesVal(self):
         descrList = self.getCodesFull()
         codesList = [s.split(" - ")[0] for s in descrList]
@@ -120,7 +126,8 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         # super().connectComponents()
         self.speciesBufferMode.clicked.connect(self.switchBufferMode)
         self.speciesLayerMode.clicked.connect(self.switchLayerMode)
-        self.speciesLanduse.setModel(self.pluginModel.landuseModel)
+        dataNames =  self.pluginModel.getDataNames()
+        self.speciesLanduse.insertItems(0,dataNames)
         # testModel = TestModel()
         self.feedback.pushInfo("LANDUSE MODEL NB ITEMS " + str(len(self.pluginModel.landuseModel.items)))
         # assert(False)
@@ -149,7 +156,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             min_patch = self.speciesMinPatch.value()
             patch_unit = self.speciesPatchUnit.currentIndex()
             # landuse = self.speciesLanduse.currentLayer()
-            landuse = self.speciesLanduse.currentIndex()
+            landuse = self.speciesLanduse.currentText()
             codes = str(self.habitatCodes.checkedItems())
             # group = self.speciesGroup.currentIndex()
             buffer_mode = self.speciesBufferMode.isChecked()
@@ -175,7 +182,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.speciesMaxDisp.setValue(dlg_item.getMaxDisp())
             self.speciesMinPatch.setValue(dlg_item.getMinArea())
             self.speciesDispUnit.setCurrentIndex(0)
-            self.speciesLanduse.setCurrentIndex(dlg_item.dict[SpeciesItem.LANDUSE])
+            self.speciesLanduse.setCurrentText(dlg_item.dict[SpeciesItem.LANDUSE])
             self.habitatCodes.setCheckedItems(dlg_item.getCodesFull())
             # self.habitatCodes.setCheckedItems(dlg_item.dict[SpeciesItem.CODES])
             # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesItem.GROUP])

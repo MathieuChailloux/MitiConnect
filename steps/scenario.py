@@ -42,6 +42,8 @@ from ..ui.plot_window import PlotWindow
         
 class ScenarioModel(DictModel):
 
+    IS_NAME = "initialState"
+
     def __init__(self, pluginModel):
         itemClass = getattr(sys.modules[__name__], ScenarioItem.__name__)
         super().__init__(itemClass,
@@ -51,6 +53,7 @@ class ScenarioModel(DictModel):
         # super().__init__(self,itemClass,feedback=pluginModel.feedback,
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.pluginModel = pluginModel
+        self.addInitialState()
         
     def getScenarioNames(self):
         return [i.getName() for i in self.items]
@@ -65,12 +68,23 @@ class ScenarioModel(DictModel):
         i = self.getItemFromName(name)
         return (i is not None)
 
+    def getInitialState(self):
+        return self.getItemFromName(self.IS_NAME)
+    def addInitialState(self):
+        self.feedback.pushDebugInfo("addINitialState")
+        item = ScenarioItem.fromValues(self.IS_NAME,mode=3,feedback=self.feedback)
+        self.addItem(item)
     def addScenarioFromLayer(self,name,layer):
         self.feedback.pushDebugInfo("addScenarioFromLayer")
         item = ScenarioItem.fromValues(name,base=layer,
             feedback=self.feedback)
         self.addItem(item)
         self.layoutChanged.emit()
+                                
+    def updateFromXML(self,root,feedback=None):
+        super().updateFromXML(root)
+        if self.getInitialState() is None:
+            self.addInitialState()
                                 
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -128,7 +142,7 @@ class ScenarioConnector(TableToDialogConnector):
             luFlag = False
         else:
             luFlag = item.isLanduseMode()
-        if not luFlag:
+        if item.isStackedMode():
             self.feedback.pushDebugInfo("openDialog overlap")
             scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
@@ -138,12 +152,18 @@ class ScenarioConnector(TableToDialogConnector):
             scenarioDlg = ScenarioDialog(self.dlg,item_copy,
                 model=self.model.pluginModel,feedback=self.feedback)
             # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
-        else:
+        elif item.isLanduseMode():
             self.feedback.pushDebugInfo("openDialog landuse")   
             dataNames = self.model.pluginModel.getDataNames()
             scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
                 feedback=self.feedback,dataNames=dataNames)
                 #luModel=self.model.pluginModel.landuseModel)
+        elif item.isInitialState():
+            self.feedback.pushDebugInfo("Ignoring double click on initial state")
+            scenarioDlg = None
+        else:
+            self.feedback.internal_error("Unexpected scenario mode : "
+                + str(scItem.getMode()))
         return scenarioDlg
                         
     def openDialogLanduseNew(self):

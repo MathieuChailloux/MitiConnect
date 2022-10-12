@@ -179,12 +179,16 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return bool(self.dict[self.STATUS_FRICTION])
     def getStatusGraph(self):
         return bool(self.dict[self.STATUS_GRAPH])
+    def isInitialState(self):
+        return self.getMode() == 3
     def isLanduseMode(self):
         return self.getMode() == 0
     def isFixedMode(self):
         return self.getMode() == 1
     def isFieldMode(self):
         return self.getMode() == 2
+    def isStackMode(self):
+        return self.isFixedMode() or self.isFieldMode()
         
     def getReclassTable(self):
         return self.reclassModel.getReclassTable()
@@ -367,7 +371,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.feedback.pushDebugInfo("updateUI child 1 " + str(dlgItem.reclassModel))
             self.scName.setText(dlgItem.dict[ScenarioItem.NAME])
             self.scBase.setCurrentText(dlgItem.dict[ScenarioItem.BASE])
-            self.layerComboDlg.setLayerPath(dlgItem.dict[ScenarioItem.LAYER])
+            layer = dlgItem.getLayer()
+            if layer:
+                self.layerComboDlg.setLayerPath(dlgItem.dict[ScenarioItem.LAYER])
             fieldMode = dlgItem.dict[ScenarioItem.MODE] == 2
             self.switchBurnMode(fieldMode)
             if fieldMode:

@@ -197,11 +197,18 @@ class LaunchModel(DictModel):
         return self.normPath(joinPath(spDir,out_bname))
     def getItemLanduse(self,scName,spName):
         scItem = self.pluginModel.scenarioModel.getItemFromName(scName)
-        if scItem.isLanduseMode():
+        if scItem is None:
+            self.feedback.internal_error("No scenario named " + str(scName))
+        if scItem.isInitialState():
+            path = self.pluginModel.speciesModel.getLandusePathFromName(spName)
+        elif scItem.isLanduseMode():
             base = scItem.getBase()
             path = self.pluginModel.getDataOutPathFromName(base)
-        else:
+        elif scItem.isStackedMode():
             path = self.getItemOutBase(scName,spName,suffix="landuse")
+        else:
+            self.feedback.internal_error("Unexpected scenario mode : "
+                + str(scItem.getMode()))
         return path
     def getItemFriction(self,scName,spName):
         return self.getItemOutBase(scName,spName,suffix="friction")
@@ -271,23 +278,15 @@ class LaunchModel(DictModel):
         # out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
         # out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         crs, extent, resolution = self.pluginModel.getRasterParams()
-        if scItem.isLanduseMode():
-            self.feedback.pushDebugInfo("LU1")
-            # in_path = self.pluginModel.getLanduseOutLayerFromName(base)
-            in_path = self.pluginModel.getDataOutPathFromName(base)
-            if not utils.fileExists(in_path):
-                feedback.user_error("File '"+ str(in_path) + " does not exist"
-                    + ", launch " + str(base) + " in step 2")
-            # feedback.pushDebugInfo("Copying " + in_path + " to " + out_path)
-            # shutil.copy(in_path,out_path)
-            # os.symlink(in_path,out_path)
-            # self.pluginModel.paramsModel.normalizeRaster(
-                # in_path,out_path=out_path,
-                # context=context,
-                # feedback=self.feedback)
-
-            # assert(False)
-        else:
+        if scItem.isInitialState() or scItem.isLanduseMode():
+            pass
+        # elif scItem.isLanduseMode():
+            # self.feedback.pushDebugInfo("LU1")
+            # in_path = self.pluginModel.getDataOutPathFromName(base)
+            # if not utils.fileExists(in_path):
+                # feedback.user_error("File '"+ str(in_path) + " does not exist"
+                    # + ", launch " + str(base) + " in step 2")
+        elif scItem.isStackedMode():
             self.feedback.pushDebugInfo("LU2")
             # baseItem = self.pluginModel.scenarioModel.getItemFromName(base)
             in_path = self.getItemLanduse(base,spName)
@@ -299,13 +298,13 @@ class LaunchModel(DictModel):
             vector_path = self.pluginModel.getOrigPath(vector_rel_path)
             raster_path = qgsUtils.mkTmpPath(name + "_raster.tif")
             mode = scItem.getMode()
-            if mode == 1:
+            if scItem.isFixedMode():
                 # Fixed mode
                 qgsTreatments.applyRasterization(vector_path,raster_path,
                     extent,resolution,burn_val=scItem.getBurnVal(),
                     nodata_val=0,out_type=Qgis.UInt16,feedback=feedback)
                 path = raster_path
-            elif mode == 2:
+            elif scItem.isFieldMode():
                 # Field mode
                 reclass_path = qgsUtils.mkTmpPath(name + "_reclass.tif")
                 qgsTreatments.applyRasterization(vector_path,raster_path,
@@ -466,6 +465,7 @@ class LaunchConnector(TableToDialogConnector):
         self.dlg = dlg
         self.feedback = dlg.feedback
         super().__init__(model,self.dlg.launchesView)
+        self.refreshScenarios()
 
     def refreshSpecies(self):   
         names = self.model.pluginModel.speciesModel.getNames()

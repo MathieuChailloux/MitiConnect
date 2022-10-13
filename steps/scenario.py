@@ -133,16 +133,12 @@ class ScenarioConnector(TableToDialogConnector):
         # return scenarioDlg
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
-        # self.feedback.pushDebugInfo("itemBase = " + str(b))
-        # self.feedback.pushDebugInfo("item = " + str(item is None))
-        # self.feedback.pushDebugInfo("itemBase = " + str((b is None)))
-        # if (item is None) or (item.getBase() is None):
         if (item is None):
             # Specific openDialogLanduseNew otherwise 
             luFlag = False
         else:
             luFlag = item.isLanduseMode()
-        if item.isStackedMode():
+        if item is None or item.isStackedMode():
             self.feedback.pushDebugInfo("openDialog overlap")
             scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:

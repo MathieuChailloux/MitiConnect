@@ -199,6 +199,8 @@ class LaunchModel(DictModel):
         return self.normPath(joinPath(spDir,out_bname))
     def getItemLanduse(self,scName,spName):
         scItem = self.pluginModel.scenarioModel.getItemFromName(scName)
+        if not scItem:
+            self.feedback.internal_error("No scenario found for " + str(scName))
         if scItem is None:
             self.feedback.internal_error("No scenario named " + str(scName))
         if scItem.isInitialState():

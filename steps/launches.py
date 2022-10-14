@@ -189,14 +189,35 @@ class LaunchModel(DictModel):
     def getItemNameSuffix(self,scName,spName,suffix):
         res = scName + "_" + spName + "_" + suffix
         return res
-    def getItemBaseDir(self,scName,spName):
-        scDir = self.pluginModel.getSubDir(scName)
-        spDir = self.pluginModel.getSubDir(spName,baseDir=scDir)
+    def getItemSpDir(spName):
+        spDir = self.pluginModel.getSubDir(spName)
         return self.normPath(spDir)
+    def getItemExtentScDir(self,scName,spName):
+        extentSc = self.pluginModel.scenarioModel.getItemExtentSc(scName)
+        extentScName = extentSc.getName()
+        spDir = self.getItemSpDir(spName)
+        return self.normPath(joinPath(spDir,extentScName))
+    def getItemExtentPath(self,scName,spName):
+        extentDir = self.getItemExtentScDir(scName,spName)
+        return self.normPath(joinPath(spDir,"extent.gpkg"))
+    def getItemBaseDir(self,scName,spName):
+        extentDir = self.getItemExtentScDir(scName,spName)
+        itemDir = self.pluginModel.getSubDir(scName,baseDir=extentDir)
+        return self.normPath(itemDir)
     def getItemOutBase(self,scName,spName,suffix=""):
         spDir = self.getItemBaseDir(scName,spName)
         out_bname = scName + "_" + spName+ "_" + suffix + ".tif"
         return self.normPath(joinPath(spDir,out_bname))
+    def getSpBaseLanduse(self,spName):
+        return self.pluginModel.speciesModel.getLandusePathFromName(spName)
+        
+    def getItemExtent(self,scItem,spItem):
+        extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(scItem)
+        spLanduse = self.getSpBaseLanduse(spItem)
+        if spItem.isBufferMode():
+            bufferVal = spItem.getBufferVal()
+            extent = qgsTreatments.applyBuffer(extentScLayer,bufferVal,
+                feedback=self.feedback)
     def getItemLanduse(self,scName,spName):
         scItem = self.pluginModel.scenarioModel.getItemFromName(scName)
         if not scItem:
@@ -204,7 +225,7 @@ class LaunchModel(DictModel):
         if scItem is None:
             self.feedback.internal_error("No scenario named " + str(scName))
         if scItem.isInitialState():
-            path = self.pluginModel.speciesModel.getLandusePathFromName(spName)
+            path = self.getSpBaseLanduse(spName)
         elif scItem.isLanduseMode():
             base = scItem.getBase()
             path = self.pluginModel.getDataOutPathFromName(base)

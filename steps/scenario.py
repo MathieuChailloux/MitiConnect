@@ -68,6 +68,21 @@ class ScenarioModel(DictModel):
         i = self.getItemFromName(name)
         return (i is not None)
 
+    def getItemExtentSc(self,itemName):
+        item = self.getItemFromName(itemName)
+        if item.useExtent():
+            return item
+        elif item.isLeaf():
+            return item
+        else:
+            childItem = item.getBase()
+            return childItem.getItemExtentSc()
+    def getItemExtentScLayer(self,itemName):
+        item = self.getItemFromName(itemName)
+        extentSc = self.getItemExtentSc(item)
+        return extentSc.getLayer()
+    # def getItemSpExtentPath(self,item)
+        # assert(False)
     def getInitialState(self):
         return self.getItemFromName(self.IS_NAME)
     def addInitialState(self):

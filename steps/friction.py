@@ -59,6 +59,8 @@ class FrictionModel(ExtensiveTableModel):
             s += str(i.dict[self.IMPORT])
             s += " - "
             s += str(i.dict[self.IMPORT_VAL])
+            s += " - "
+            s += str(i.dict[self.ROW_DESCR])
             l.append(s)
         return l
         

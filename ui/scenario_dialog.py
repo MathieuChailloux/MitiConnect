@@ -26,6 +26,7 @@ import os, sys, copy
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.core import QgsFieldProxyModel 
 
 from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks
 
@@ -290,6 +291,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scLayerCombo.layerChanged.connect(self.changeLayer)
         self.scFieldMode.clicked.connect(self.switchFieldMode)
         self.scFixedMode.clicked.connect(self.switchFixedMode)
+        self.scField.setFilters(QgsFieldProxyModel.Numeric)
         self.scField.fieldChanged.connect(self.changeField)
         self.scBase.setModel(self.scModel)
         self.scDialogView.setModel(self.reclassModel)

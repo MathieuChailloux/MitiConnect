@@ -68,6 +68,15 @@ class SpeciesModel(DictModel):
         out_bname = item.getName() + ".tif"
         out_dir = self.pluginModel.getImportsDir()
         return os.path.join(out_dir,out_bname)
+    def getItemLandusePath(self,spItem):
+        if spItem is None:
+            self.feedback.internal_error("No species named " + str(spName))
+        spName =  spItem.getName()
+        landuse = spItem.getLanduse()
+        if not landuse:
+            self.feedback.user_error("No base landuse specified for specie "
+                + str(spName))
+        return self.pluginModel.getDataOutPathFromName(landuse)
     def getLandusePathFromName(self,spName):
         spItem = self.getItemFromName(spName)
         if spItem is None:

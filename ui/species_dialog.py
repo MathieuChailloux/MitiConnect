@@ -90,6 +90,7 @@ class SpeciesItem(abstract_model.DictItem):
     # def __init__(self,dict=dict,feedback=None):
         # super().__init__(dict=dict,feedback=feedback)
         
+    # getters
     def getName(self):
         return self.dict[self.ID]
     def getLanduse(self):
@@ -104,6 +105,10 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.EXTENT_MODE]
     def getExtentVal(self):
         return self.dict[self.EXTENT_VAL]
+        
+    # getters wrappers
+    def isBufferMode(self):
+        return self.getExtentMode() == True
     def getCodesVal(self):
         descrList = self.getCodesFull()
         codesList = [s.split(" - ")[0] for s in descrList]

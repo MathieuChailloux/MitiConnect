@@ -68,19 +68,34 @@ class ScenarioModel(DictModel):
         i = self.getItemFromName(name)
         return (i is not None)
 
-    def getItemExtentSc(self,itemName):
-        item = self.getItemFromName(itemName)
+    def getItemExtentSc(self,item):
+        # item = self.getItemFromName(itemName)
         if item.useExtent():
             return item
         elif item.isLeaf():
             return item
         else:
+            assert(False)
             childItem = item.getBase()
             return childItem.getItemExtentSc()
-    def getItemExtentScLayer(self,itemName):
-        item = self.getItemFromName(itemName)
+    def getItemExtentScLayer(self,item):
+        # item = self.getItemFromName(itemName)
+        if not item:
+            self.feedback.internal_error("No scenario named " + str(itemName))
         extentSc = self.getItemExtentSc(item)
-        return extentSc.getLayer()
+        # assert(False)
+        # extentSc = item
+        # assert(False)
+        self.feedback.pushDebugInfo("extentSc " + str(extentSc))
+        # assert(False)
+        self.feedback.pushDebugInfo("extentSc name" + str(extentSc.getName()))
+        # assert(False)
+        extentScPath = extentSc.getLayer()
+        self.feedback.pushDebugInfo("extentScPath " + str(extentScPath))
+        # assert(False)
+        extentScAbsPath = self.pluginModel.getOrigPath(extentScPath)
+        # assert(False)
+        return extentScAbsPath
     # def getItemSpExtentPath(self,item)
         # assert(False)
     def getInitialState(self):

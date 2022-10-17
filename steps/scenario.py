@@ -100,9 +100,11 @@ class ScenarioModel(DictModel):
         # assert(False)
     def getInitialState(self):
         return self.getItemFromName(self.IS_NAME)
+    def mkInitialState(self):
+        return ScenarioItem.fromValues(self.IS_NAME,mode=3,feedback=self.feedback)
     def addInitialState(self):
         self.feedback.pushDebugInfo("addINitialState")
-        item = ScenarioItem.fromValues(self.IS_NAME,mode=3,feedback=self.feedback)
+        item = self.mkInitialState()
         self.addItem(item)
     def addScenarioFromLayer(self,name,layer):
         self.feedback.pushDebugInfo("addScenarioFromLayer")

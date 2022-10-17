@@ -222,6 +222,7 @@ class LaunchModel(DictModel):
         self.feedback.pushDebugInfo("sc Item " + str(scItem))
         # assert(False)
         extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(scItem)
+        if extentScLayer is None:
         spLanduse = self.getSpBaseLanduse(spItem)
         out_path = self.getItemExtentPath(scItem,spItem)
         if spItem.isBufferMode():
@@ -600,6 +601,29 @@ class LaunchConnector(TableToDialogConnector):
                 func(sc,sp,feedback=step_feedback)
                 cpt+=1
                 step_feedback.setCurrentStep(cpt)
+    # def iterateRunExtent(self,func):
+        # scenarios = self.getSelectedScenarios()
+        # scMap = {}
+        # for sc in scenarios:
+            # baseSc = self.pluginModel.scenarioModel.getItemExtentSc(sc)
+            # if baseSc in scMap:
+                # scMap[baseSc] += sc
+            # else:
+                # scMap[baseSc] = [sc]
+        # for baseSc, scenarios in scMap:
+            # isSc = self.pluginModel.scenarioModel.mkInitialState()
+            # scenarios.insert(0,isSc)
+        # species = self.getSelectedSpecies()
+        # nb_steps = len(scenarios) * len(species)
+        # step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
+        # cpt=0
+        # step_feedback.setCurrentStep(cpt)
+        # for sc in scenarios:
+            # self.feedback.pushDebugInfo("sc " + str(sc))
+            # for sp in species:
+                # func(sc,sp,feedback=step_feedback)
+                # cpt+=1
+                # step_feedback.setCurrentStep(cpt)
         
     def landuseRun(self):
         self.feedback.beginSection("Computing land use layer(s)")

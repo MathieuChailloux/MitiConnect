@@ -223,6 +223,7 @@ class LaunchModel(DictModel):
         # assert(False)
         extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(scItem)
         if extentScLayer is None:
+            assert(False)
         spLanduse = self.getSpBaseLanduse(spItem)
         out_path = self.getItemExtentPath(scItem,spItem)
         if spItem.isBufferMode():

@@ -122,10 +122,17 @@ class SpeciesConnector(TableToDialogConnector):
             feedback=self.feedback)
         return species_dlg 
     
-    def updateFromDlgItem(self,item,dlg_item):
-        item.updateFromDlgItem(dlg_item)
-    def mkItemFromDlgItem(self,dlg_item): 
-        return SpeciesItem(dlg_item,feedback=self.feedback)
+    def updateFromDlgItem(self,item,dlgItem):
+        initName, newName = item.getName(), dlgItem.getName()
+        item.updateFromDlgItem(dlgItem)
+        if initName != newName:
+            pluginModel = self.model.pluginModel
+            pluginModel.frictionModel.renameField(initName,newName)
+            # pluginModel
+        self.model.layoutChanged.emit()
+            
+    def mkItemFromDlgItem(self,dlgItem): 
+        return SpeciesItem(dlgItem,feedback=self.feedback)
      
 
         

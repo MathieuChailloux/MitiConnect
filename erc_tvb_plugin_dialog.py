@@ -106,11 +106,21 @@ class PluginModel(abstract_model.MainModel):
         layer = self.getOutLayerFromName(name,self.landuseModel)
         return layer
         
-    def changeImport(self,oldName,newName):
-        for luItem in self.landuseModel:
-            if luItem.getName() == newName:
-                luItem.setName(newName)
+    # def applyRename(self,oldName,newName,model):
+        # for item in model.items:
+            # if item.getName() == oldName:
+                # item.setName(newName)
+        # model.layoutChanged.emit()
+    def renameData(self,oldName,newName):
+        for item in self.speciesModel.items:
+            if item.getLanduse() == oldName:
+                item.setLanduse(newName)
+        self.speciesModel.layoutChanged.emit()
+    def renameImport(self,oldName,newName):
+        for li in self.landuseModel.items:
+            li.renameImport(oldName,newName)
         self.landuseModel.layoutChanged.emit()
+        self.renameData(oldName,newName)
         
     def checkWorkspaceInit(self):
         self.paramsModel.checkWorkspaceInit()

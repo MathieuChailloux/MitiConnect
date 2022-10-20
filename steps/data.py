@@ -410,9 +410,12 @@ class ImportConnector(TableToDialogConnector):
         else:
             self.feedback.pushDebugInfo("No dlgItem given")
         
-    def updateItem(self,item,dlgItem):
+    def updateFromDlgItem(self,item,dlgItem):
+        initName, newName = item.getName(), dlgItem.getName()
         self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
         item.updateFromDlgItem(dlgItem)
+        if initName != newName:
+            self.model.pluginModel.renameImport(initName,newName)
         
 
 class LanduseItem(DictItem):
@@ -434,6 +437,10 @@ class LanduseItem(DictItem):
         return self.getImports().split(",")
     def setName(self,name):
         self.dict[self.NAME] = name
+    def renameImport(self,oldName,newName):
+        imports = self.getImportsAsList()
+        imports = [newName if i == oldName else i for i in imports]
+        self.dict[self.IMPORTS]= ",".join(imports)
     def setImports(self,imports):
         self.dict[self.IMPORTS] = imports
 
@@ -541,3 +548,9 @@ class LanduseConnector(AbstractConnector):
             self.model.layoutChanged.emit()
         else:
             self.feedback.user_error("No name given to landuse layers ranking")
+            
+    def updateFromDlgItem(self,item,dlgItem):
+        initName, newName = item.getName(), dlgItem.getName()
+        item.updateFromDlgItem(dlgItem)
+        if initName != newName:
+            self.model.pluginModel.renameData(initName,newName)

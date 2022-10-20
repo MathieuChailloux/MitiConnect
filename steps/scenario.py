@@ -203,8 +203,13 @@ class ScenarioConnector(TableToDialogConnector):
             self.model.addItem(dlg_item)
             self.model.layoutChanged.emit()
     
-    def updateFromDlgItem(self,item,dlg_item):
-        item.updateFromDlgItem(dlg_item)
+    def updateFromDlgItem(self,item,dlgItem):
+        initName, newName = item.getName(), dlgItem.getName()
+        item.updateFromDlgItem(dlgItem)
+        if initName != newName:
+            for scItem in self.model:
+                if scItem.getBase() == initName:
+                    scItem.setBase(newName)
             
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)

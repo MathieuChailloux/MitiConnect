@@ -95,6 +95,8 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.ID]
     def getLanduse(self):
         return self.dict[self.LANDUSE]
+    def setLanduse(self,val):
+        self.dict[self.LANDUSE] = val
     def getMinArea(self):
         return self.dict[self.MIN_AREA]
     def getMaxDisp(self):

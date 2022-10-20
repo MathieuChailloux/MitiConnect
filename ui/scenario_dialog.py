@@ -164,8 +164,12 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         
     def getName(self):
         return self.dict[self.NAME]
+    def setName(self,val):
+        self.dict[self.NAME] = val
     def getBase(self):
         return self.dict[self.BASE]
+    def setBase(self,val):
+        self.dict[self.BASE] = val
     def getBaseLayer(self):
         return self.dict[self.BASE_LAYER]
     def getLayer(self):

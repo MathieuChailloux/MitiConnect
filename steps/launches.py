@@ -339,41 +339,33 @@ class LaunchModel(DictModel):
         # else:
             # assert(False)
         
-    def applyItemLanduse(self, scItem, spItem,extentSc=None,feedback=None):
+    def applyItemLanduse(self, scItem, spItem,extentSc=None,feedback=None,eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemLanduse " + str(scItem))
         scName, spName = scItem.getName(), spItem.getName()
-        if scItem.getStatusLanduse():
-            msg = self.tr("Landuse layer already computed for scenario ")
-            feedback.pushWarning(msg + str(scName))
-            return
+        # Check out path
+        out_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
+        if utils.fileExists(out_path):
+            if eraseFlag:
+                qgsUtils.removeLayerFromPath(out_path)
+                qgsUtils.removeRaster(out_path)
+            else:
+                qgsUtils.loadRasterLayer(out_path,loadProject=True)
+                return
+        # Prepare Params
         base = scItem.getBase()
         baseItem = self.getScItemFromName(base)
-        # extentSc = extentSc if extentSc else self.pluginModel.scenarioModel.getItemExtentSc(scItem)
-        # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         spLanduse = self.getSpBaseLanduse(spItem)
-        out_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
-        # out_path = QgsProcessingUtils.generateTempFilename("out.tif")
-        # out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
-        # out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
-        # out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         if scItem.isInitialState() or scItem.isLanduseMode():
             luPath = spLanduse
-        # elif scItem.isLanduseMode():
-            # self.feedback.pushDebugInfo("LU1")
-            # in_path = self.pluginModel.getDataOutPathFromName(base)
-            # if not utils.fileExists(in_path):
-                # feedback.user_error("File '"+ str(in_path) + " does not exist"
-                    # + ", launch " + str(base) + " in step 2")
         elif scItem.isStackedMode():
             self.feedback.pushDebugInfo("LU2")
             luPath = QgsProcessingUtils.generateTempFilename(spName + "_landuse.tif")
             qgsUtils.removeLayerFromPath(luPath)
             qgsUtils.removeRaster(luPath)
-            # baseItem = self.pluginModel.scenarioModel.getItemFromName(base)
             in_path = self.getItemLanduse(baseItem,spItem,extentSc=extentSc)
             if not utils.fileExists(in_path):
                 feedback.user_error("File '"+ str(in_path) + " does not exist"
@@ -410,66 +402,56 @@ class LaunchModel(DictModel):
         extentPath = self.getItemExtentPath(scItem,spItem,extentSc=extentSc)
         self.computeItemExtent(scItem,spItem,extentSc)
         # Clip
-        out_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
-        qgsUtils.removeLayerFromPath(out_path)
-        qgsUtils.removeRaster(out_path)
         dst_crs = self.pluginModel.paramsModel.getCrsStr()
         qgsTreatments.clipRasterFromVector(luPath,extentPath,out_path,
             resolution=resolution,nodata=nodataVal,
             feedback=feedback)
-        # qgsTreatments.clipRasterAllTouched(luPath,extentPath,dst_crs,
-            # out_path=out_path,feedback=self.feedback)
-        # extentRasterPath = qgsUtils.mkTmpPath(scName + "_" + spName + "_extent_raster.tif")
-        # extentExtent = qgsUtils.getExtentStrFromPath(extentPath)
-        # qgsTreatments.applyRasterization(extentPath,out_path,
-            # extentExtent,resolution,
-            # burn_val=1,nodata_val=255,out_type=Qgis.Byte,
-            # feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
-    def applyItemFriction(self, scItem,species,extentSc=None,feedback=None):
+    def applyItemFriction(self, scItem,spItem,extentSc=None,feedback=None,  eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemFriction")
-        name = scItem.getName()
-        # extentSc = extentSc if extentSc else self.pluginModel.scenarioModel.getItemExtentSc(scItem)
-        if scItem.getStatusFriction():
-            msg = self.tr("Friction layer already computed for scenario ")
-            feedback.pushWarning(msg + str(name))
-        else:
-            # Reclassify
-            baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
-            frictionModel = self.pluginModel.frictionModel
-            species_names = [sp.getName() for sp in species]
-            reclass_matrixes = frictionModel.getReclassifyMatrixes(species_names)
-            nb_items = len(reclass_matrixes)
-            step_feedback = feedbacks.ProgressMultiStepFeedback(nb_items,feedback)
-            cpt=0
-            for specie, matrix in reclass_matrixes.items():
-                spItem = self.getSpItemFromName(specie)
-                feedback.pushDebugInfo("specie = " + str(specie))
-                feedback.pushDebugInfo("matrix = " + str(matrix))
-                in_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
-                feedback.pushDebugInfo("in_path = " + str(in_path))
-                out_path = self.getItemFriction(scItem,spItem,extentSc=extentSc)
-                feedback.pushDebugInfo("out_path = " + str(out_path))
+        scName, spName = scItem.getName(), spItem.getName()
+        # Check in path
+        in_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
+        feedback.pushDebugInfo("in_path = " + str(in_path))
+        if not utils.fileExists(in_path):
+            self.feedback.user_error("No landuse file " + str(in_path) + " for specie " + str(specie) + " in scenario " + name)
+        # Check out path
+        out_path = self.getItemFriction(scItem,spItem,extentSc=extentSc)
+        feedback.pushDebugInfo("out_path = " + str(out_path))
+        if utils.fileExists(out_path):
+            if eraseFlag:
                 qgsUtils.removeLayerFromPath(out_path)
-                inVals = qgsUtils.getRasterValsFromPath(in_path)
-                mInVals, mOutVals = matrix[::3], matrix[2::3]
-                feedback.pushDebugInfo("mInVals = " + str(mInVals))
-                feedback.pushDebugInfo("mOutVals = " + str(mOutVals))
-                naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
-                self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
-                qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
-                    out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
-                    feedback=step_feedback)
+                qgsUtils.removeRaster(out_path)
+            else:
                 loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 styles.setRendererPalettedGnYlRd(loaded_layer)
-                cpt+=1
-                step_feedback.setCurrentStep(cpt)
+                return
+        # Prepare matrix
+        baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
+        frictionModel = self.pluginModel.frictionModel
+        matrixes = frictionModel.getReclassifyMatrixes([spName])
+        feedback.pushDebugInfo("matrixes = " + str(matrixes))
+        matrix = matrixes[spName]
+        feedback.pushDebugInfo("matrix = " + str(matrix))
+        # Get non assigned values
+        inVals = qgsUtils.getRasterValsFromPath(in_path)
+        mInVals, mOutVals = matrix[::3], matrix[2::3]
+        feedback.pushDebugInfo("mInVals = " + str(mInVals))
+        feedback.pushDebugInfo("mOutVals = " + str(mOutVals))
+        naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
+        self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
+        # Call reclassify
+        qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
+            out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
+            feedback=feedback)
+        loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
+        styles.setRendererPalettedGnYlRd(loaded_layer)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
-    def applyItemGraphabProject(self, scItem,spItem,extentSc=None,feedback=None):
+    def applyItemGraphabProject(self, scItem,spItem,extentSc=None,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemGraph")
@@ -492,7 +474,7 @@ class LaunchModel(DictModel):
             nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=feedback)
 
 
-    def applyItemGraphabLinkset(self, scItem,spItem,extentSc=None,feedback=None):
+    def applyItemGraphabLinkset(self, scItem,spItem,extentSc=None,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemGraphabLinkset")
@@ -514,7 +496,7 @@ class LaunchModel(DictModel):
         createGraphabLinkset(project,linksetName,friction,feedback=feedback)
             
             
-    def applyItemGraphabGraph(self, scItem,spItem,extentSc=None,feedback=None):
+    def applyItemGraphabGraph(self, scItem,spItem,extentSc=None,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemGraphabGraph")
@@ -533,7 +515,7 @@ class LaunchModel(DictModel):
         createGraphabGraph(project,linksetName,
             dist=maxDisp,graphName=graphName,feedback=feedback)
                 
-    def computeLocalMetric(self,scItem,spItem,extentSc=None,feedback=None):
+    def computeLocalMetric(self,scItem,spItem,extentSc=None,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
         scName, spName = scItem.getName(), spItem.getName()
@@ -544,7 +526,7 @@ class LaunchModel(DictModel):
         self.feedback.pushDebugInfo("l = " + str(l))
         computeLocalMetric(project,graphName,metricName=l,d=d,p=p,feedback=feedback)
                 
-    def computeGlobalMetric(self,scItem,spItem,extentSc=None,feedback=None):
+    def computeGlobalMetric(self,scItem,spItem,extentSc=None,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
         scName, spName = scItem.getName(), spItem.getName()
@@ -637,6 +619,7 @@ class LaunchConnector(TableToDialogConnector):
     def iterateRunExtent(self,func):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
+        eraseFlag = self.dlg.eraseResults.isChecked()
         # Build scMap
         scMap = {}
         for sc in scenarios:
@@ -662,7 +645,7 @@ class LaunchConnector(TableToDialogConnector):
             # extentLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(baseSc)
             for sp in species:
                 for sc in scenarios:
-                    func(sc,sp,extentSc=baseSc,feedback=step_feedback)
+                    func(sc,sp,extentSc=baseSc,eraseFlag=eraseFlag,feedback=step_feedback)
                     cpt+=1
                     step_feedback.setCurrentStep(cpt)
         # for sc in scenarios:
@@ -679,12 +662,11 @@ class LaunchConnector(TableToDialogConnector):
         
     def frictionRun(self):
         self.feedback.beginSection("Computing friction layer(s)")
-        scenarios = self.getSelectedScenarios()
-        species = self.getSelectedSpecies()
-        step_feedback = feedbacks.ProgressMultiStepFeedback(len(scenarios),self.feedback)
-        for cpt, sc in enumerate(scenarios,start=1):
-            self.model.applyItemFriction(sc,species,feedback=step_feedback)
-            step_feedback.setCurrentStep(cpt)
+        self.iterateRunExtent(self.model.applyItemFriction)
+        # step_feedback = feedbacks.ProgressMultiStepFeedback(len(scenarios),self.feedback)
+        # for cpt, sc in enumerate(scenarios,start=1):
+            # self.model.applyItemFriction(sc,species,feedback=step_feedback)
+            # step_feedback.setCurrentStep(cpt)
         self.feedback.endSection()
             # for sp in species:
                 # self.feedback.pushDebugInfo("TODO : friction Run "

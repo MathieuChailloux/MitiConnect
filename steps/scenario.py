@@ -68,17 +68,25 @@ class ScenarioModel(DictModel):
         i = self.getItemFromName(name)
         return (i is not None)
 
-    def getItemExtentSc(self,item):
+    def getItemDegree(self,item,acc=0):
+        if item.isLeaf():
+            return 0
+        else:
+            baseItem = self.getItemFromName(item.getBase())
+            return self.getItemDegree(baseItem,acc=acc+1)
+    def getItemExtentSc(self,item,acc=[]):
         # item = self.getItemFromName(itemName)
         if item.useExtent():
             return item
         elif item.isLeaf():
             return item
         else:
-            childItem = item.getBase()
-            if childItem == item:
-                self.internal_error("Scenario auto reference " + str(item.getName()))
-            return childItem.getItemExtentSc()
+            childName = item.getBase()
+            childItem = self.getItemFromName(childName)
+            if childName in acc:
+                self.internal_error("Scenario auto reference " + str(childName))
+            acc += childName
+            return self.getItemExtentSc(childItem,acc=acc)
     def getItemExtentScLayer(self,item):
         # item = self.getItemFromName(itemName)
         if not item:

@@ -230,12 +230,15 @@ class LaunchModel(DictModel):
     def getItemOutBase(self,scItem,spItem,suffix="",extentSc=None):
         spDir = self.getItemBaseDir(scItem,spItem,extentSc=extentSc)
         scName, spName = scItem.getName(), spItem.getName()
+        suffix += "" if extentSc is None else ("_ext" + extentSc.getName())
         out_bname = self.getItemNameSuffix(scName,spName,suffix) + ".tif"
         return self.normPath(joinPath(spDir,out_bname))
     def getSpBaseLanduse(self,spItem):
         return self.pluginModel.speciesModel.getItemLandusePath(spItem)
         
-    def computeItemExtent(self,scItem,spItem,extentSc,eraseFlag=True):
+    def computeItemExtent(self,scItem,spItem,extentSc,eraseFlag=True,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
         scName, spName = scItem.getName(), spItem.getName()
         extentScName = extentSc.getName()
         self.feedback.pushDebugInfo("computeItemExtent " + str(extentScName))
@@ -263,7 +266,7 @@ class LaunchModel(DictModel):
                 self.feedback.user_error("Empty dispersal distance for specie " + str(spName))
             bufferVal = bufferMulVal * maxDisp
             extent = qgsTreatments.applyBufferFromExpr(extentScLayer,
-                bufferVal,out_path,feedback=self.feedback)
+                bufferVal,out_path,feedback=feedback)
         elif spItem.isCustomLayerMode():
             self.internal_error("Custom extent layer mode not implemented yet")
         else:
@@ -400,7 +403,7 @@ class LaunchModel(DictModel):
                 out_type=baseType,nodata_val=nodataVal,feedback=feedback)
         # Extent
         extentPath = self.getItemExtentPath(scItem,spItem,extentSc=extentSc)
-        self.computeItemExtent(scItem,spItem,extentSc)
+        self.computeItemExtent(scItem,spItem,extentSc,feedback=feedback)
         # Clip
         dst_crs = self.pluginModel.paramsModel.getCrsStr()
         qgsTreatments.clipRasterFromVector(luPath,extentPath,out_path,
@@ -624,8 +627,12 @@ class LaunchConnector(TableToDialogConnector):
         scMap = {}
         for sc in scenarios:
             baseSc = self.model.pluginModel.scenarioModel.getItemExtentSc(sc)
+            self.feedback.pushDebugInfo("sc = " + str(sc.getName()))
+            self.feedback.pushDebugInfo("scMap = " + str(scMap))
             if baseSc in scMap:
-                scMap[baseSc] += sc
+                self.feedback.pushDebugInfo("scMap(base) = " + str(scMap[baseSc]))
+                self.feedback.pushDebugInfo("scMap(type) = " + str(scMap[baseSc].__class__.__name__))
+                scMap[baseSc].append(sc)
             else:
                 scMap[baseSc] = [sc]
         # for baseSc, scenarios in scMap:
@@ -633,6 +640,7 @@ class LaunchConnector(TableToDialogConnector):
                 # isSc = self.pluginModel.scenarioModel.mkInitialState()
                 # scenarios.insert(0,isSc)
         # nb steps feedback
+        self.feedback.pushDebugInfo("apres")
         nb_steps = len(scenarios) * len(species)
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
         cpt=0

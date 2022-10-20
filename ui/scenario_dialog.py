@@ -175,10 +175,9 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     def getLayer(self):
         return self.dict[self.LAYER]
     def getExtentFlag(self):
-        if self.EXTENT_FLAG in self.dict:
-            return self.dict[self.EXTENT_FLAG]
-        else:
-            return True
+        if self.EXTENT_FLAG not in self.dict:
+            self.dict[self.EXTENT_FLAG] = True
+        return self.dict[self.EXTENT_FLAG]
     def getMode(self):
         return self.dict[self.MODE]
     def getBurnVal(self):
@@ -358,6 +357,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 self.errorDialog(self.tr("Empty layer"))
                 continue
             layerPath = qgsUtils.pathOfLayer(layer)
+            extentFlag = self.scExtentFlag.isChecked()
             shortMode = self.scShort.isChecked()
             scPerValueMode = self.scPerValue.isChecked()
             fixedMode = self.scFixedMode.isChecked()
@@ -366,13 +366,15 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if fixedMode:
                 burnVal = self.scBurnVal.text()
                 dlgItem = ScenarioItem.fromValues(name,layer=layerPath,base=base,
-                    mode=1,burnVal=burnVal,feedback=self.feedback)
+                    mode=1,burnVal=burnVal,extentFlag=extentFlag,
+                    feedback=self.feedback)
             else:
                 if not reclassField:
                     self.errorDialog(self.tr("Empty field"))
                     continue
                 dlgItem = ScenarioItem.fromValues(name,layer=layerPath,base=base,
-                    mode=2,reclassField=reclassField,feedback=self.feedback)
+                    mode=2,reclassField=reclassField,extentFlag=extentFlag,
+                    feedback=self.feedback)
                 dlgItem.setReclassModel(self.reclassModel)
                 # if not self.model.items:
                     # self.errorDialog(self.tr("Empty model"))
@@ -391,6 +393,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             layer = dlgItem.getLayer()
             if layer:
                 self.layerComboDlg.setLayerPath(dlgItem.dict[ScenarioItem.LAYER])
+            self.scExtentFlag.setChecked(dlgItem.dict[ScenarioItem.EXTENT_FLAG])
             fieldMode = dlgItem.dict[ScenarioItem.MODE] == 2
             self.switchBurnMode(fieldMode)
             if fieldMode:

@@ -193,40 +193,68 @@ class LaunchModel(DictModel):
     def getItemNameSuffix(self,scName,spName,suffix):
         res = scName + "_" + spName + "_" + suffix
         return res
-    def getItemSpDir(self,spName):
-        spDir = self.pluginModel.getSubDir(spName)
+    # def getItemSpDir(self,spName):
+        # spDir = self.pluginModel.getSubDir(spName)
+        # return self.normPath(spDir)
+    def getScDirFromName(self,scName):
+        scDir = self.getItemSpDir(scName)
+        return self.normPath(scDir)
+    # def getItemExtentScDir(self,extentSc):
+        # suffix = extentSc.getName() if extentSc else "base"
+        # dirname = "extent_" + suffix
+        # return self.getSubDir(dirname)
+    # def getItemExtentScDir(self,scItem,spItem):
+        # extentSc = self.pluginModel.scenarioModel.getItemExtentSc(scItem)
+        # extentScDir = self.pluginModel.getSubDir(extentSc.getName())
+        # return self.normPath(extentScDir)
+        # extentScName, spName = extentSc.getName(), spItem.getName()
+        # spDir = self.getItemSpDir(spName)
+        # return self.normPath(joinPath(spDir,extentScName))
+    def getItemExtentScDir(self,extentSc):
+        suffix = extentSc.getName() if extentSc else "base"
+        dirname = "extent_" + suffix
+        return self.pluginModel.getSubDir(dirname)
+    def getItemExtentSpDir(self,extentSc,spName):
+        extentScDir = self.getItemExtentScDir(extentSc)
+        spDir = self.pluginModel.getSubDir(spName,baseDir=extentScDir)
         return self.normPath(spDir)
-    def getItemExtentScDir(self,scItem,spItem):
-        extentSc = self.pluginModel.scenarioModel.getItemExtentSc(scItem)
-        extentScName, spName = extentSc.getName(), spItem.getName()
-        spDir = self.getItemSpDir(spName)
-        return self.normPath(joinPath(spDir,extentScName))
-    def getItemExtentPath(self,scItem,spItem):
-        extentDir = self.getItemExtentScDir(scItem,spItem)
-        return self.normPath(joinPath(extentDir,"extent.shp"))
-    def getItemBaseDir(self,scItem,spItem):
-        extentDir = self.getItemExtentScDir(scItem,spItem)
-        scName = scItem.getName()
-        itemDir = self.pluginModel.getSubDir(scName,baseDir=extentDir)
-        return self.normPath(itemDir)
-    def getItemOutBase(self,scItem,spItem,suffix=""):
-        spDir = self.getItemBaseDir(scItem,spItem)
+    def getItemExtentPath(self,scItem,spItem,extentSc=None):
         scName, spName = scItem.getName(), spItem.getName()
-        out_bname = scName + "_" + spName+ "_" + suffix + ".tif"
+        extentDir = self.getItemExtentSpDir(extentSc,spName)
+        return self.normPath(joinPath(extentDir,"extent.shp"))
+    def getItemBaseDir(self,scItem,spItem,extentSc=None):
+        scName, spName = scItem.getName(), spItem.getName()
+        spDir = self.getItemExtentSpDir(extentSc,spName)
+        scDir = self.pluginModel.getSubDir(scName,baseDir=spDir)
+        return self.normPath(scDir)
+    def getItemOutBase(self,scItem,spItem,suffix="",extentSc=None):
+        spDir = self.getItemBaseDir(scItem,spItem,extentSc=extentSc)
+        scName, spName = scItem.getName(), spItem.getName()
+        out_bname = self.getItemNameSuffix(scName,spName,suffix) + ".tif"
         return self.normPath(joinPath(spDir,out_bname))
     def getSpBaseLanduse(self,spItem):
         return self.pluginModel.speciesModel.getItemLandusePath(spItem)
         
-    def computeItemExtent(self,scItem,spItem):
+    def computeItemExtent(self,scItem,spItem,extentSc,eraseFlag=True):
         scName, spName = scItem.getName(), spItem.getName()
-        self.feedback.pushDebugInfo("sc Item " + str(scItem))
+        extentScName = extentSc.getName()
+        self.feedback.pushDebugInfo("computeItemExtent " + str(extentScName))
         # assert(False)
-        extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(scItem)
+        # extentSc = extentSc if extentSc else self.pluginModel.scenarioModel.getItemExtentSc(scItem)
+        extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(extentSc)
         if extentScLayer is None:
             assert(False)
         spLanduse = self.getSpBaseLanduse(spItem)
-        out_path = self.getItemExtentPath(scItem,spItem)
-        if spItem.isBufferMode():
+        out_path = self.getItemExtentPath(scItem,spItem,extentSc=extentSc)
+        if utils.fileExists(out_path):
+            if eraseFlag:
+                qgsUtils.removeVectorLayer(out_path)
+            else:
+                return out_path
+        if spItem.isMaxExtentMode():
+            self.feedback.pushDebugInfo("copymode")
+            shutil.copy(extentScLayer,out_path)
+        elif spItem.isBufferMode():
             # bufferVal = float(spItem.getExtentVal
             bufferMulVal, maxDisp = float(spItem.getExtentVal()), int(spItem.getMaxDisp())
             if bufferMulVal == 0:
@@ -236,42 +264,42 @@ class LaunchModel(DictModel):
             bufferVal = bufferMulVal * maxDisp
             extent = qgsTreatments.applyBufferFromExpr(extentScLayer,
                 bufferVal,out_path,feedback=self.feedback)
-        elif spItem.isMaxExtentMode():
-            shutil.copy(extentScLayer,out_path)
-        elif spItem.isCustomLauerMode():
+        elif spItem.isCustomLayerMode():
             self.internal_error("Custom extent layer mode not implemented yet")
         else:
             assert(False)
         return out_path
-    def getItemLanduse(self,scItem,spItem):
-        # scItem = self.pluginModel.scenarioModel.getItemFromName(scName)
-        scName, spName = scItem.getName(), spItem.getName()
-        if not scItem:
-            self.feedback.internal_error("No scenario found for " + str(scName))
-        if scItem is None:
-            self.feedback.internal_error("No scenario named " + str(scName))
-        if scItem.isInitialState():
-            path = self.getSpBaseLanduse(spItem)
-        elif scItem.isLanduseMode():
-            base = scItem.getBase()
-            path = self.pluginModel.getDataOutPathFromName(base)
-        elif scItem.isStackedMode():
-            path = self.getItemOutBase(scItem,spItem,suffix="landuse")
-        else:
-            self.feedback.internal_error("Unexpected scenario mode : "
-                + str(scItem.getMode()))
-        return path
-    def getItemFriction(self,scItem,spItem):
-        return self.getItemOutBase(scItem,spItem,suffix="friction")
-    def getItemGraphabProjectName(self,scItem,spItem):
+        
+    # def getItemLanduse(self,scItem,spItem,extentSc=None):
+        # scName, spName = scItem.getName(), spItem.getName()
+        # if not scItem:
+            # self.feedback.internal_error("No scenario found for " + str(scName))
+        # if scItem is None:
+            # self.feedback.internal_error("No scenario named " + str(scName))
+        # if scItem.isInitialState():
+            # path = self.getSpBaseLanduse(spItem)
+        # elif scItem.isLanduseMode():
+            # base = scItem.getBase()
+            # path = self.pluginModel.getDataOutPathFromName(base)
+        # elif scItem.isStackedMode():
+            # path = self.getItemOutBase(scItem,spItem,extentSc=extentSc,suffix="landuse")
+        # else:
+            # self.feedback.internal_error("Unexpected scenario mode : "
+                # + str(scItem.getMode()))
+        # return path
+    def getItemLanduse(self,scItem,spItem,extentSc=None):
+        return self.getItemOutBase(scItem,spItem,extentSc=extentSc,suffix="landuse")
+    def getItemFriction(self,scItem,spItem,extentSc=None):
+        return self.getItemOutBase(scItem,spItem,extentSc=extentSc,suffix="friction")
+    def getItemGraphabProjectName(self,scItem,spItem,extentSc=None):
         scName, spName = scItem.getName(), spItem.getName()
         return self.getItemNameSuffix(scName,spName,"graphab")
-    def getItemGraphabProjectDir(self,scItem,spItem):
-        spDir = self.getItemBaseDir(scItem,spItem)
+    def getItemGraphabProjectDir(self,scItem,spItem,extentSc=None):
+        spDir = self.getItemBaseDir(scItem,spItem,extentSc=extentSc)
         out_bname = self.getItemGraphabProjectName(scItem,spItem)
         return self.normPath(joinPath(spDir,out_bname))
-    def getItemGraphabProjectFile(self,scItem,spItem):
-        baseDir = self.getItemGraphabProjectDir(scItem,spItem)
+    def getItemGraphabProjectFile(self,scItem,spItem,extentSc=None):
+        baseDir = self.getItemGraphabProjectDir(scItem,spItem,extentSc=extentSc)
         out_bname = self.getItemGraphabProjectName(scItem,spItem) + ".xml"
         return self.normPath(joinPath(baseDir,out_bname))
     def getItemLinksetName(self,scName,spName):
@@ -311,7 +339,7 @@ class LaunchModel(DictModel):
         # else:
             # assert(False)
         
-    def applyItemLanduse(self, scItem, spItem,feedback=None):
+    def applyItemLanduse(self, scItem, spItem,extentSc=None,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemLanduse " + str(scItem))
@@ -322,14 +350,15 @@ class LaunchModel(DictModel):
             return
         base = scItem.getBase()
         baseItem = self.getScItemFromName(base)
+        # extentSc = extentSc if extentSc else self.pluginModel.scenarioModel.getItemExtentSc(scItem)
         # in_path = self.pluginModel.getOrigPath(scItem.getLayer())
         spLanduse = self.getSpBaseLanduse(spItem)
-        out_path = self.getItemLanduse(scItem,spItem)
+        out_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
         # out_path = QgsProcessingUtils.generateTempFilename("out.tif")
         # out_path2 = QgsProcessingUtils.generateTempFilename("out2.tif")
         # out_gpkg = QgsProcessingUtils.generateTempFilename("out.gpkg")
         # out_shp = QgsProcessingUtils.generateTempFilename("out.shp")
-        crs, extent, resolution = self.pluginModel.getRasterParams()
+        crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         if scItem.isInitialState() or scItem.isLanduseMode():
             luPath = spLanduse
@@ -345,7 +374,7 @@ class LaunchModel(DictModel):
             qgsUtils.removeLayerFromPath(luPath)
             qgsUtils.removeRaster(luPath)
             # baseItem = self.pluginModel.scenarioModel.getItemFromName(base)
-            in_path = self.getItemLanduse(baseItem,spItem)
+            in_path = self.getItemLanduse(baseItem,spItem,extentSc=extentSc)
             if not utils.fileExists(in_path):
                 feedback.user_error("File '"+ str(in_path) + " does not exist"
                     + ", launch scenario " + str(base) + " landuse")
@@ -357,14 +386,14 @@ class LaunchModel(DictModel):
             if scItem.isFixedMode():
                 # Fixed mode
                 qgsTreatments.applyRasterization(vector_path,raster_path,
-                    extent,resolution,burn_val=scItem.getBurnVal(),
+                    maxExtent,resolution,burn_val=scItem.getBurnVal(),
                     nodata_val=nodataVal,out_type=baseType,feedback=feedback)
                 path = raster_path
             elif scItem.isFieldMode():
                 # Field mode
                 reclass_path = qgsUtils.mkTmpPath(scName + "_reclass.tif")
                 qgsTreatments.applyRasterization(vector_path,raster_path,
-                    extent,resolution,field=scItem.getBurnField(),
+                    maxExtent,resolution,field=scItem.getBurnField(),
                     nodata_val=nodataVal,out_type=baseType,feedback=feedback)
                 qgsTreatments.applyReclassifyByTable(raster_path,
                     scItem.getReclassTable(),reclass_path,
@@ -377,10 +406,11 @@ class LaunchModel(DictModel):
             paths = [in_path, path]
             qgsTreatments.applyMergeRaster(paths,luPath,#nodata_input=0,
                 out_type=baseType,nodata_val=nodataVal,feedback=feedback)
-        extentPath = self.getItemExtentPath(scItem,spItem)
-        if utils.fileExists(extentPath):
-            qgsUtils.removeVectorLayer(extentPath)
-        self.computeItemExtent(scItem,spItem)
+        # Extent
+        extentPath = self.getItemExtentPath(scItem,spItem,extentSc=extentSc)
+        self.computeItemExtent(scItem,spItem,extentSc)
+        # Clip
+        out_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
         qgsUtils.removeLayerFromPath(out_path)
         qgsUtils.removeRaster(out_path)
         dst_crs = self.pluginModel.paramsModel.getCrsStr()
@@ -397,11 +427,12 @@ class LaunchModel(DictModel):
             # feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
-    def applyItemFriction(self, scItem,species,feedback=None):
+    def applyItemFriction(self, scItem,species,extentSc=None,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemFriction")
         name = scItem.getName()
+        # extentSc = extentSc if extentSc else self.pluginModel.scenarioModel.getItemExtentSc(scItem)
         if scItem.getStatusFriction():
             msg = self.tr("Friction layer already computed for scenario ")
             feedback.pushWarning(msg + str(name))
@@ -418,9 +449,9 @@ class LaunchModel(DictModel):
                 spItem = self.getSpItemFromName(specie)
                 feedback.pushDebugInfo("specie = " + str(specie))
                 feedback.pushDebugInfo("matrix = " + str(matrix))
-                in_path = self.getItemLanduse(scItem,spItem)
+                in_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
                 feedback.pushDebugInfo("in_path = " + str(in_path))
-                out_path = self.getItemFriction(scItem,spItem)
+                out_path = self.getItemFriction(scItem,spItem,extentSc=extentSc)
                 feedback.pushDebugInfo("out_path = " + str(out_path))
                 qgsUtils.removeLayerFromPath(out_path)
                 inVals = qgsUtils.getRasterValsFromPath(in_path)
@@ -438,22 +469,22 @@ class LaunchModel(DictModel):
                 step_feedback.setCurrentStep(cpt)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
-    def applyItemGraphabProject(self, scItem,spItem,feedback=None):
+    def applyItemGraphabProject(self, scItem,spItem,extentSc=None,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemGraph")
         scName, spName = scItem.getName(), spItem.getName()
         checkGraphabInstalled(feedback)
         projName = self.getItemGraphabProjectName(scItem,spItem)
-        project = self.getItemGraphabProjectFile(scItem,spItem)
-        landuse = self.getItemLanduse(scItem,spItem)
-        friction = self.getItemFriction(scItem,spItem)
+        project = self.getItemGraphabProjectFile(scItem,spItem,extentSc=extentSc)
+        landuse = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
+        friction = self.getItemFriction(scItem,spItem,extentSc=extentSc)
         codes = spItem.getCodesVal()
         if not codes:
             self.feedback.user_error("No habitat code specified for specie "
                 + str(spName))
         minArea = spItem.getMinArea()
-        outDir = self.getItemBaseDir(scItem,spItem)
+        outDir = self.getItemBaseDir(scItem,spItem,extentSc=extentSc)
         qgsUtils.removeGroup(projName)
         projectFolder = os.path.dirname(project)
         qgsUtils.removeFolder(projectFolder)
@@ -461,16 +492,16 @@ class LaunchModel(DictModel):
             nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=feedback)
 
 
-    def applyItemGraphabLinkset(self, scItem,spItem,feedback=None):
+    def applyItemGraphabLinkset(self, scItem,spItem,extentSc=None,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemGraphabLinkset")
         scName, spName = scItem.getName(), spItem.getName()
         checkGraphabInstalled(feedback)
         projName = self.getItemGraphabProjectName(scItem,spItem)
-        project = self.getItemGraphabProjectFile(scItem,spItem)
+        project = self.getItemGraphabProjectFile(scItem,spItem,extentSc=extentSc)
         linksetName = self.getItemLinksetName(scName,spName)
-        friction = self.getItemFriction(scItem,spItem)
+        friction = self.getItemFriction(scItem,spItem,extentSc=extentSc)
         self.pluginModel.loadProject(project)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
         if gProj:
@@ -483,7 +514,7 @@ class LaunchModel(DictModel):
         createGraphabLinkset(project,linksetName,friction,feedback=feedback)
             
             
-    def applyItemGraphabGraph(self, scItem,spItem,feedback=None):
+    def applyItemGraphabGraph(self, scItem,spItem,extentSc=None,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemGraphabGraph")
@@ -491,7 +522,7 @@ class LaunchModel(DictModel):
         maxDisp = spItem.getMaxDisp()
         checkGraphabInstalled(feedback)
         projName = self.getItemGraphabProjectName(scItem,spItem)
-        project = self.getItemGraphabProjectFile(scItem,spItem)
+        project = self.getItemGraphabProjectFile(scItem,spItem,extentSc=extentSc)
         graphName = self.getItemGraphName(scName,spName)
         linksetName = self.getItemLinksetName(scName,spName)
         self.pluginModel.loadProject(project)
@@ -502,22 +533,22 @@ class LaunchModel(DictModel):
         createGraphabGraph(project,linksetName,
             dist=maxDisp,graphName=graphName,feedback=feedback)
                 
-    def computeLocalMetric(self,scItem,spItem,feedback=None):
+    def computeLocalMetric(self,scItem,spItem,extentSc=None,feedback=None):
         if feedback is None:
             feedback = self.feedback
         scName, spName = scItem.getName(), spItem.getName()
-        project = self.getItemGraphabProjectFile(scItem,spItem)
+        project = self.getItemGraphabProjectFile(scItem,spItem,extentSc=extentSc)
         graphName = self.getItemGraphName(scName,spName)
         self.pluginModel.loadProject(project)
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         self.feedback.pushDebugInfo("l = " + str(l))
         computeLocalMetric(project,graphName,metricName=l,d=d,p=p,feedback=feedback)
                 
-    def computeGlobalMetric(self,scItem,spItem,feedback=None):
+    def computeGlobalMetric(self,scItem,spItem,extentSc=None,feedback=None):
         if feedback is None:
             feedback = self.feedback
         scName, spName = scItem.getName(), spItem.getName()
-        project = self.getItemGraphabProjectFile(scItem,spItem)
+        project = self.getItemGraphabProjectFile(scItem,spItem,extentSc=extentSc)
         graphName = self.getItemGraphName(scName,spName)
         self.pluginModel.loadProject(project)
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
@@ -584,6 +615,7 @@ class LaunchConnector(TableToDialogConnector):
         
     def getSelectedSpecies(self):
         speciesNames = self.dlg.speciesSelection.checkedItems()
+        self.feedback.pushDebugInfo("spNames = " + str(speciesNames))
         if not speciesNames:
             self.feedback.user_error("No specie selected")
         items = [self.model.pluginModel.speciesModel.getItemFromName(s) for s in speciesNames]
@@ -602,23 +634,37 @@ class LaunchConnector(TableToDialogConnector):
                 func(sc,sp,feedback=step_feedback)
                 cpt+=1
                 step_feedback.setCurrentStep(cpt)
-    # def iterateRunExtent(self,func):
-        # scenarios = self.getSelectedScenarios()
-        # scMap = {}
-        # for sc in scenarios:
-            # baseSc = self.pluginModel.scenarioModel.getItemExtentSc(sc)
-            # if baseSc in scMap:
-                # scMap[baseSc] += sc
-            # else:
-                # scMap[baseSc] = [sc]
+    def iterateRunExtent(self,func):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        # Build scMap
+        scMap = {}
+        for sc in scenarios:
+            baseSc = self.model.pluginModel.scenarioModel.getItemExtentSc(sc)
+            if baseSc in scMap:
+                scMap[baseSc] += sc
+            else:
+                scMap[baseSc] = [sc]
         # for baseSc, scenarios in scMap:
-            # isSc = self.pluginModel.scenarioModel.mkInitialState()
-            # scenarios.insert(0,isSc)
-        # species = self.getSelectedSpecies()
-        # nb_steps = len(scenarios) * len(species)
-        # step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
-        # cpt=0
-        # step_feedback.setCurrentStep(cpt)
+            # if not baseSc.isInitialState():
+                # isSc = self.pluginModel.scenarioModel.mkInitialState()
+                # scenarios.insert(0,isSc)
+        # nb steps feedback
+        nb_steps = len(scenarios) * len(species)
+        step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
+        cpt=0
+        step_feedback.setCurrentStep(cpt)
+        # Iteration
+        for baseSc, scenarios in scMap.items():
+            if not baseSc.isInitialState():
+                isSc = self.model.pluginModel.scenarioModel.mkInitialState()
+                scenarios.insert(0,isSc)
+            # extentLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(baseSc)
+            for sp in species:
+                for sc in scenarios:
+                    func(sc,sp,extentSc=baseSc,feedback=step_feedback)
+                    cpt+=1
+                    step_feedback.setCurrentStep(cpt)
         # for sc in scenarios:
             # self.feedback.pushDebugInfo("sc " + str(sc))
             # for sp in species:
@@ -628,7 +674,7 @@ class LaunchConnector(TableToDialogConnector):
         
     def landuseRun(self):
         self.feedback.beginSection("Computing land use layer(s)")
-        self.iterateRun(self.model.applyItemLanduse)
+        self.iterateRunExtent(self.model.applyItemLanduse)
         self.feedback.endSection()
         
     def frictionRun(self):
@@ -645,19 +691,19 @@ class LaunchConnector(TableToDialogConnector):
                     # + sc.getName() + " - " + sp.getName())
     def graphabProjectRun(self):
         self.feedback.beginSection("Creating Graphab project(s)")
-        self.iterateRun(self.model.applyItemGraphabProject)
+        self.iterateRunExtent(self.model.applyItemGraphabProject)
         self.feedback.endSection()
     def graphabLinksetRun(self):
         self.feedback.beginSection("Creating linkset(s)")
-        self.iterateRun(self.model.applyItemGraphabLinkset)
+        self.iterateRunExtent(self.model.applyItemGraphabLinkset)
         self.feedback.endSection()
     def graphabGraphRun(self):
         self.feedback.beginSection("Creating graphs(s)")
-        self.iterateRun(self.model.applyItemGraphabGraph)
+        self.iterateRunExtent(self.model.applyItemGraphabGraph)
         self.feedback.endSection()
     def computeLocalMetric(self):
         self.feedback.beginSection("Computing local metric(s)")
-        self.iterateRun(self.model.computeLocalMetric)
+        self.iterateRunExtent(self.model.computeLocalMetric)
         self.feedback.endSection()
     def computeGlobalMetric(self):
         self.feedback.beginSection("Computing global metric(s)")

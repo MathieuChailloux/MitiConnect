@@ -169,9 +169,9 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QRadioButton" name="scShort_2">
+       <widget class="QRadioButton" name="scExtentFlag">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="minimumSize">
          <size>

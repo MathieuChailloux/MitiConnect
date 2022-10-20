@@ -109,6 +109,10 @@ class SpeciesItem(abstract_model.DictItem):
     # getters wrappers
     def isBufferMode(self):
         return self.getExtentMode() == True
+    def isMaxExtentMode(self):
+        return False
+    def isCustomLayerMode(self):
+        return False
     def getCodesVal(self):
         descrList = self.getCodesFull()
         codesList = [s.split(" - ")[0] for s in descrList]

@@ -116,6 +116,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     BASE = 'BASE'
     BASE_LAYER = 'BASE_LAYER'
     LAYER = 'LAYER'
+    EXTENT_FLAG = 'EXTENT_FLAG'
     # True = Field mode, False = Fixed mode
     MODE = 'MODE'
     RECLASS_FIELD = 'RECLASS_FIELD'
@@ -144,11 +145,12 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     
     @classmethod
     def fromValues(cls, name, layer=None, base=None,baseLayer=None,
-            mode=0, reclassField=None, burnVal=1,
+            extentFlag=True, mode=0, reclassField=None, burnVal=1,
             statusLanduse=False,statusFrict=False,statusGraph=False,
             feedback=None):
         dict = { cls.NAME : name, cls.BASE : base, cls.BASE_LAYER : baseLayer,
-            cls.LAYER : layer, cls.MODE : mode, cls.RECLASS_FIELD : reclassField,
+            cls.LAYER : layer, cls.EXTENT_FLAG : extentFlag, cls.MODE : mode,
+            cls.RECLASS_FIELD : reclassField,
             cls.BURN_VAL : burnVal, cls.STATUS_LANDUSE : statusLanduse,
             cls.STATUS_FRICTION : statusFrict, cls.STATUS_GRAPH : statusGraph }
         return cls(dict, feedback=feedback)
@@ -168,6 +170,11 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.dict[self.BASE_LAYER]
     def getLayer(self):
         return self.dict[self.LAYER]
+    def getExtentFlag(self):
+        if self.EXTENT_FLAG in self.dict:
+            return self.dict[self.EXTENT_FLAG]
+        else:
+            return True
     def getMode(self):
         return self.dict[self.MODE]
     def getBurnVal(self):
@@ -193,7 +200,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     def isLeaf(self):
         return self.getBase() == None
     def useExtent(self):
-        return True
+        return self.getExtentFlag()
         
     def getReclassTable(self):
         return self.reclassModel.getReclassTable()

@@ -210,6 +210,7 @@ class ScenarioConnector(TableToDialogConnector):
             for scItem in self.model:
                 if scItem.getBase() == initName:
                     scItem.setBase(newName)
+            self.model.pluginModel.renameClassImports(oldName,newName)
             
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)

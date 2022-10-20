@@ -111,16 +111,19 @@ class PluginModel(abstract_model.MainModel):
             # if item.getName() == oldName:
                 # item.setName(newName)
         # model.layoutChanged.emit()
+    def renameClassImports(self,oldName,newName):
+        self.frictionModel.renameImport(oldName,newName)
     def renameData(self,oldName,newName):
         for item in self.speciesModel.items:
             if item.getLanduse() == oldName:
                 item.setLanduse(newName)
         self.speciesModel.layoutChanged.emit()
     def renameImport(self,oldName,newName):
+        self.renameData(oldName,newName)
+        self.renameClassImports(oldName,newName)
         for li in self.landuseModel.items:
             li.renameImport(oldName,newName)
         self.landuseModel.layoutChanged.emit()
-        self.renameData(oldName,newName)
         
     def checkWorkspaceInit(self):
         self.paramsModel.checkWorkspaceInit()

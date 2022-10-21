@@ -113,6 +113,7 @@ class ScenarioReclassModel(abstract_model.DictModel):
 class ScenarioItem(abstract_model.DictItemWithChild):
     
     NAME = 'NAME'
+    DESCR = 'DESCR'
     BASE = 'BASE'
     BASE_LAYER = 'BASE_LAYER'
     LAYER = 'LAYER'
@@ -130,7 +131,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     
     LANDUSE_MODE = 0
     
-    BASE_FIELDS = [ NAME, BASE ]
+    BASE_FIELDS = [ NAME, DESCR, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
     STATUS_FIELDS = [ STATUS_LANDUSE, STATUS_FRICTION, STATUS_GRAPH ]
     FIELDS = BASE_FIELDS + RECLASS_FIELDS + STATUS_FIELDS
@@ -144,12 +145,14 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         # self.setReclassModel(ScenarioReclassModel(feedback=self.feedback))
     
     @classmethod
-    def fromValues(cls, name, layer=None, base=None,baseLayer=None,
+    def fromValues(cls, name, descr="", layer=None, base=None,
+            baseLayer=None,
             extentFlag=True, mode=0, reclassField=None, burnVal=1,
             statusLanduse=False,statusFrict=False,statusGraph=False,
             feedback=None):
-        dict = { cls.NAME : name, cls.BASE : base, cls.BASE_LAYER : baseLayer,
-            cls.LAYER : layer, cls.EXTENT_FLAG : extentFlag, cls.MODE : mode,
+        dict = { cls.NAME : name, cls.DESCR : descr, cls.BASE : base,
+            cls.BASE_LAYER : baseLayer, cls.LAYER : layer,
+            cls.EXTENT_FLAG : extentFlag, cls.MODE : mode,
             cls.RECLASS_FIELD : reclassField,
             cls.BURN_VAL : burnVal, cls.STATUS_LANDUSE : statusLanduse,
             cls.STATUS_FRICTION : statusFrict, cls.STATUS_GRAPH : statusGraph }
@@ -241,6 +244,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     @classmethod
     def fromXML(cls,root,feedback=None):
         utils.debug("fromXML " + str(root))
+        if cls.DESCR not in root.attrib:
+            root.attrib[cls.DESCR] = ""
         o = cls.fromDict(root.attrib,feedback=feedback)
         for child in root:
             # childObj = ScenarioReclassModel(feedback=feedback)
@@ -337,6 +342,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         
     def showDialog(self):
         while self.exec_():
+            # Name
             name = self.scName.text()
             if not name.isalnum():
                 self.feedback.user_error("Name '" + str(name) + "' is not alphanumeric")
@@ -347,11 +353,14 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if self.newFlag and self.frictionModel.importExists(name):
                 self.errorDialog(self.tr("Import already exists : " + name))
                 continue
+            descr = self.scDescr.text()
+            # base scenario
             base = self.scBase.currentText()
             self.feedback.pushDebugInfo("base = " + str(base))
             if base is None:
                 self.errorDialog(self.tr("Empty base scenario"))
                 continue
+            # new layer
             layer = self.scLayerCombo.currentLayer()
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
@@ -365,14 +374,16 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.feedback.pushDebugInfo("fixedMode = " + str(fixedMode))
             if fixedMode:
                 burnVal = self.scBurnVal.text()
-                dlgItem = ScenarioItem.fromValues(name,layer=layerPath,base=base,
+                dlgItem = ScenarioItem.fromValues(name,descr=descr,
+                    layer=layerPath,base=base,
                     mode=1,burnVal=burnVal,extentFlag=extentFlag,
                     feedback=self.feedback)
             else:
                 if not reclassField:
                     self.errorDialog(self.tr("Empty field"))
                     continue
-                dlgItem = ScenarioItem.fromValues(name,layer=layerPath,base=base,
+                dlgItem = ScenarioItem.fromValues(name,descr=descr,
+                    layer=layerPath,base=base,
                     mode=2,reclassField=reclassField,extentFlag=extentFlag,
                     feedback=self.feedback)
                 dlgItem.setReclassModel(self.reclassModel)
@@ -389,6 +400,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.feedback.pushDebugInfo("updateUI " + str(dlgItem.dict))
             self.feedback.pushDebugInfo("updateUI child 1 " + str(dlgItem.reclassModel))
             self.scName.setText(dlgItem.dict[ScenarioItem.NAME])
+            self.scDescr.setText(dlgItem.dict[ScenarioItem.DESCR])
             self.scBase.setCurrentText(dlgItem.dict[ScenarioItem.BASE])
             layer = dlgItem.getLayer()
             if layer:

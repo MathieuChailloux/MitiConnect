@@ -68,7 +68,7 @@ class VectorDlgItem(abstract_model.DictItem):
         return self.dict[self.BURN_VAL]
     def getAllTouch(self):
         return self.dict[self.ALL_TOUCH]
-    def getBufferMode(self):
+    def isBufferMode(self):
         return self.dict[self.BUFFER_MODE]
     def getBufferExpr(self):
         return self.dict[self.BUFFER_EXPR]

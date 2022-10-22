@@ -197,6 +197,7 @@ class ImportModel(DictModel):
         # input = qgsUtils.loadLayer(input_path)
         # out_type = Qgis.Byte
         reclassified = qgsUtils.mkTmpPath('reclassified.tif')
+        to_norm_path = None
         out_path = self.getItemOutPath(item)
         # out_path = self.pluginModel.getOrigPath(out_rel_path)
         qgsUtils.removeLayerFromPath(out_path)
@@ -207,18 +208,29 @@ class ImportModel(DictModel):
             childItem = item.getChild()
             all_touch = childItem.getAllTouch()
             expr = childItem.getExpression()
+            # Feature selection
             if expr:
-                selected = qgsUtils.mkTmpPath('selection.gpkg')
-                feedback.pushWarning("Selection expression not yet implemented")
-            # at = childItem.getAllTouch()
+                selected = qgsUtils.mkTmpPath(name + '_selection.gpkg')
+                qgsTreatments.extractByExpression(input_path,expr,selected,
+                    context=context,feedback=feedback)
+            else:
+                selected = input_path
+            # Bufferization
+            if childItem.isBufferMode():
+                buffered = qgsUtils.mkTmpPath(name + '_buffered.gpkg')
+                bufferExpr = childItem.getBufferExpr()
+                qgsTreatments.applyBufferFromExpr(selected,expr,
+                    buffered,context=context,feedback=feedback)
+            else:
+                buffered = selected
+            # Burn by field mode
             if childItem.getBurnMode():
                 burnField = childItem.getBurnField()
                 name = item.getName()
-                # raster_path = qgsUtils.mkTmpPath(item.getName() + '_raster.tif')
                 unique_path = qgsUtils.mkTmpPath(name + '_unique.gpkg')
                 assoc_path = qgsUtils.mkTmpPath(name + '_assoc.gpkg')
                 outField = 'NUM_FIELD'
-                qgsTreatments.addUniqueValue(input_path,burnField,outField,
+                qgsTreatments.addUniqueValue(buffered,burnField,outField,
                     unique_path,assoc_path,context=context,feedback=feedback)
                 # Rasterize
                 raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
@@ -232,7 +244,6 @@ class ImportModel(DictModel):
                 self.feedback.pushDebugInfo("reclassDict = " + str(reclassDict))
                 reclassTable = []
                 for f in assoc_layer.getFeatures():
-                    # initVal = str(f[burnField])
                     initVal = str(f[burnField])
                     self.feedback.pushDebugInfo("initVal = " + str(initVal))
                     self.feedback.pushDebugInfo("initVal type = " + str(initVal.__class__.__name__))
@@ -248,21 +259,21 @@ class ImportModel(DictModel):
                     boundaries_mode=2,context=context,feedback=feedback)
                 to_norm_path = reclassified
             else:
+                # Burn by fixed value mode
                 burnVal = childItem.getBurnVal()
                 # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyRasterization(input_path,out_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
-                to_norm_path = None
         else:
+            # Raster mode
             keepValues = False
             if keepValues:
-                to_norm_path = input_path
+                to_norm_path = buffered
             else:           
-                reclassified = qgsUtils.mkTmpPath('reclassified.tif')
                 table = self.pluginModel.frictionModel.getReclassTable(name)
                 # min_type, nodata_val = Qgis.UInt16, 0
-                qgsTreatments.applyReclassifyByTable(input_path,table,
+                qgsTreatments.applyReclassifyByTable(buffered,table,
                     reclassified,out_type=min_type,nodata_val=nodata_val,
                     boundaries_mode=2,nodata_missing=True,
                     context=context,feedback=feedback)

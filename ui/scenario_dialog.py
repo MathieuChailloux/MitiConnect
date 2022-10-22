@@ -35,6 +35,8 @@ SC_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_dialog.ui'))
 SC_LANDUSE_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_landuse_dialog.ui'))
+SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'scenario_initialState_dialog.ui'))
 
 class ScenarioReclassItem(abstract_model.DictItem):
 
@@ -135,7 +137,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
     STATUS_FIELDS = [ STATUS_LANDUSE, STATUS_FRICTION, STATUS_GRAPH ]
     FIELDS = BASE_FIELDS + RECLASS_FIELDS + STATUS_FIELDS
-    DISPLAY_FIELDS = BASE_FIELDS + STATUS_FIELDS
+    DISPLAY_FIELDS = BASE_FIELDS
     
     def __init__(self,dict,feedback=None):
         super().__init__(dict,feedback=feedback,child=None)
@@ -169,6 +171,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.dict[self.NAME]
     def setName(self,val):
         self.dict[self.NAME] = val
+    def getDescr(self):
+        return self.dict[self.DESCR]
     def getBase(self):
         return self.dict[self.BASE]
     def setBase(self,val):
@@ -426,6 +430,33 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         else:
             burnVal = str(self.frictionModel.getFreeVals(1)[0])
             self.scBurnVal.setText(burnVal)
+
+class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
+    def __init__(self, parent, dlgItem, feedback=None):
+        """Constructor."""
+        super(ScenarioInitialStateDialog, self).__init__(parent)
+        self.feedback = feedback
+        self.setupUi(self)
+        self.updateUi(dlgItem)
+                
+    def updateUi(self,dlgItem):
+        if dlgItem:
+            self.scName.setText(dlgItem.getName())
+            self.scDescr.setText(dlgItem.getDescr())
+        else:
+            assert(False)
+        
+    def showDialog(self):
+        while self.exec_():
+            name = self.scName.text()
+            if not name.isalnum():
+                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+                continue
+            descr = self.scDescr.text()
+            dlgItem = ScenarioItem.fromValues(name=name,descr=descr,
+                mode=3,layer=None,feedback=self.feedback)
+            return dlgItem
+        return None
 
 class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
     def __init__(self, parent, dlgItem, feedback=None, dataNames=[]):

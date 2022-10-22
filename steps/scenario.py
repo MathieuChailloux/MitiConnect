@@ -35,14 +35,14 @@ from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConne
 # from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
-from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
+from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog, ScenarioInitialStateDialog
 from ..ui.plot_window import PlotWindow
 
 # Scenario
         
 class ScenarioModel(DictModel):
 
-    IS_NAME = "initialState"
+    IS_NAME = "INIT"
 
     def __init__(self, pluginModel):
         itemClass = getattr(sys.modules[__name__], ScenarioItem.__name__)
@@ -104,9 +104,14 @@ class ScenarioModel(DictModel):
     # def getItemSpExtentPath(self,item)
         # assert(False)
     def getInitialState(self):
-        return self.getItemFromName(self.IS_NAME)
+        for i in self.items:
+            if i.isInitialState():
+                return i
+        return None
     def mkInitialState(self):
-        return ScenarioItem.fromValues(self.IS_NAME,mode=3,feedback=self.feedback)
+        descr = self.tr("Initial state scenario")
+        return ScenarioItem.fromValues(self.IS_NAME,mode=3,
+            descr=descr,feedback=self.feedback)
     def addInitialState(self):
         self.feedback.pushDebugInfo("addINitialState")
         item = self.mkInitialState()
@@ -193,7 +198,8 @@ class ScenarioConnector(TableToDialogConnector):
                 #luModel=self.model.pluginModel.landuseModel)
         elif item.isInitialState():
             self.feedback.pushDebugInfo("Ignoring double click on initial state")
-            scenarioDlg = None
+            scenarioDlg = ScenarioInitialStateDialog(self.dlg,item,
+                feedback=self.feedback)
         else:
             self.feedback.internal_error("Unexpected scenario mode : "
                 + str(scItem.getMode()))
@@ -215,10 +221,10 @@ class ScenarioConnector(TableToDialogConnector):
         initName, newName = item.getName(), dlgItem.getName()
         item.updateFromDlgItem(dlgItem)
         if initName != newName:
-            for scItem in self.model:
+            for scItem in self.model.items:
                 if scItem.getBase() == initName:
                     scItem.setBase(newName)
-            self.model.pluginModel.renameClassImports(oldName,newName)
+            self.model.pluginModel.renameClassImports(initName,newName)
             
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)

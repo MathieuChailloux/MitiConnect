@@ -2178,7 +2178,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="0" column="4" rowspan="2">
+                     <item row="0" column="4">
                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_3">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2202,6 +2202,12 @@
                         <string>Launch parameters</string>
                        </property>
                        <layout class="QGridLayout" name="gridLayout_15">
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
                         <item row="0" column="0">
                          <widget class="QCheckBox" name="eraseResults">
                           <property name="minimumSize">
@@ -2263,7 +2269,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="1">
+                     <item row="2" column="1" rowspan="2">
                       <widget class="QPushButton" name="landuseRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2303,7 +2309,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="2">
+                     <item row="2" column="2" rowspan="2">
                       <widget class="QPushButton" name="frictionRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2343,7 +2349,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="4" rowspan="3">
+                     <item row="3" column="4" rowspan="3">
                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_2">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2353,21 +2359,27 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>0</width>
-                         <height>80</height>
+                         <width>280</width>
+                         <height>45</height>
                         </size>
                        </property>
                        <property name="maximumSize">
                         <size>
-                         <width>200</width>
+                         <width>16777215</width>
                          <height>16777215</height>
                         </size>
                        </property>
                        <property name="title">
                         <string>Graphab parameters</string>
                        </property>
-                       <layout class="QGridLayout" name="gridLayout_18">
-                        <item row="0" column="0">
+                       <layout class="QHBoxLayout" name="horizontalLayout_8">
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
                          <widget class="QLabel" name="label_54">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2380,7 +2392,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="0" column="1">
+                        <item>
                          <widget class="QComboBox" name="localMetric">
                           <property name="minimumSize">
                            <size>
@@ -2405,7 +2417,7 @@
                           </item>
                          </widget>
                         </item>
-                        <item row="1" column="0">
+                        <item>
                          <widget class="QLabel" name="label_55">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2418,7 +2430,7 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="1" column="1">
+                        <item>
                          <widget class="QComboBox" name="globalMetric">
                           <property name="minimumSize">
                            <size>
@@ -2446,7 +2458,7 @@
                        </layout>
                       </widget>
                      </item>
-                     <item row="3" column="0">
+                     <item row="4" column="0">
                       <widget class="QLabel" name="bufferInGroupLabel_21">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2459,7 +2471,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="3" column="1">
+                     <item row="4" column="1">
                       <widget class="QPushButton" name="projectRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2499,7 +2511,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="3" column="2">
+                     <item row="4" column="2">
                       <widget class="QPushButton" name="linksetRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2539,7 +2551,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="3" column="3">
+                     <item row="4" column="3">
                       <widget class="QPushButton" name="graphRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2579,7 +2591,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="4" column="0">
+                     <item row="5" column="0" rowspan="2">
                       <widget class="QLabel" name="bufferInGroupLabel_22">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2592,7 +2604,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="4" column="1">
+                     <item row="5" column="1" rowspan="2">
                       <widget class="QPushButton" name="localMetricsRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2603,6 +2615,12 @@
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
+                         <height>23</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
                          <height>23</height>
                         </size>
                        </property>
@@ -2626,7 +2644,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="4" column="2">
+                     <item row="5" column="2" rowspan="2">
                       <widget class="QPushButton" name="compareScenariosRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2637,6 +2655,12 @@
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
+                         <height>23</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
                          <height>23</height>
                         </size>
                        </property>
@@ -2657,6 +2681,22 @@
                          <width>15</width>
                          <height>15</height>
                         </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="4">
+                      <widget class="QCheckBox" name="cmpInit">
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Compare scenarios to initial state</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>

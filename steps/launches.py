@@ -619,13 +619,12 @@ class LaunchConnector(TableToDialogConnector):
                 func(sc,sp,feedback=step_feedback)
                 cpt+=1
                 step_feedback.setCurrentStep(cpt)
-    def iterateRunExtent(self,func):
+                
+    def groupByExtent(self,scenarios):
         scModel = self.model.pluginModel.scenarioModel
-        scenarios = self.getSelectedScenarios()
-        species = self.getSelectedSpecies()
-        eraseFlag = self.dlg.eraseResults.isChecked()
-        # Build scMap
+        isSc = scModel.getInitialState()
         scMap = {}
+        cpt = 0
         for sc in scenarios:
             baseSc = self.model.pluginModel.scenarioModel.getItemExtentSc(sc)
             self.feedback.pushDebugInfo("sc = " + str(sc.getName()))
@@ -636,17 +635,7 @@ class LaunchConnector(TableToDialogConnector):
                 scMap[baseSc].append(sc)
             else:
                 scMap[baseSc] = [sc]
-        # for baseSc, scenarios in scMap:
-            # if not baseSc.isInitialState():
-                # isSc = self.pluginModel.scenarioModel.mkInitialState()
-                # scenarios.insert(0,isSc)
-        # nb steps feedback
-        nb_steps = len(scenarios) * len(species)
-        step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
-        cpt=0
-        step_feedback.setCurrentStep(cpt)
-        # Iteration
-        isSc = self.model.pluginModel.scenarioModel.getInitialState()
+            cpt += 1
         for baseSc, scenarios in scMap.items():
             self.feedback.pushDebugInfo("scenarios : " + str([sc.getName() for sc in scenarios]))
             scenariosOrdered = sorted(scenarios,key=lambda i: scModel.getItemDegree(i))
@@ -655,18 +644,32 @@ class LaunchConnector(TableToDialogConnector):
             if not sc0.isInitialState():
                 scenariosOrdered.insert(0,isSc)
                 self.feedback.pushDebugInfo("scenarios ordered with IS : " + str([sc.getName() for sc in scenariosOrdered]))
-            # extentLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(baseSc)
+                cpt += 1
+            scMap[baseSc] = scenariosOrdered
+        return (scMap, cpt)
+        
+    def iterateRunExtent(self,func):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        eraseFlag = self.dlg.eraseResults.isChecked()
+        # Build scMap
+        scMap, nb_steps = self.groupByExtent(scenarios)
+        # for baseSc, scenarios in scMap:
+            # if not baseSc.isInitialState():
+                # isSc = self.pluginModel.scenarioModel.mkInitialState()
+                # scenarios.insert(0,isSc)
+        # nb steps feedback
+        # nb_steps = len(scenarios) * len(species)
+        step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
+        cpt=0
+        step_feedback.setCurrentStep(cpt)
+        # Iteration
+        for baseSc, scenarios in scMap.items():
             for sp in species:
-                for sc in scenariosOrdered:
+                for sc in scenarios:
                     func(sc,sp,extentSc=baseSc,eraseFlag=eraseFlag,feedback=step_feedback)
                     cpt+=1
                     step_feedback.setCurrentStep(cpt)
-        # for sc in scenarios:
-            # self.feedback.pushDebugInfo("sc " + str(sc))
-            # for sp in species:
-                # func(sc,sp,feedback=step_feedback)
-                # cpt+=1
-                # step_feedback.setCurrentStep(cpt)
         
     def landuseRun(self):
         self.feedback.beginSection("Computing land use layer(s)")
@@ -702,22 +705,48 @@ class LaunchConnector(TableToDialogConnector):
         self.feedback.endSection()
     def computeGlobalMetric(self):
         self.feedback.beginSection("Computing global metric(s)")
+        # Get UI state
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
-        nb_steps = len(scenarios) * len(species)
+        cmpInit = self.dlg.cmpInit.isChecked()
+        percentFlag = True
+        # Prepare feedback
+        # nb_steps = len(scenarios) * len(species)
+        scMap, nb_steps = self.groupByExtent(scenarios)
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
-        # res = { sc.getName() : {sp.getName() : None for sp in species} for sc in scenarios }
         values = {}
         cpt = 0
-        for sc in scenarios:
-            values[sc.getName()] = {} 
+        # Loop
+        for baseSc, scenarios in scMap.items():
             for sp in species:
-                val = self.model.computeGlobalMetric(sc,sp,
-                    feedback=step_feedback) 
-                values[sc.getName()][sp.getName()] = val
-                cpt+=1
-                step_feedback.setCurrentStep(cpt)
+                spName = sp.getName()
+                initVal = -1
+                for sc in scenarios:
+                    scName = sc.getName()
+                    val = self.model.computeGlobalMetric(sc,sp,extentSc=baseSc,
+                        feedback=step_feedback)
+                    if sc.isInitialState():
+                        initVal = val
+                    elif initVal == -1:
+                        assert(False)
+                    elif initVal == 0:
+                        self.internal_error("Empty value for global metric of initial state")
+                    else:
+                        if cmpInit:
+                            if percentFlag:
+                                finalVal = (val - initVal) / initVal
+                            else:
+                                finalVal = val - initVal
+                        else:
+                            finalVal = val
+                        if scName not in values:
+                            values[scName] = {}
+                        values[scName][spName] = finalVal
+                    cpt += 1
+                    step_feedback.setCurrentStep(cpt)
         self.feedback.endSection()
+                # step_feedback.setCurrentStep(cpt)
+        # Plot results in new window
         window = PlotWindow(values,self.feedback)
         window.show()
         while window.exec_():

@@ -19,15 +19,19 @@ class MplCanvas(FigureCanvasQTAgg):
 
 class PlotWindow(QtWidgets.QDialog):
 
-    def __init__(self,values,feedback):
+    def __init__(self,values,cmpInit,percentFlag,metricName,feedback):
         super().__init__()
         self.values = values
+        self.cmpInit = cmpInit
+        self.percentFlag = percentFlag
+        self.metricName = metricName
         self.feedback = feedback
         self.initValues()
 
         self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
         # self.canvas.axes.plot([0,1,2,3,4], [10,1,20,3,40])
         self.plotByScenario()
+        self.canvas.fig.tight_layout()
 
         # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
         toolbar = NavigationToolbar(self.canvas, self)
@@ -65,6 +69,15 @@ class PlotWindow(QtWidgets.QDialog):
     def get_cmap(self,n, name='hsv'):
         return plt.cm.get_cmap(name, n)
         
+    def getYLabel(self):
+        if self.cmpInit:
+            s = "\u0394 " + self.metricName + " with initial state"
+            if self.percentFlag:
+                s =  "% of " + s
+        else:
+            s = self.metricName
+        return s
+        
     def plotByScenario(self):
         toPlot = []
         self.feedback.pushDebugInfo("values = " + str(self.values))
@@ -79,22 +92,14 @@ class PlotWindow(QtWidgets.QDialog):
         bins = list(range(1,self.nbSc + 1))
         self.feedback.pushDebugInfo("bins = " + str(bins))
         x = range(self.nbSc)
+        yLabel = self.getYLabel()
         cpt = 1
         for sp, scDict in self.spView.items():
             splot = self.canvas.fig.add_subplot(self.nbSp,1,cpt)
             splot.set_xlabel("Scenarios")
-            splot.set_ylabel("Connectivity")
+            splot.set_ylabel(yLabel)
             keys = list(scDict.keys())
             values = list(scDict.values())
-            # self.feedback.pushDebugInfo("x = " + str(x))
-            # x = [1,2,3]
-            # x = [1.2, 1.3]
-            # x = [2, 3]
-            # y = [1,2]
-            # x = [0,1,2,3]
-            # y = [1,2,3]
-            # y = [0,1,2,3]
-            # x = [1,2,3]
             col = (np.random.random(), np.random.random(), np.random.random())
             splot.set_title(sp)
             # splot.ylabel("Connectivity")

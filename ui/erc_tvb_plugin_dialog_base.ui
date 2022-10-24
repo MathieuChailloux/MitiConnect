@@ -2178,7 +2178,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="0" column="4">
+                     <item row="0" column="4" rowspan="2">
                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_3">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2269,7 +2269,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="1" rowspan="2">
+                     <item row="2" column="1">
                       <widget class="QPushButton" name="landuseRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2309,7 +2309,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="2" rowspan="2">
+                     <item row="2" column="2">
                       <widget class="QPushButton" name="frictionRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2349,7 +2349,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="3" column="4" rowspan="3">
+                     <item row="2" column="4" rowspan="2">
                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_2">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2458,7 +2458,7 @@
                        </layout>
                       </widget>
                      </item>
-                     <item row="4" column="0">
+                     <item row="3" column="0" rowspan="2">
                       <widget class="QLabel" name="bufferInGroupLabel_21">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2471,7 +2471,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="4" column="1">
+                     <item row="3" column="1" rowspan="2">
                       <widget class="QPushButton" name="projectRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2511,7 +2511,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="4" column="2">
+                     <item row="3" column="2" rowspan="2">
                       <widget class="QPushButton" name="linksetRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2551,7 +2551,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="4" column="3">
+                     <item row="3" column="3" rowspan="2">
                       <widget class="QPushButton" name="graphRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2591,7 +2591,23 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="0" rowspan="2">
+                     <item row="4" column="4">
+                      <widget class="QCheckBox" name="cmpInit">
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Compare scenarios to initial state</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
                       <widget class="QLabel" name="bufferInGroupLabel_22">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2604,7 +2620,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="1" rowspan="2">
+                     <item row="5" column="1">
                       <widget class="QPushButton" name="localMetricsRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2644,7 +2660,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="2" rowspan="2">
+                     <item row="5" column="2">
                       <widget class="QPushButton" name="compareScenariosRun">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2684,8 +2700,8 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="4">
-                      <widget class="QCheckBox" name="cmpInit">
+                     <item row="5" column="4">
+                      <widget class="QCheckBox" name="cmpPerc">
                        <property name="minimumSize">
                         <size>
                          <width>200</width>
@@ -2693,7 +2709,7 @@
                         </size>
                        </property>
                        <property name="text">
-                        <string>Compare scenarios to initial state</string>
+                        <string>Display comparison as percentage</string>
                        </property>
                        <property name="checked">
                         <bool>true</bool>

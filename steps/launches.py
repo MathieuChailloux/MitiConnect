@@ -653,13 +653,13 @@ class LaunchConnector(TableToDialogConnector):
         species = self.getSelectedSpecies()
         eraseFlag = self.dlg.eraseResults.isChecked()
         # Build scMap
-        scMap, nb_steps = self.groupByExtent(scenarios)
+        scMap, nbSc = self.groupByExtent(scenarios)
         # for baseSc, scenarios in scMap:
             # if not baseSc.isInitialState():
                 # isSc = self.pluginModel.scenarioModel.mkInitialState()
                 # scenarios.insert(0,isSc)
         # nb steps feedback
-        # nb_steps = len(scenarios) * len(species)
+        nb_steps = nbSc * len(species)
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
         cpt=0
         step_feedback.setCurrentStep(cpt)
@@ -709,10 +709,10 @@ class LaunchConnector(TableToDialogConnector):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
         cmpInit = self.dlg.cmpInit.isChecked()
-        percentFlag = True
+        percentFlag = self.dlg.cmpPerc.isChecked()
         # Prepare feedback
-        # nb_steps = len(scenarios) * len(species)
-        scMap, nb_steps = self.groupByExtent(scenarios)
+        scMap, nbSc = self.groupByExtent(scenarios)
+        nb_steps = nbSc * len(species)
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
         values = {}
         cpt = 0
@@ -747,7 +747,8 @@ class LaunchConnector(TableToDialogConnector):
         self.feedback.endSection()
                 # step_feedback.setCurrentStep(cpt)
         # Plot results in new window
-        window = PlotWindow(values,self.feedback)
+        globalMetric = self.model.pluginModel.paramsModel.getGlobalMetricStr()
+        window = PlotWindow(values,cmpInit,percentFlag,globalMetric,self.feedback)
         window.show()
         while window.exec_():
             pass

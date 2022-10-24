@@ -69,11 +69,14 @@ class ScenarioModel(DictModel):
         return (i is not None)
 
     def getItemDegree(self,item,acc=0):
-        if item.isLeaf():
-            return 0
-        else:
-            baseItem = self.getItemFromName(item.getBase())
-            return self.getItemDegree(baseItem,acc=acc+1)
+        # if item is None
+            # return 0
+        # else:
+        base = item.getBase()
+        if base is None:
+            return acc
+        baseItem = self.getItemFromName(base)
+        return self.getItemDegree(baseItem,acc=acc+1)
     def getItemExtentSc(self,item,acc=[]):
         # item = self.getItemFromName(itemName)
         if item.useExtent():
@@ -93,11 +96,14 @@ class ScenarioModel(DictModel):
             self.feedback.internal_error("No scenario named " + str(itemName))
         extentSc = self.getItemExtentSc(item)
         self.feedback.pushDebugInfo("extentSc " + str(extentSc))
-        self.feedback.pushDebugInfo("extentSc name" + str(extentSc.getName()))
+        self.feedback.pushDebugInfo("extentSc name " + str(extentSc.getName()))
         extentScPath = extentSc.getLayer()
         self.feedback.pushDebugInfo("extentScPath " + str(extentScPath))
-        if extentScPath:
+        # if extentScPath == "None" or extentScPath is None:
+            # assert(False)
+        if extentScPath is not None:
             extentScAbsPath = self.pluginModel.getOrigPath(extentScPath)
+            # if extentScAbsPath
             return extentScAbsPath
         else:
             return self.pluginModel.paramsModel.getExtentLayer()
@@ -114,8 +120,23 @@ class ScenarioModel(DictModel):
             descr=descr,feedback=self.feedback)
     def addInitialState(self):
         self.feedback.pushDebugInfo("addINitialState")
-        item = self.mkInitialState()
-        self.addItem(item)
+        existingInit = self.getInitialState()
+        if existingInit is None:
+            item = self.mkInitialState()
+            self.addItem(item)
+        else:
+            self.pushInfo("Ignoring addInitialState as it already exists")
+            
+    def addItem(self,item):
+        for i in self.items:
+            self.feedback.pushDebugInfo("i1 = " + str(i.getName()))
+        if item.isInitialState():
+            self.items = [i for i in self.items if not i.isInitialState()]
+            for i in self.items:
+                self.feedback.pushDebugInfo("i = " + str(i.getName()))
+        super().addItem(item)
+        for i in self.items:
+            self.feedback.pushDebugInfo("i2 = " + str(i.getName()))
     def addScenarioFromLayer(self,name,layer):
         self.feedback.pushDebugInfo("addScenarioFromLayer")
         item = ScenarioItem.fromValues(name,base=layer,

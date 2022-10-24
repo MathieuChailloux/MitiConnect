@@ -345,7 +345,7 @@ class LaunchModel(DictModel):
     def applyItemLanduse(self, scItem, spItem,extentSc=None,feedback=None,eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
-        feedback.pushDebugInfo("applyItemLanduse " + str(scItem))
+        feedback.pushDebugInfo("applyItemLanduse " + str(scItem) + " " + str(spItem))
         scName, spName = scItem.getName(), spItem.getName()
         # Check out path
         out_path = self.getItemLanduse(scItem,spItem,extentSc=extentSc)
@@ -620,6 +620,7 @@ class LaunchConnector(TableToDialogConnector):
                 cpt+=1
                 step_feedback.setCurrentStep(cpt)
     def iterateRunExtent(self,func):
+        scModel = self.model.pluginModel.scenarioModel
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
         eraseFlag = self.dlg.eraseResults.isChecked()
@@ -640,19 +641,23 @@ class LaunchConnector(TableToDialogConnector):
                 # isSc = self.pluginModel.scenarioModel.mkInitialState()
                 # scenarios.insert(0,isSc)
         # nb steps feedback
-        self.feedback.pushDebugInfo("apres")
         nb_steps = len(scenarios) * len(species)
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
         cpt=0
         step_feedback.setCurrentStep(cpt)
         # Iteration
+        isSc = self.model.pluginModel.scenarioModel.getInitialState()
         for baseSc, scenarios in scMap.items():
-            if not baseSc.isInitialState():
-                isSc = self.model.pluginModel.scenarioModel.mkInitialState()
-                scenarios.insert(0,isSc)
+            self.feedback.pushDebugInfo("scenarios : " + str([sc.getName() for sc in scenarios]))
+            scenariosOrdered = sorted(scenarios,key=lambda i: scModel.getItemDegree(i))
+            self.feedback.pushDebugInfo("scenarios ordered : " + str([sc.getName() for sc in scenariosOrdered]))
+            sc0 = scenariosOrdered[0]
+            if not sc0.isInitialState():
+                scenariosOrdered.insert(0,isSc)
+                self.feedback.pushDebugInfo("scenarios ordered with IS : " + str([sc.getName() for sc in scenariosOrdered]))
             # extentLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(baseSc)
             for sp in species:
-                for sc in scenarios:
+                for sc in scenariosOrdered:
                     func(sc,sp,extentSc=baseSc,eraseFlag=eraseFlag,feedback=step_feedback)
                     cpt+=1
                     step_feedback.setCurrentStep(cpt)

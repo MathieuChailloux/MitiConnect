@@ -106,7 +106,7 @@ class LaunchItem(DictItem):
     SPECIE = 'SPECIE'
     EXTENT = 'EXTENT'
     
-    FIELDS = [ SCENARIO, SPECIE ]
+    FIELDS = [ SCENARIO, SPECIE, EXTENT ]
     DISPLAY_FIELDS = FIELDS
     
     def __init__(self,dict,pluginModel=None,feedback=None):
@@ -117,7 +117,12 @@ class LaunchItem(DictItem):
     def fromValues(cls,scName,spName,extent,pluginModel=None,feedback=None):
         dict = { cls.SCENARIO : scName, cls.SPECIE : spName,
             cls.EXTENT : extent}
-        return cls(dict,pluginModel=pluginModel,feedback=feedback)        
+        return cls(dict,pluginModel=pluginModel,feedback=feedback)
+    @classmethod
+    def fromDict(cls,dict,feedback=None):
+        if cls.EXTENT not in dict:
+            dict[cls.EXTENT] = None
+        return cls(dict,feedback=feedback)
         
     def getScName(self):
         return self.dict[self.SCENARIO]
@@ -125,6 +130,8 @@ class LaunchItem(DictItem):
         return self.dict[self.SPECIE]
     def getExtName(self):
         return self.dict[self.EXTENT]
+    def setExtName(self,val):
+        self.dict[self.EXTENT] = val
     def getScSpNames(self):
         return (self.getScName(), self.getSpName())
     def getNames(self):
@@ -176,8 +183,9 @@ class LaunchModel(DictModel):
     def getItemFromNames(self,scName,spName,extName):
         for i in self.items:
             iScName, iSpName, iExtName = i.getNames()
-            if iScName == scName and iSpName == spName and iExtName == extName:
-                return i
+            if iScName == scName and iSpName == spName:
+                if extName is None or extName == iExtName:
+                    return i
         return None
     def scExists(self,name):
         i = self.getItemFromName(name)
@@ -189,9 +197,9 @@ class LaunchModel(DictModel):
     def normPath(self,fname):
         return os.path.normcase(fname)
     def getItemNameSuffix(self,item,suffix):
-        scName, spName, extName = self.getNames()
+        scName, spName, extName = item.getNames()
         if extName:
-            suffix = extName + "_" + suffix
+            suffix = "ext" + extName + "_" + suffix
         res = scName + "_" + spName + "_" + suffix
         return res
     # def getItemSpDir(self,spName):
@@ -223,7 +231,7 @@ class LaunchModel(DictModel):
         extentDir = self.getItemExtentSpDir(item)
         return self.normPath(joinPath(extentDir,"extent.shp"))
     def getItemBaseDir(self,item):
-        scName = item.getName()
+        scName = item.getScName()
         spDir = self.getItemExtentSpDir(item)
         scDir = self.pluginModel.getSubDir(scName,baseDir=spDir)
         return self.normPath(scDir)
@@ -283,7 +291,7 @@ class LaunchModel(DictModel):
         baseDir = self.getItemGraphabProjectDir(item)
         out_bname = self.getItemGraphabProjectName(item) + ".xml"
         return self.normPath(joinPath(baseDir,out_bname))
-    def getItemLinksetName(self,scName,spName):
+    def getItemLinksetName(self,item):
         return self.getItemNameSuffix(item,"linkset")
     def getItemGraphName(self,item):
         return self.getItemNameSuffix(item,"graph")
@@ -293,18 +301,25 @@ class LaunchModel(DictModel):
         
     def reload(self):
         scModel = self.pluginModel.scenarioModel
+        self.items = []
         for scItem in scModel.items:
             scName = scItem.getName()
             extentSc = scModel.getItemExtentSc(scItem)
+            extName = extentSc.getName() if extentSc else extentSc
             for spItem in self.pluginModel.speciesModel.items:
                 spName = spItem.getName()
-                launchItem = LaunchItem.fromValues(scName,spName,extentSc,
+                # existingItem = self.getItemFromNames(scName,spName,extName)
+                # if existingItem:
+                    # if existingItem.getExtName() != extName:
+                        # existingItem.setName(extName)
+                # else:
+                launchItem = LaunchItem.fromValues(scName,spName,extName,
                     pluginModel=self.pluginModel,feedback=self.feedback)
                 self.addItem(launchItem)
                 if not scItem.isInitialState():
                     isScItem = scModel.getInitialState()
                     isScName = isScItem.getName()
-                    isItem = LaunchItem.fromValues(isScName,spName,extentSc,
+                    isItem = LaunchItem.fromValues(isScName,spName,extName,
                     pluginModel=self.pluginModel,feedback=self.feedback)
                     self.addItem(isItem)
         self.layoutChanged.emit()
@@ -325,8 +340,6 @@ class LaunchModel(DictModel):
                 qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 return
         # Prepare Params
-        base = scItem.getBase()
-        baseItem = self.getScItemFromName(base)
         spLanduse = self.getSpBaseLanduse(spItem)
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
@@ -334,10 +347,12 @@ class LaunchModel(DictModel):
             luPath = spLanduse
         elif scItem.isStackedMode():
             self.feedback.pushDebugInfo("LU2")
-            luPath = QgsProcessingUtils.generateTempFilename(spName + "_landuse.tif")
-            qgsUtils.removeLayerFromPath(luPath)
-            qgsUtils.removeRaster(luPath)
-            in_path = self.getItemLanduse(item)
+            # Retrieve base landuse
+            base = scItem.getBase()
+            # baseScItem = self.getScItemFromName(base)
+            baseISItem = self.getItemFromNames(base,spName,None)
+            self.feedback.pushDebugInfo("baseISItem = " + str(baseISItem))
+            in_path = self.getItemLanduse(baseISItem)
             if not utils.fileExists(in_path):
                 feedback.user_error("File '"+ str(in_path) + " does not exist"
                     + ", launch scenario " + str(base) + " landuse")
@@ -366,7 +381,10 @@ class LaunchModel(DictModel):
                 feedback.user_error("Unexpected scenario mode : " + str(mode))
                 # Reclassify
             # Merge
-            paths = [in_path, path]
+            paths = [in_path, path]            
+            luPath = QgsProcessingUtils.generateTempFilename(spName + "_landuse.tif")
+            qgsUtils.removeLayerFromPath(luPath)
+            qgsUtils.removeRaster(luPath)
             qgsTreatments.applyMergeRaster(paths,luPath,#nodata_input=0,
                 out_type=baseType,nodata_val=nodataVal,feedback=feedback)
         # Extent
@@ -440,6 +458,9 @@ class LaunchModel(DictModel):
                 + str(spName))
         minArea = spItem.getMinArea()
         outDir = self.getItemBaseDir(item)
+        if eraseFlag:
+            pass
+        assert(False)
         qgsUtils.removeGroup(projName)
         projectFolder = os.path.dirname(project)
         qgsUtils.removeFolder(projectFolder)
@@ -510,7 +531,7 @@ class LaunchModel(DictModel):
     def computeGlobalMetric(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
-        scName, spName = scItem.getName(), spItem.getName()
+        scName, spName = item.getScSpNames()
         project = self.getItemGraphabProjectFile(item)
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
@@ -703,13 +724,14 @@ class LaunchConnector(TableToDialogConnector):
         cpt = 0
         # Loop
         for baseSc, scenarios in scMap.items():
+            extName = baseSc.getName()
             for sp in species:
                 spName = sp.getName()
                 initVal = -1
                 for sc in scenarios:
                     scName = sc.getName()
-                    val = self.model.computeGlobalMetric(sc,sp,extentSc=baseSc,
-                        feedback=step_feedback)
+                    item = self.model.getItemFromNames(scName,spName,extName)
+                    val = self.model.computeGlobalMetric(item,feedback=step_feedback)
                     if sc.isInitialState():
                         initVal = val
                     elif initVal == -1:

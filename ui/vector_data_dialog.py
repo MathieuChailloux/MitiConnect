@@ -123,7 +123,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.vectorFieldCombo.setField(self.data_item.getBurnField())
             self.vectorFixedValue.setValue(self.data_item.getBurnVal())
             self.vectorAllTouch.setChecked(self.data_item.getAllTouch())
-            bm = self.data_item.getBufferMode()
+            bm = self.data_item.isBufferMode()
             self.vectorBufferMode.setChecked(bm)
             self.vectorBufferValue.setEnabled(bm)
             self.vectorBufferValue.setValue(self.data_item.getBufferExpr())

@@ -444,7 +444,7 @@ class LaunchModel(DictModel):
     def applyItemGraphabProject(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
-        feedback.pushDebugInfo("applyItemGraph")
+        feedback.pushDebugInfo("applyItemGraphabProject " + str(item))
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
         checkGraphabInstalled(feedback)
@@ -457,13 +457,18 @@ class LaunchModel(DictModel):
             self.feedback.user_error("No habitat code specified for specie "
                 + str(spName))
         minArea = spItem.getMinArea()
+        # Get outputs
         outDir = self.getItemBaseDir(item)
-        if eraseFlag:
-            pass
-        assert(False)
-        qgsUtils.removeGroup(projName)
         projectFolder = os.path.dirname(project)
-        qgsUtils.removeFolder(projectFolder)
+        self.feedback.pushDebugInfo("project = " + str(project))
+        if os.path.isfile(project):
+            if eraseFlag:
+                qgsUtils.removeGroup(projName)
+                # qgsUtils.removeFolder(projectFolder)
+            else:
+                self.feedback.pushInfo("Graphab file " + str(project) + " already exists")
+                self.pluginModel.loadProject(project)
+                return
         createGraphabProject(landuse,codes,outDir,projName,
             nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=feedback)
 

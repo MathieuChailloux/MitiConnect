@@ -248,19 +248,29 @@ class LaunchModel(DictModel):
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
         self.feedback.pushDebugInfo("computeItemExtent " + str(extName))
-        extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(extItem)
-        if extentScLayer is None:
-            assert(False)
-        spLanduse = self.getSpBaseLanduse(spItem)
+        crs = self.pluginModel.paramsModel.getCrsStr()
+        maxExtent = self.pluginModel.paramsModel.getExtentLayer()
+        # Check out path
         out_path = self.getItemExtentPath(item)
         if utils.fileExists(out_path):
             if eraseFlag:
-                qgsUtils.removeVectorLayer(out_path)
+                qgsUtils.removeLayerFromPath(out_path)
             else:
                 return out_path
+        # Union of scenario and children
+        # extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(extItem)
+        scExtentLayers = self.pluginModel.scenarioModel.getItemExtentLayers(scItem)
+        self.feedback.pushDebugInfo("scExtentLayers " + str(scExtentLayers))
+        if not scExtentLayers:
+            extPath = maxExtent
+        else:
+            extPath = qgsUtils.mkTmpPath("extentsMerged.gpkg")
+            qgsTreatments.mergeVectorLayers(scExtentLayers,crs,extPath,feedback=feedback)
+        # Apply specie extent mode
+        spLanduse = self.getSpBaseLanduse(spItem)
         if spItem.isMaxExtentMode():
             self.feedback.pushDebugInfo("copymode")
-            shutil.copy(extentScLayer,out_path)
+            shutil.copy(extPath,out_path)
         elif spItem.isBufferMode():
             # bufferVal = float(spItem.getExtentVal
             bufferMulVal, maxDisp = float(spItem.getExtentVal()), int(spItem.getMaxDisp())
@@ -269,12 +279,12 @@ class LaunchModel(DictModel):
             if maxDisp == 0:
                 self.feedback.user_error("Empty dispersal distance for specie " + str(spName))
             bufferVal = bufferMulVal * maxDisp
-            extent = qgsTreatments.applyBufferFromExpr(extentScLayer,
+            extent = qgsTreatments.applyBufferFromExpr(extPath,
                 bufferVal,out_path,feedback=feedback)
         elif spItem.isCustomLayerMode():
             self.internal_error("Custom extent layer mode not implemented yet")
         else:
-            assert(False)
+            self.internal_error("Unexpected specie mode " + str(spItem))
         return out_path
         
     def getItemLanduse(self,item):
@@ -343,49 +353,33 @@ class LaunchModel(DictModel):
         spLanduse = self.getSpBaseLanduse(spItem)
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
+        # Main action
         if scItem.isInitialState() or scItem.isLanduseMode():
             luPath = spLanduse
         elif scItem.isStackedMode():
-            self.feedback.pushDebugInfo("LU2")
-            # Retrieve base landuse
-            base = scItem.getBase()
-            # baseScItem = self.getScItemFromName(base)
-            baseISItem = self.getItemFromNames(base,spName,None)
-            self.feedback.pushDebugInfo("baseISItem = " + str(baseISItem))
-            in_path = self.getItemLanduse(baseISItem)
-            if not utils.fileExists(in_path):
-                feedback.user_error("File '"+ str(in_path) + " does not exist"
-                    + ", launch scenario " + str(base) + " landuse")
-            # Rasterize
-            vector_rel_path = scItem.getLayer()
-            vector_path = self.pluginModel.getOrigPath(vector_rel_path)
-            raster_path = qgsUtils.mkTmpPath(scName + "_raster.tif")
-            mode = scItem.getMode()
-            if scItem.isFixedMode():
-                # Fixed mode
-                qgsTreatments.applyRasterization(vector_path,raster_path,
-                    maxExtent,resolution,burn_val=scItem.getBurnVal(),
-                    nodata_val=nodataVal,out_type=baseType,feedback=feedback)
-                path = raster_path
-            elif scItem.isFieldMode():
-                # Field mode
-                reclass_path = qgsUtils.mkTmpPath(scName + "_reclass.tif")
-                qgsTreatments.applyRasterization(vector_path,raster_path,
-                    maxExtent,resolution,field=scItem.getBurnField(),
-                    nodata_val=nodataVal,out_type=baseType,feedback=feedback)
-                qgsTreatments.applyReclassifyByTable(raster_path,
-                    scItem.getReclassTable(),reclass_path,
-                    boundaries_mode=2,feedback=feedback)
-                path = reclass_path
-            else:
-                feedback.user_error("Unexpected scenario mode : " + str(mode))
-                # Reclassify
-            # Merge
-            paths = [in_path, path]            
-            luPath = QgsProcessingUtils.generateTempFilename(spName + "_landuse.tif")
+            feedback.pushDebugInfo("LU2")
+            # Get base layer
+            isSc = self.pluginModel.scenarioModel.getInitialState()
+            isName = isSc.getName()
+            isItem = self.getItemFromNames(isName,spName,isName)
+            isLayer = self.getItemLanduse(isItem)
+            if not os.path.isfile(isLayer):
+                feedback.user_error("Landuse layer does not exit for " + str(isItem))
+            # Apply landuse modifications
+            scHierarchy = self.pluginModel.scenarioModel.getItemHierarchy(scItem)
+            feedback.pushDebugInfo("scHierarchy = %s"%(scHierarchy))
+            nbSc, cpt = len(scHierarchy), 0
+            scLayers = [isLayer]
+            mfeedback = feedbacks.ProgressMultiStepFeedback(nbSc,feedback)
+            for sc in reversed(scHierarchy):
+                scLayer = self.pluginModel.scenarioModel.rasterizeLayer(sc,mfeedback)
+                scLayers.append(scLayer)
+            # luPath = qgsUtils.mkTmpPath("%s_%s_%s_reclass.tif"%(scName,spName,extName))
+            # Merge       
+            luPath = qgsUtils.mkTmpPath(spName + "_landuse.tif")
             qgsUtils.removeLayerFromPath(luPath)
-            qgsUtils.removeRaster(luPath)
-            qgsTreatments.applyMergeRaster(paths,luPath,#nodata_input=0,
+            # qgsUtils.removeRaster(luPath)
+            qgsTreatments.applyMergeRaster(scLayers,luPath,
                 out_type=baseType,nodata_val=nodataVal,feedback=feedback)
         # Extent
         extentPath = self.getItemExtentPath(item)

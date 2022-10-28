@@ -365,6 +365,9 @@ class ImportConnector(TableToDialogConnector):
             self.pathFieldToAbs(dlg_item,VectorDlgItem.INPUT)
 
     def postDlg(self,dlg_item):
+        self.feedback.pushDebugInfo("postDlg %s"%(str(dlg_item)))
+        if isinstance(dlg_item,ImportItem):
+            dlg_item = dlg_item.child
         self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
       
     def openDialog(self,item):

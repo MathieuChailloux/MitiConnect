@@ -407,8 +407,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.scDescr.setText(dlgItem.dict[ScenarioItem.DESCR])
             self.scBase.setCurrentText(dlgItem.dict[ScenarioItem.BASE])
             layer = dlgItem.getLayer()
-            if layer:
-                self.layerComboDlg.setLayerPath(dlgItem.dict[ScenarioItem.LAYER])
+            if layer and os.path.isfile(layer):
+                self.layerComboDlg.setLayerPath(layer)
             self.scExtentFlag.setChecked(dlgItem.dict[ScenarioItem.EXTENT_FLAG])
             fieldMode = dlgItem.dict[ScenarioItem.MODE] == 2
             self.switchBurnMode(fieldMode)

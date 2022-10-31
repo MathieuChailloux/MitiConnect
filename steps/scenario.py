@@ -82,25 +82,22 @@ class ScenarioModel(DictModel):
         else:
             base = item.getBase()
             baseItem = self.getItemFromName(base)
-            acc.append(item)
+            acc = acc + [item]
             return self.getItemHierarchy(baseItem,acc=acc)
     def getItemExtentLayers(self,item,acc=[]):
         self.feedback.pushDebugInfo("getItemExtentLayers " + item.getName() + " - " + str(acc))
         if item.isInitialState():
             return acc
-        elif item.useExtent():
+        if item.useExtent():
             relLayer = item.getLayer()
             if relLayer:
                 absLayer = self.pluginModel.getOrigPath(relLayer)
-                acc.append(absLayer)
+                acc = acc + [absLayer]
             else:
                 self.feedback.user_error("No layer for item " + str(item))
-        if item.isLeaf():
-            return acc
-        else:
-            base = item.getBase()
-            baseItem = self.getItemFromName(base)
-            return self.getItemExtentLayers(baseItem,acc=acc)
+        base = item.getBase()
+        baseItem = self.getItemFromName(base)
+        return self.getItemExtentLayers(baseItem,acc=acc)
     def getItemExtentSc(self,item,acc=[]):
         # item = self.getItemFromName(itemName)
         if item.useExtent():

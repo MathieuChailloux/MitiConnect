@@ -265,15 +265,16 @@ class ImportModel(DictModel):
                 qgsTreatments.applyRasterization(input_path,out_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
+                to_norm_path = None
         else:
             # Raster mode
             keepValues = False
             if keepValues:
-                to_norm_path = buffered
+                to_norm_path = input_path
             else:           
                 table = self.pluginModel.frictionModel.getReclassTable(name)
                 # min_type, nodata_val = Qgis.UInt16, 0
-                qgsTreatments.applyReclassifyByTable(buffered,table,
+                qgsTreatments.applyReclassifyByTable(input_path,table,
                     reclassified,out_type=min_type,nodata_val=nodata_val,
                     boundaries_mode=2,nodata_missing=True,
                     context=context,feedback=feedback)

@@ -259,7 +259,7 @@ class LaunchModel(DictModel):
                 return out_path
         # Union of scenario and children
         # extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(extItem)
-        scExtentLayers = self.pluginModel.scenarioModel.getItemExtentLayers(scItem)
+        scExtentLayers = self.pluginModel.scenarioModel.getItemExtentLayers(extItem)
         self.feedback.pushDebugInfo("scExtentLayers " + str(scExtentLayers))
         if not scExtentLayers:
             extPath = maxExtent
@@ -367,7 +367,7 @@ class LaunchModel(DictModel):
                 feedback.user_error("Landuse layer does not exit for " + str(isItem))
             # Apply landuse modifications
             scHierarchy = self.pluginModel.scenarioModel.getItemHierarchy(scItem)
-            feedback.pushDebugInfo("scHierarchy = %s"%(scHierarchy))
+            feedback.pushDebugInfo("scHierarchy = %s"%([s.getName() for s in scHierarchy]))
             nbSc, cpt = len(scHierarchy), 0
             scLayers = [isLayer]
             mfeedback = feedbacks.ProgressMultiStepFeedback(nbSc,feedback)

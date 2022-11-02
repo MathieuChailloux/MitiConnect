@@ -539,13 +539,23 @@ class LaunchModel(DictModel):
             feedback = self.feedback
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
+        projName = self.getItemGraphabProjectName(item)
         project = self.getItemGraphabProjectFile(item)
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
+        gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         self.feedback.pushDebugInfo("l = " + str(l))
-        val = computeLocalMetric(project,graphName,metricName=l,d=d,p=p,feedback=feedback)
-        metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
+        # Compute metric value
+        if eraseFlag or metricStr not in self.fields:
+            val = computeLocalMetric(project,graphName,metricName=l,d=d,p=p,feedback=feedback)
+        else:
+            val = item.dict[metricStr]
+            if not val:
+                val = computeLocalMetric(project,graphName,
+                    metricName=l,d=d,p=p,feedback=feedback)
+        # Update table
         self.addField(metricStr)
         item.dict[metricStr] = val
         self.layoutChanged.emit()
@@ -559,8 +569,16 @@ class LaunchModel(DictModel):
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
-        val = computeGlobalMetric(project,graphName,metricName=g,d=d,p=p,feedback=feedback)
         metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
+        # Compute metric value
+        if eraseFlag or metricStr not in self.fields:
+            val = computeGlobalMetric(project,graphName,metricName=g,d=d,p=p,feedback=feedback)
+        else:
+            val = item.dict[metricStr]
+            if not val:
+                val = computeGlobalMetric(project,graphName,
+                    metricName=g,d=d,p=p,feedback=feedback)
+        # Update table
         self.addField(metricStr)
         item.dict[metricStr] = val
         self.layoutChanged.emit()

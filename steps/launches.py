@@ -655,7 +655,6 @@ class LaunchConnector(TableToDialogConnector):
         eraseFlag = self.dlg.eraseResults.isChecked()
         # Build scMap
         scMap, nbSc = self.groupByExtent(scenarios)
-        
         # nb steps feedback
         nb_steps = nbSc * len(species)
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)

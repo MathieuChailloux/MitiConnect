@@ -73,6 +73,10 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
         xmlStr += "/>"
         return xmlStr
         
+    def setWorkspace(self,workspace):
+        self.feedback.pushInfo("setWorkspace " + str(workspace))
+        super().setWorkspace(workspace)
+        self.feedback.setWorkspace(workspace)
     def setLocalMetric(self,val):
         self.feedback.pushDebugInfo("setLocalMetric " + str(val))
         self.localMetric = val

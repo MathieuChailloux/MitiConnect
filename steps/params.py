@@ -89,6 +89,9 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
     def setProbaParam(self,val):
         self.feedback.pushDebugInfo("setProbaParam")
         self.probaParam = val
+    def getLocalMetricStr(self):
+        names = ["F","IF","BC"]
+        return names[self.localMetric]
     def getGlobalMetricStr(self):
         names = ["PC","EC","IIC"]
         return names[self.globalMetric]

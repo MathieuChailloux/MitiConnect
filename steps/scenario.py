@@ -64,19 +64,40 @@ class ScenarioModel(DictModel):
             if i.getName() == name:
                 return i
         return None
+        
     def scExists(self,name):
         i = self.getItemFromName(name)
         return (i is not None)
 
     def getItemDegree(self,item,acc=0):
-        # if item is None
-            # return 0
-        # else:
         base = item.getBase()
         if base is None:
             return acc
         baseItem = self.getItemFromName(base)
         return self.getItemDegree(baseItem,acc=acc+1)
+    def getItemHierarchy(self,item,acc=[]):
+        self.feedback.pushDebugInfo("getItemHierarchy " + item.getName() + " - " + str(len(acc)))
+        if item.isInitialState():
+            return acc
+        else:
+            base = item.getBase()
+            baseItem = self.getItemFromName(base)
+            acc = acc + [item]
+            return self.getItemHierarchy(baseItem,acc=acc)
+    def getItemExtentLayers(self,item,acc=[]):
+        self.feedback.pushDebugInfo("getItemExtentLayers " + item.getName() + " - " + str(acc))
+        if item.isInitialState():
+            return acc
+        if item.useExtent():
+            relLayer = item.getLayer()
+            if relLayer:
+                absLayer = self.pluginModel.getOrigPath(relLayer)
+                acc = acc + [absLayer]
+            else:
+                self.feedback.user_error("No layer for item " + str(item))
+        base = item.getBase()
+        baseItem = self.getItemFromName(base)
+        return self.getItemExtentLayers(baseItem,acc=acc)
     def getItemExtentSc(self,item,acc=[]):
         # item = self.getItemFromName(itemName)
         if item.useExtent():
@@ -91,9 +112,8 @@ class ScenarioModel(DictModel):
             acc += childName
             return self.getItemExtentSc(childItem,acc=acc)
     def getItemExtentScLayer(self,item):
-        # item = self.getItemFromName(itemName)
         if not item:
-            self.feedback.internal_error("No scenario named " + str(itemName))
+            self.feedback.internal_error("No scenario " + str(item))
         extentSc = self.getItemExtentSc(item)
         self.feedback.pushDebugInfo("extentSc " + str(extentSc))
         self.feedback.pushDebugInfo("extentSc name " + str(extentSc.getName()))
@@ -103,7 +123,6 @@ class ScenarioModel(DictModel):
             # assert(False)
         if extentScPath is not None:
             extentScAbsPath = self.pluginModel.getOrigPath(extentScPath)
-            # if extentScAbsPath
             return extentScAbsPath
         else:
             return self.pluginModel.paramsModel.getExtentLayer()
@@ -143,6 +162,33 @@ class ScenarioModel(DictModel):
             feedback=self.feedback)
         self.addItem(item)
         self.layoutChanged.emit()
+        
+    def rasterizeLayer(self,item,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
+        absLayer = self.pluginModel.getOrigPath(item.getLayer())
+        crs, maxExtent, resolution = self.pluginModel.getRasterParams()
+        name = item.getName()
+        outPath = qgsUtils.mkTmpPath(name + ".tif")
+        mode = item.getMode()
+        baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
+        if item.isFixedMode():
+            # Fixed mode
+            qgsTreatments.applyRasterization(absLayer,outPath,
+                maxExtent,resolution,burn_val=item.getBurnVal(),
+                nodata_val=nodataVal,out_type=baseType,feedback=feedback)
+        elif item.isFieldMode():
+            # Field mode
+            rasterPath = qgsUtils.mkTmpPath(name + "_raster.tif")
+            qgsTreatments.applyRasterization(absLayer,rasterPath,
+                maxExtent,resolution,field=item.getBurnField(),
+                nodata_val=nodataVal,out_type=baseType,feedback=feedback)
+            qgsTreatments.applyReclassifyByTable(rasterPath,
+                item.getReclassTable(),outPath,
+                boundaries_mode=2,feedback=feedback)
+        else:
+            feedback.user_error("Unexpected scenario mode : " + str(mode))
+        return outPath
                                 
     def updateFromXML(self,root,feedback=None):
         super().updateFromXML(root)

@@ -51,6 +51,19 @@ def checkGraphabInstalled(feedback):
         # feedback.user_error("Graphab is not installed")
 
 #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
+
+def getLinkset(gProj,linksetName):
+    for linkset in gProj.project.costLinks:
+        if linkset.name == linksetName:
+            return linkset
+    return None
+def getGraph(gProj,graphName):
+    for graph in gProj.project.graphs:
+        if graph.name == graphName:
+            return graph
+    return None
+    
+
 # TODO : grapha wrappers in erc_tvb_algs_provider ?
 def createGraphabProject(landuse,codes,out_dir,project_name,
         nodata=None,patch_size=0,feedback=None):
@@ -481,8 +494,15 @@ class LaunchModel(DictModel):
         self.pluginModel.loadProject(project)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
         if gProj:
-            print("gproj")
-            gProj.removeLinkset(linksetName)
+            self.feedback.pushDebugInfo("gproj")
+            self.feedback.pushDebugInfo("linkset = " + str(linksetName))
+            self.feedback.pushDebugInfo("linksets = " + str([l.name for l in gProj.project.costLinks]))
+            linkset = getLinkset(gProj,linksetName)
+            if linkset:
+                if eraseFlag:
+                    gProj.removeLinkset(linksetName)
+                else:
+                    return
         # assert(False)
         classes,array,nodata = qgsUtils.getRasterValsArrayND(friction)
         feedback.pushDebugInfo("classes = " + str(classes))
@@ -505,8 +525,12 @@ class LaunchModel(DictModel):
         self.pluginModel.loadProject(project)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
         if gProj:
-            print("grpoj")
-            gProj.removeGraph(graphName)
+            graph = getGraph(gProj,graphName)
+            if graph:
+                if eraseFlag:
+                    gProj.removeGraph(graphName)
+                else:
+                    return
         createGraphabGraph(project,linksetName,
             dist=maxDisp,graphName=graphName,feedback=feedback)
                 

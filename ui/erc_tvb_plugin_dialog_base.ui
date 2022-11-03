@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ERC-TVB</string>
+   <string>MitiConnect</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_11">
    <item row="1" column="0">
@@ -83,8 +83,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>895</width>
-            <height>624</height>
+            <width>902</width>
+            <height>631</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -336,7 +336,7 @@
                      </sizepolicy>
                     </property>
                     <property name="text">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome in ERC-TVB !&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://github.com/MathieuChailloux/ erc_tvb_plugin/blob/master/docs/drafts/README.md&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/ erc_tvb_plugin/blob/master/docs/drafts/README.md&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Video tutorials : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLh9oFe6PuPCXgsR9DAxP9uyhp9BEu8X3c&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PL0Wd1JAi6QuHdwALwwJqj5TcfNYvjRbcs&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Configuration should be frequently saved (buttons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; in top left corner).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome in MitiConnect !&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://github.com/MathieuChailloux/ erc_tvb_plugin/blob/master/docs/drafts/README.md&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/ erc_tvb_plugin/blob/master/docs/drafts/README.md&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Video tutorials : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLh9oFe6PuPCXgsR9DAxP9uyhp9BEu8X3c&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PL0Wd1JAi6QuHdwALwwJqj5TcfNYvjRbcs&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Configuration should be frequently saved (buttons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; in top left corner).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="wordWrap">
                      <bool>true</bool>
@@ -471,7 +471,11 @@
                 </widget>
                </item>
                <item row="6" column="0" colspan="2">
-                <widget class="QTableView" name="paramsView"/>
+                <widget class="QTableView" name="paramsView">
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>800</number>
+                 </attribute>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -1892,7 +1896,7 @@
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <layout class="QGridLayout" name="gridLayout_19">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -1905,818 +1909,872 @@
                   <property name="bottomMargin">
                    <number>0</number>
                   </property>
-                  <item>
-                   <widget class="QLabel" name="label_32">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
+                  <item row="0" column="0">
+                   <widget class="QSplitter" name="splitter_5">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
                     </property>
-                    <property name="font">
-                     <font>
-                      <pointsize>9</pointsize>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Launches</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QFrame" name="frame_8">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>23</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>23</height>
-                     </size>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_6">
-                     <property name="leftMargin">
-                      <number>0</number>
+                    <widget class="QFrame" name="frame_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
                      </property>
-                     <property name="topMargin">
-                      <number>0</number>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>150</height>
+                      </size>
                      </property>
-                     <property name="rightMargin">
-                      <number>0</number>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
                      </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
                      </property>
-                     <item>
-                      <spacer name="horizontalSpacer_8">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeType">
-                        <enum>QSizePolicy::Expanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>55</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QToolButton" name="reloadButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>25</width>
-                         <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>50</width>
-                         <height>50</height>
-                        </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>Reload scenarios</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>../icons/mActionRefresh.svg</normaloff>../icons/mActionRefresh.svg</iconset>
-                       </property>
-                       <property name="autoRaise">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QToolButton" name="launchesUp">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>25</width>
-                         <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>50</width>
-                         <height>50</height>
-                        </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>Upgrade scenario</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/up-arrow.png</normaloff>:/plugins/BioDispersal/icons/up-arrow.png</iconset>
-                       </property>
-                       <property name="autoRaise">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QToolButton" name="launchesDown">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>25</width>
-                         <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>50</width>
-                         <height>50</height>
-                        </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>Downgrade scenario</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/down-arrow.png</normaloff>:/plugins/BioDispersal/icons/down-arrow.png</iconset>
-                       </property>
-                       <property name="autoRaise">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QTableView" name="launchesView">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>100</width>
-                      <height>100</height>
-                     </size>
-                    </property>
-                    <property name="editTriggers">
-                     <set>QAbstractItemView::NoEditTriggers</set>
-                    </property>
-                    <property name="dragEnabled">
-                     <bool>true</bool>
-                    </property>
-                    <property name="alternatingRowColors">
-                     <bool>true</bool>
-                    </property>
-                    <property name="selectionBehavior">
-                     <enum>QAbstractItemView::SelectRows</enum>
-                    </property>
-                    <property name="sortingEnabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QFrame" name="frame_15">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>167</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>167</height>
-                     </size>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_17">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="bufferInGroupLabel_18">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Select scenarios</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1" colspan="3">
-                      <widget class="QgsCheckableComboBox" name="scenariosSelection">
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="sizeAdjustPolicy">
-                        <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="4" rowspan="2">
-                      <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_3">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>40</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>200</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="title">
-                        <string>Launch parameters</string>
-                       </property>
-                       <layout class="QGridLayout" name="gridLayout_15">
-                        <property name="topMargin">
-                         <number>0</number>
+                     <layout class="QGridLayout" name="gridLayout_18">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_32">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
                         </property>
-                        <property name="bottomMargin">
-                         <number>0</number>
+                        <property name="font">
+                         <font>
+                          <pointsize>9</pointsize>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
                         </property>
-                        <item row="0" column="0">
-                         <widget class="QCheckBox" name="eraseResults">
-                          <property name="minimumSize">
-                           <size>
-                            <width>125</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>Erase existing results</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="bufferInGroupLabel_19">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Select species</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1" colspan="3">
-                      <widget class="QgsCheckableComboBox" name="speciesSelection">
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="sizeAdjustPolicy">
-                        <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="bufferInGroupLabel_20">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Base layers</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="1">
-                      <widget class="QPushButton" name="landuseRun">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>7</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>1 - Land Use </string>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
-                       </property>
-                       <property name="iconSize">
-                        <size>
-                         <width>15</width>
-                         <height>15</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="2">
-                      <widget class="QPushButton" name="frictionRun">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>7</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>2 - Friction</string>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
-                       </property>
-                       <property name="iconSize">
-                        <size>
-                         <width>15</width>
-                         <height>15</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="4" rowspan="2">
-                      <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_2">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>280</width>
-                         <height>45</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="title">
-                        <string>Graphab parameters</string>
-                       </property>
-                       <layout class="QHBoxLayout" name="horizontalLayout_8">
-                        <property name="topMargin">
-                         <number>0</number>
+                        <property name="text">
+                         <string>Launches</string>
                         </property>
-                        <property name="bottomMargin">
-                         <number>0</number>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QFrame" name="frame_8">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
                         </property>
-                        <item>
-                         <widget class="QLabel" name="label_54">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="text">
-                           <string>Local metric</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QComboBox" name="localMetric">
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>18</height>
-                           </size>
-                          </property>
-                          <item>
-                           <property name="text">
-                            <string>F</string>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="frameShape">
+                         <enum>QFrame::NoFrame</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Raised</enum>
+                        </property>
+                        <layout class="QHBoxLayout" name="horizontalLayout_6">
+                         <property name="leftMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <item>
+                          <spacer name="horizontalSpacer_8">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
                            </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>IF</string>
+                           <property name="sizeType">
+                            <enum>QSizePolicy::Expanding</enum>
                            </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>BC</string>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>55</width>
+                             <height>20</height>
+                            </size>
                            </property>
-                          </item>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_55">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="text">
-                           <string>Global metric</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QComboBox" name="globalMetric">
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>18</height>
-                           </size>
-                          </property>
-                          <item>
-                           <property name="text">
-                            <string>PC</string>
+                          </spacer>
+                         </item>
+                         <item>
+                          <widget class="QToolButton" name="reloadButton">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
                            </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>EC</string>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
                            </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>IIC</string>
+                           <property name="maximumSize">
+                            <size>
+                             <width>50</width>
+                             <height>50</height>
+                            </size>
                            </property>
-                          </item>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item row="3" column="0" rowspan="2">
-                      <widget class="QLabel" name="bufferInGroupLabel_21">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Graphab</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="1" rowspan="2">
-                      <widget class="QPushButton" name="projectRun">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>7</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>3 - Project</string>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
-                       </property>
-                       <property name="iconSize">
-                        <size>
-                         <width>15</width>
-                         <height>15</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="2" rowspan="2">
-                      <widget class="QPushButton" name="linksetRun">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>7</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>4 - Linkset</string>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
-                       </property>
-                       <property name="iconSize">
-                        <size>
-                         <width>15</width>
-                         <height>15</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="3" rowspan="2">
-                      <widget class="QPushButton" name="graphRun">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>7</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>5 - Graph</string>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
-                       </property>
-                       <property name="iconSize">
-                        <size>
-                         <width>15</width>
-                         <height>15</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="4" column="4">
-                      <widget class="QCheckBox" name="cmpInit">
-                       <property name="minimumSize">
-                        <size>
-                         <width>200</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>Compare scenarios to initial state</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="0">
-                      <widget class="QLabel" name="bufferInGroupLabel_22">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Metrics</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="1">
-                      <widget class="QPushButton" name="localMetricsRun">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>7</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>6 - Spatialize</string>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
-                       </property>
-                       <property name="iconSize">
-                        <size>
-                         <width>15</width>
-                         <height>15</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="2">
-                      <widget class="QPushButton" name="compareScenariosRun">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>23</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>7</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>7 - Compare scenarios</string>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
-                       </property>
-                       <property name="iconSize">
-                        <size>
-                         <width>15</width>
-                         <height>15</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="4">
-                      <widget class="QCheckBox" name="cmpPerc">
-                       <property name="minimumSize">
-                        <size>
-                         <width>200</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>Display comparison as percentage</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
+                           <property name="toolTip">
+                            <string>Reload scenarios</string>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset>
+                             <normaloff>../icons/mActionRefresh.svg</normaloff>../icons/mActionRefresh.svg</iconset>
+                           </property>
+                           <property name="autoRaise">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QToolButton" name="launchesUp">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>50</width>
+                             <height>50</height>
+                            </size>
+                           </property>
+                           <property name="toolTip">
+                            <string>Upgrade scenario</string>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset>
+                             <normaloff>:/plugins/BioDispersal/icons/up-arrow.png</normaloff>:/plugins/BioDispersal/icons/up-arrow.png</iconset>
+                           </property>
+                           <property name="autoRaise">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QToolButton" name="launchesDown">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>50</width>
+                             <height>50</height>
+                            </size>
+                           </property>
+                           <property name="toolTip">
+                            <string>Downgrade scenario</string>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="icon">
+                            <iconset>
+                             <normaloff>:/plugins/BioDispersal/icons/down-arrow.png</normaloff>:/plugins/BioDispersal/icons/down-arrow.png</iconset>
+                           </property>
+                           <property name="autoRaise">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QTableView" name="launchesView">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>100</width>
+                          <height>100</height>
+                         </size>
+                        </property>
+                        <property name="editTriggers">
+                         <set>QAbstractItemView::NoEditTriggers</set>
+                        </property>
+                        <property name="dragEnabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="alternatingRowColors">
+                         <bool>true</bool>
+                        </property>
+                        <property name="selectionBehavior">
+                         <enum>QAbstractItemView::SelectRows</enum>
+                        </property>
+                        <property name="sortingEnabled">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QFrame" name="frame_15">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>167</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
+                     </property>
+                     <layout class="QGridLayout" name="gridLayout_17">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>9</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="bufferInGroupLabel_18">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Select scenarios</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1" colspan="3">
+                       <widget class="QgsCheckableComboBox" name="scenariosSelection">
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="sizeAdjustPolicy">
+                         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="4" rowspan="2">
+                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_3">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="title">
+                         <string>Launch parameters</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_15">
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <item row="0" column="0">
+                          <widget class="QCheckBox" name="eraseResults">
+                           <property name="minimumSize">
+                            <size>
+                             <width>125</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>Erase existing results</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="bufferInGroupLabel_19">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Select species</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1" colspan="3">
+                       <widget class="QgsCheckableComboBox" name="speciesSelection">
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="sizeAdjustPolicy">
+                         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QLabel" name="bufferInGroupLabel_20">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Base layers</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="1">
+                       <widget class="QPushButton" name="landuseRun">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>7</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>1 - Land Use </string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>15</width>
+                          <height>15</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="2">
+                       <widget class="QPushButton" name="frictionRun">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>7</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>2 - Friction</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>15</width>
+                          <height>15</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="4">
+                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_2">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>280</width>
+                          <height>45</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="title">
+                         <string>Graphab parameters</string>
+                        </property>
+                        <layout class="QHBoxLayout" name="horizontalLayout_8">
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <item>
+                          <widget class="QLabel" name="label_54">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="text">
+                            <string>Local metric</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QComboBox" name="localMetric">
+                           <property name="minimumSize">
+                            <size>
+                             <width>0</width>
+                             <height>18</height>
+                            </size>
+                           </property>
+                           <item>
+                            <property name="text">
+                             <string>F</string>
+                            </property>
+                           </item>
+                           <item>
+                            <property name="text">
+                             <string>IF</string>
+                            </property>
+                           </item>
+                           <item>
+                            <property name="text">
+                             <string>BC</string>
+                            </property>
+                           </item>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_55">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="text">
+                            <string>Global metric</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QComboBox" name="globalMetric">
+                           <property name="minimumSize">
+                            <size>
+                             <width>0</width>
+                             <height>18</height>
+                            </size>
+                           </property>
+                           <item>
+                            <property name="text">
+                             <string>PC</string>
+                            </property>
+                           </item>
+                           <item>
+                            <property name="text">
+                             <string>EC</string>
+                            </property>
+                           </item>
+                           <item>
+                            <property name="text">
+                             <string>IIC</string>
+                            </property>
+                           </item>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QLabel" name="bufferInGroupLabel_21">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Graphab</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="1">
+                       <widget class="QPushButton" name="projectRun">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>7</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>3 - Project</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>15</width>
+                          <height>15</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="2">
+                       <widget class="QPushButton" name="linksetRun">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>7</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>4 - Linkset</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>15</width>
+                          <height>15</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="3">
+                       <widget class="QPushButton" name="graphRun">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>7</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>5 - Graph</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>15</width>
+                          <height>15</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="4">
+                       <widget class="QCheckBox" name="cmpInit">
+                        <property name="minimumSize">
+                         <size>
+                          <width>200</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Compare scenarios to initial state</string>
+                        </property>
+                        <property name="checked">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="0">
+                       <widget class="QLabel" name="bufferInGroupLabel_22">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Metrics</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="1">
+                       <widget class="QPushButton" name="localMetricsRun">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>7</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>6 - Spatialize</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>15</width>
+                          <height>15</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="2">
+                       <widget class="QPushButton" name="compareScenariosRun">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>23</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>7</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>7 - Compare scenarios</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                        </property>
+                        <property name="iconSize">
+                         <size>
+                          <width>15</width>
+                          <height>15</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="4">
+                       <widget class="QCheckBox" name="cmpPerc">
+                        <property name="minimumSize">
+                         <size>
+                          <width>200</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Display comparison as percentage</string>
+                        </property>
+                        <property name="checked">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
                    </widget>
                   </item>
                  </layout>
@@ -2861,7 +2919,7 @@
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Nom étape&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Description générale&lt;/span&gt;&lt;/p&gt;

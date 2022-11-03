@@ -63,7 +63,7 @@ def getGraph(gProj,graphName):
             return graph
     return None
     
-
+PROVIDER = 'mitiConnect'
 # TODO : grapha wrappers in erc_tvb_algs_provider ?
 def createGraphabProject(landuse,codes,out_dir,project_name,
         nodata=None,patch_size=0,feedback=None):
@@ -75,7 +75,7 @@ def createGraphabProject(landuse,codes,out_dir,project_name,
         'NAMEPROJECT' : project_name,
         'NODATA' : nodata,
         'SIZEPATCHES' : patch_size }
-    return applyProcessingAlg('erc_tvb','create_project',params,feedback=feedback)
+    return applyProcessingAlg(PROVIDER,'create_project',params,feedback=feedback)
 def createGraphabLinkset(project,name,frictionPath,feedback=None):
     params = { 'CODE' : '',
         'EXTCOST' : frictionPath,
@@ -83,7 +83,7 @@ def createGraphabLinkset(project,name,frictionPath,feedback=None):
         'NAME' : name,
         #'TYPE' : 1 }
         'TYPE' : 1 }
-    return applyProcessingAlg('erc_tvb','create_linkset',params,feedback=feedback)
+    return applyProcessingAlg(PROVIDER,'create_linkset',params,feedback=feedback)
 def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         feedback=None):
     params = { 'DIST' : dist,
@@ -91,7 +91,7 @@ def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         'INPUT' : project,
         'NAMEGRAPH' : graphName,
         'NAMELINKSET' : linkset }
-    return applyProcessingAlg('erc_tvb','create_graph',params,feedback=feedback)
+    return applyProcessingAlg(PROVIDER,'create_graph',params,feedback=feedback)
 def computeMetric(project,graphName,metricName=0,unit=0,
         d=1000,p=0,localMetric=True,feedback=None):
     params = { 'DISTUNIT' : unit,
@@ -101,7 +101,7 @@ def computeMetric(project,graphName,metricName=0,unit=0,
         'METRICSNAME' : metricName,
         'PPARAMETER' : p }
     alg_name = 'local_metric' if localMetric else 'global_metric'
-    return applyProcessingAlg('erc_tvb',alg_name,params,feedback=feedback)
+    return applyProcessingAlg(PROVIDER,alg_name,params,feedback=feedback)
 def computeLocalMetric(project,graphName,metricName=0,unit=0,
         d=1000,p=0,feedback=None):
     return computeMetric(project,graphName,metricName=metricName,unit=unit,
@@ -135,7 +135,8 @@ class LaunchItem(DictItem):
     def fromDict(cls,dict,feedback=None):
         if cls.EXTENT not in dict:
             dict[cls.EXTENT] = None
-        return cls(dict,feedback=feedback)
+        castDict = utils.castDict(dict)
+        return cls(castDict,feedback=feedback)
         
     def getScName(self):
         return self.dict[self.SCENARIO]
@@ -170,12 +171,20 @@ class LaunchModel(DictModel):
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.pluginModel = pluginModel
         
+    # Add metric field if needed
+    def addItem(self,item):
+        for f in item.dict.keys():
+            if f not in self.fields:
+                self.addField(f)
+        super().addItem(item)
     def mkItemFromDict(self,dict,feedback=None):
+        feedback.pushDebugInfo("mkItemFromDict " + str(dict))
         for f in dict.keys():
             if f not in self.fields:
                 self.addField(f)
         return self.itemClass.fromDict(dict,feedback=feedback)
         
+    # Item getters
     def getScenarioNames(self):
         return [i.getName() for i in self.items]
     def getItemFromName(self,name):
@@ -203,10 +212,8 @@ class LaunchModel(DictModel):
     def scExists(self,name):
         i = self.getItemFromName(name)
         return (i is not None)
-                        
-    # Returns absolute path of 'item' output layer
-    # def getItemSubElement
-    # def getScenarioDir(self,name)
+                 
+    # Item base path getters
     def normPath(self,fname):
         return os.path.normcase(fname)
     def getItemNameSuffix(self,item,suffix):
@@ -215,23 +222,9 @@ class LaunchModel(DictModel):
             suffix = "ext" + extName + "_" + suffix
         res = scName + "_" + spName + "_" + suffix
         return res
-    # def getItemSpDir(self,spName):
-        # spDir = self.pluginModel.getSubDir(spName)
-        # return self.normPath(spDir)
     def getScDirFromName(self,scName):
         scDir = self.getItemSpDir(scName)
         return self.normPath(scDir)
-    # def getItemExtentScDir(self,extentSc):
-        # suffix = extentSc.getName() if extentSc else "base"
-        # dirname = "extent_" + suffix
-        # return self.getSubDir(dirname)
-    # def getItemExtentScDir(self,scItem,spItem):
-        # extentSc = self.pluginModel.scenarioModel.getItemExtentSc(scItem)
-        # extentScDir = self.pluginModel.getSubDir(extentSc.getName())
-        # return self.normPath(extentScDir)
-        # extentScName, spName = extentSc.getName(), spItem.getName()
-        # spDir = self.getItemSpDir(spName)
-        # return self.normPath(joinPath(spDir,extentScName))
     def getItemExtentScDir(self,extName):
         dirname = "extent_" + str(extName)
         return self.pluginModel.getSubDir(dirname)
@@ -255,6 +248,7 @@ class LaunchModel(DictModel):
     def getSpBaseLanduse(self,spItem):
         return self.pluginModel.speciesModel.getItemLandusePath(spItem)
         
+    # Extent computing
     def computeItemExtent(self,item,eraseFlag=True,feedback=None):
         if feedback is None:
             feedback = self.feedback
@@ -271,7 +265,6 @@ class LaunchModel(DictModel):
             else:
                 return out_path
         # Union of scenario and children
-        # extentScLayer = self.pluginModel.scenarioModel.getItemExtentScLayer(extItem)
         scExtentLayers = self.pluginModel.scenarioModel.getItemExtentLayers(extItem)
         self.feedback.pushDebugInfo("scExtentLayers " + str(scExtentLayers))
         if not scExtentLayers:
@@ -300,6 +293,7 @@ class LaunchModel(DictModel):
             self.internal_error("Unexpected specie mode " + str(spItem))
         return out_path
         
+    # Item getters for each step
     def getItemLanduse(self,item):
         return self.getItemOutBase(item,suffix="landuse")
     def getItemFriction(self,item):
@@ -319,6 +313,7 @@ class LaunchModel(DictModel):
     def getItemGraphName(self,item):
         return self.getItemNameSuffix(item,"graph")
         
+    # Table flags
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
         
@@ -355,13 +350,13 @@ class LaunchModel(DictModel):
         feedback.pushDebugInfo("applyItemLanduse " + str(scItem) + " " + str(spItem))
         # Check out path
         out_path = self.getItemLanduse(item)
-        if utils.fileExists(out_path):
-            if eraseFlag:
-                qgsUtils.removeLayerFromPath(out_path)
-                qgsUtils.removeRaster(out_path)
-            else:
-                qgsUtils.loadRasterLayer(out_path,loadProject=True)
-                return
+        # if utils.fileExists(out_path):
+            # if eraseFlag:
+                # qgsUtils.removeLayerFromPath(out_path)
+                # qgsUtils.removeRaster(out_path)
+            # else:
+                # qgsUtils.loadRasterLayer(out_path,loadProject=True)
+                # return
         # Prepare Params
         spLanduse = self.getSpBaseLanduse(spItem)
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
@@ -390,7 +385,7 @@ class LaunchModel(DictModel):
             # luPath = qgsUtils.mkTmpPath("%s_%s_%s_reclass.tif"%(scName,spName,extName))
             # Merge       
             luPath = qgsUtils.mkTmpPath(spName + "_landuse.tif")
-            qgsUtils.removeLayerFromPath(luPath)
+            # qgsUtils.removeLayerFromPath(luPath)
             # qgsUtils.removeRaster(luPath)
             qgsTreatments.applyMergeRaster(scLayers,luPath,
                 out_type=baseType,nodata_val=nodataVal,feedback=feedback)
@@ -402,7 +397,8 @@ class LaunchModel(DictModel):
         qgsTreatments.clipRasterFromVector(luPath,extentPath,out_path,
             resolution=resolution,nodata=nodataVal,
             feedback=feedback)
-        qgsUtils.loadRasterLayer(out_path,loadProject=True)
+        return out_path
+        # qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
     def applyItemFriction(self,item,feedback=None,  eraseFlag=False):
         if feedback is None:
@@ -502,7 +498,12 @@ class LaunchModel(DictModel):
                 if eraseFlag:
                     gProj.removeLinkset(linksetName)
                 else:
-                    return
+                    linksetGroup = gProj.projectGroup.children()[1]
+                    for layer in linksetGroup.children():
+                        if layer.name() == linksetName:
+                            layer.setItemVisibilityChecked(True)
+                            return
+                    # gProj.reloadLinksetCSV(linksetName)
         # assert(False)
         classes,array,nodata = qgsUtils.getRasterValsArrayND(friction)
         feedback.pushDebugInfo("classes = " + str(classes))
@@ -530,6 +531,11 @@ class LaunchModel(DictModel):
                 if eraseFlag:
                     gProj.removeGraph(graphName)
                 else:
+                    graphsGroup = gProj.projectGroup.children()[0]
+                    graphsGroup.setItemVisibilityChecked(True)
+                    for graphGroup in graphsGroup.children():
+                        if graphGroup.name() == graphName:
+                            graphGroup.setItemVisibilityChecked(True)
                     return
         createGraphabGraph(project,linksetName,
             dist=maxDisp,graphName=graphName,feedback=feedback)
@@ -565,11 +571,19 @@ class LaunchModel(DictModel):
         if feedback is None:
             feedback = self.feedback
         scName, spName = item.getScSpNames()
+        projName = self.getItemGraphabProjectName(item)
         project = self.getItemGraphabProjectFile(item)
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
+        # Check graph
+        # projName = self.getItemGraphabProjectName(item)
+        # gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        # if gProj:
+            # graph = getGraph(gProj,graphName)
+        # else:
+            # pass
         # Compute metric value
         if eraseFlag or metricStr not in self.fields:
             val = computeGlobalMetric(project,graphName,metricName=g,d=d,p=p,feedback=feedback)
@@ -717,10 +731,22 @@ class LaunchConnector(TableToDialogConnector):
                     func(li,eraseFlag=eraseFlag,feedback=step_feedback)
                     cpt+=1
                     step_feedback.setCurrentStep(cpt)
-        
+    
+    def landuseItemRun(self,item,feedback=None,eraseFlag=None):
+        out_path = self.model.getItemLanduse(item)
+        if utils.fileExists(out_path):
+            if eraseFlag:
+                qgsUtils.removeLayerFromPath(out_path)
+                qgsUtils.removeRaster(out_path)
+            else:
+                qgsUtils.loadRasterLayer(out_path,loadProject=True)
+                return out_path
+        self.model.applyItemLanduse(item,feedback=feedback)
+        qgsUtils.loadRasterLayer(out_path,loadProject=True)
     def landuseRun(self):
         self.feedback.beginSection("Computing land use layer(s)")
-        self.iterateRunExtent(self.model.applyItemLanduse)
+        # self.iterateRunExtent(self.model.applyItemLanduse)
+        self.iterateRunExtent(self.landuseItemRun)
         self.feedback.endSection()
         
     def frictionRun(self):

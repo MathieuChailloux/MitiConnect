@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os, sys, shutil
+import os, sys, shutil, time
 
 import qgis
 from qgis.PyQt import uic, QtWidgets
@@ -342,6 +342,51 @@ class LaunchModel(DictModel):
                     self.addItem(isItem)
         self.layoutChanged.emit()
         
+    def clearFile(self,filename):
+        if utils.fileExists(filename):
+            qgsUtils.removeLayerFromPath(filename)
+            qgsUtils.removeRaster(filename)
+    def clearStep(self,item,step=1):
+        if step <= 1:
+            luPath = self.getItemLanduse(item)
+            self.clearFile(luPath)
+        if step <= 2:
+            frPath = self.getItemFriction(item)
+            self.clearFile(frPath)
+        if step <=3:
+            project = self.getItemGraphabProjectFile(item)
+            if os.path.isfile(project):
+                projName = self.getItemGraphabProjectName(item)
+                qgsUtils.removeGroups(projName)
+                # projectFolder = os.path.dirname(project)
+                # qgsUtils.removeFolder(projectFolder)
+        gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        if step <= 4:
+            if gProj:
+                linksetName = self.getItemLinksetName(item)
+                linkset = getLinkset(gProj,linksetName)
+                if linkset:
+                    gProj.removeLinkset(linksetName)
+        if step <= 5:
+            if gProj:
+                graphName = self.getItemGraphName(item)
+                graph = getGraph(gProj,graphName)
+                if graph:
+                    qgsUtils.removeGroups(graphName)
+                    gProj.removeGraph(graphName)
+        if step <= 6:
+            metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
+            if metricStr in self.fields:
+                for i in self.items:
+                    i.dict[metricStr] = None
+        if step <= 7:
+            metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
+            if metricStr in self.fields:
+                for i in self.items:
+                    i.dict[metricStr] = None
+
+        
+        
     def applyItemLanduse(self,item,feedback=None,eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
@@ -416,8 +461,9 @@ class LaunchModel(DictModel):
         feedback.pushDebugInfo("out_path = " + str(out_path))
         if utils.fileExists(out_path):
             if eraseFlag:
-                qgsUtils.removeLayerFromPath(out_path)
-                qgsUtils.removeRaster(out_path)
+                self.clearStep(item,2)
+                # qgsUtils.removeLayerFromPath(out_path)
+                # qgsUtils.removeRaster(out_path)
             else:
                 loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 styles.setRendererPalettedGnYlRd(loaded_layer)
@@ -464,9 +510,12 @@ class LaunchModel(DictModel):
         outDir = self.getItemBaseDir(item)
         projectFolder = os.path.dirname(project)
         self.feedback.pushDebugInfo("project = " + str(project))
+        self.feedback.pushDebugInfo("projName = " + str(projName))
         if os.path.isfile(project):
             if eraseFlag:
-                qgsUtils.removeGroup(projName)
+                self.clearStep(item,3)
+                # qgsUtils.removeGroups(projName)
+                # time.sleep(5)
                 # qgsUtils.removeFolder(projectFolder)
             else:
                 self.feedback.pushInfo("Graphab file " + str(project) + " already exists")
@@ -496,7 +545,8 @@ class LaunchModel(DictModel):
             linkset = getLinkset(gProj,linksetName)
             if linkset:
                 if eraseFlag:
-                    gProj.removeLinkset(linksetName)
+                    self.clearStep(item,4)
+                    # gProj.removeLinkset(linksetName)
                 else:
                     linksetGroup = gProj.projectGroup.children()[1]
                     for layer in linksetGroup.children():
@@ -526,10 +576,16 @@ class LaunchModel(DictModel):
         self.pluginModel.loadProject(project)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
         if gProj:
+            feedback.pushDebugInfo("gProj")
             graph = getGraph(gProj,graphName)
             if graph:
+                feedback.pushDebugInfo("graph")
                 if eraseFlag:
-                    gProj.removeGraph(graphName)
+                    self.clearStep(item,5)
+                    # feedback.pushDebugInfo("erase")
+                    # qgsUtils.removeGroups(graphName)
+                    # gProj.removeGraph(graphName)
+                    # assert(False)
                 else:
                     graphsGroup = gProj.projectGroup.children()[0]
                     graphsGroup.setItemVisibilityChecked(True)
@@ -736,8 +792,9 @@ class LaunchConnector(TableToDialogConnector):
         out_path = self.model.getItemLanduse(item)
         if utils.fileExists(out_path):
             if eraseFlag:
-                qgsUtils.removeLayerFromPath(out_path)
-                qgsUtils.removeRaster(out_path)
+                self.model.clearStep(item,1)
+                # qgsUtils.removeLayerFromPath(out_path)
+                # qgsUtils.removeRaster(out_path)
             else:
                 qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 return out_path

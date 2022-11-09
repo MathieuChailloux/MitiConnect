@@ -479,7 +479,7 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="selectionTab">
+             <widget class="QWidget" name="dataTab">
               <attribute name="title">
                <string>2 - Data</string>
               </attribute>
@@ -493,7 +493,7 @@
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -524,7 +524,7 @@
                       </sizepolicy>
                      </property>
                      <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                      <enum>QFrame::NoFrame</enum>
                      </property>
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
@@ -588,7 +588,7 @@
                              </size>
                             </property>
                             <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
+                             <enum>QFrame::NoFrame</enum>
                             </property>
                             <property name="frameShadow">
                              <enum>QFrame::Raised</enum>
@@ -769,7 +769,7 @@
                              </size>
                             </property>
                             <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
+                             <enum>QFrame::NoFrame</enum>
                             </property>
                             <property name="frameShadow">
                              <enum>QFrame::Raised</enum>
@@ -1009,7 +1009,7 @@
                              </size>
                             </property>
                             <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
+                             <enum>QFrame::NoFrame</enum>
                             </property>
                             <property name="frameShadow">
                              <enum>QFrame::Raised</enum>
@@ -1122,7 +1122,7 @@
                          </size>
                         </property>
                         <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
+                         <enum>QFrame::NoFrame</enum>
                         </property>
                         <property name="frameShadow">
                          <enum>QFrame::Raised</enum>
@@ -1213,7 +1213,7 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="stTab">
+             <widget class="QWidget" name="speciesTab">
               <attribute name="title">
                <string>3 - Species</string>
               </attribute>
@@ -1883,7 +1883,7 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="tab">
+             <widget class="QWidget" name="launchTab">
               <attribute name="title">
                <string>6 - Launches</string>
               </attribute>
@@ -1934,7 +1934,7 @@
                       </size>
                      </property>
                      <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                      <enum>QFrame::NoFrame</enum>
                      </property>
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
@@ -2191,7 +2191,7 @@
                       </size>
                      </property>
                      <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                      <enum>QFrame::NoFrame</enum>
                      </property>
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>

@@ -347,43 +347,44 @@ class LaunchModel(DictModel):
             qgsUtils.removeLayerFromPath(filename)
             qgsUtils.removeRaster(filename)
     def clearStep(self,item,step=1):
-        if step <= 1:
-            luPath = self.getItemLanduse(item)
-            self.clearFile(luPath)
-        if step <= 2:
-            frPath = self.getItemFriction(item)
-            self.clearFile(frPath)
-        if step <=3:
-            project = self.getItemGraphabProjectFile(item)
-            if os.path.isfile(project):
-                projName = self.getItemGraphabProjectName(item)
-                qgsUtils.removeGroups(projName)
-                # projectFolder = os.path.dirname(project)
-                # qgsUtils.removeFolder(projectFolder)
-        gProj = self.pluginModel.graphabPlugin.getProject(projName)
-        if step <= 4:
-            if gProj:
-                linksetName = self.getItemLinksetName(item)
-                linkset = getLinkset(gProj,linksetName)
-                if linkset:
-                    gProj.removeLinkset(linksetName)
-        if step <= 5:
-            if gProj:
-                graphName = self.getItemGraphName(item)
-                graph = getGraph(gProj,graphName)
-                if graph:
-                    qgsUtils.removeGroups(graphName)
-                    gProj.removeGraph(graphName)
-        if step <= 6:
-            metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
-            if metricStr in self.fields:
-                for i in self.items:
-                    i.dict[metricStr] = None
         if step <= 7:
             metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
             if metricStr in self.fields:
                 for i in self.items:
                     i.dict[metricStr] = None
+        if step <= 6:
+            metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
+            if metricStr in self.fields:
+                for i in self.items:
+                    i.dict[metricStr] = None
+        projName = self.getItemGraphabProjectName(item)
+        gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        if gProj:
+            if step <= 5:
+                graphName = self.getItemGraphName(item)
+                # graph = getGraph(gProj,graphName)
+                # if graph:
+                    # qgsUtils.removeGroups(graphName)
+                gProj.removeGraph(graphName)
+                # assert(False)
+            if step <= 4:
+                self.feedback.pushDebugInfo("proj")
+                linksetName = self.getItemLinksetName(item)
+                # linkset = getLinkset(gProj,linksetName)
+                # if linkset:
+                gProj.removeLinkset(linksetName)
+        if step <=3:
+            project = self.getItemGraphabProjectFile(item)
+            if os.path.isfile(project):
+                projName = self.getItemGraphabProjectName(item)
+                qgsUtils.removeGroups(projName)
+        if step <= 2:
+            frPath = self.getItemFriction(item)
+            self.clearFile(frPath)
+        if step <= 1:
+            luPath = self.getItemLanduse(item)
+            self.clearFile(luPath)
+
 
         
         
@@ -395,8 +396,9 @@ class LaunchModel(DictModel):
         feedback.pushDebugInfo("applyItemLanduse " + str(scItem) + " " + str(spItem))
         # Check out path
         out_path = self.getItemLanduse(item)
-        # if utils.fileExists(out_path):
-            # if eraseFlag:
+        if utils.fileExists(out_path):
+            if eraseFlag:
+                self.clearStep(item,1)
                 # qgsUtils.removeLayerFromPath(out_path)
                 # qgsUtils.removeRaster(out_path)
             # else:
@@ -455,7 +457,7 @@ class LaunchModel(DictModel):
         in_path = self.getItemLanduse(item)
         feedback.pushDebugInfo("in_path = " + str(in_path))
         if not utils.fileExists(in_path):
-            self.feedback.user_error("No landuse file " + str(in_path) + " for specie " + str(specie) + " in scenario " + name)
+            self.feedback.user_error("No landuse file %s for specie %s in scenario %s"%(in_path,spName,scName))
         # Check out path
         out_path = self.getItemFriction(item)
         feedback.pushDebugInfo("out_path = " + str(out_path))
@@ -501,6 +503,10 @@ class LaunchModel(DictModel):
         project = self.getItemGraphabProjectFile(item)
         landuse = self.getItemLanduse(item)
         friction = self.getItemFriction(item)
+        if not utils.fileExists(landuse):
+            self.feedback.user_error("No landuse file %s for specie %s in scenario %s"%(landuse,spName,scName))
+        if not utils.fileExists(friction):
+            self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
         codes = spItem.getCodesVal()
         if not codes:
             self.feedback.user_error("No habitat code specified for specie "

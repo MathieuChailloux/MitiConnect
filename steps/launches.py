@@ -631,25 +631,27 @@ class LaunchModel(DictModel):
                         if graphGroup.name() == graphName:
                             graphGroup.setItemVisibilityChecked(True)
                     return
+        # Retrieve regression values
         if scItem.isInitialState():
-            createGraphabGraph(project,linksetName,
-                dist=maxDisp,graphName=graphName,feedback=feedback)
+            # createGraphabGraph(project,linksetName,
+                # dist=maxDisp,graphName=graphName,feedback=feedback)
+            isItem = item
         else:
-            # itemA, itemB = item.paramRegr
             isSc = self.pluginModel.scenarioModel.getInitialState()
             isName = isSc.getName()
             isItem = self.getItemFromNames(isName,spName,extName)
-            regr = isItem.getRegression()
-            feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
-            if regr is None:
-                self.computeRegression(isItem)
-            regr = isItem.getRegression()
-            if regr is None:
-                feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
-            isA, isB = isItem.paramRegr
-            maxDispCost = float(isA * maxDisp + isB)
-            createGraphabGraph(project,linksetName,
-                unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)
+        regr = isItem.getRegression()
+        feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
+        if regr is None:
+            self.computeRegression(isItem)
+        regr = isItem.getRegression()
+        if regr is None:
+            feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
+        isA, isB = regr
+        maxDispCost = float(isA * maxDisp + isB)
+        # Build graph
+        createGraphabGraph(project,linksetName,
+            unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)
             
             
             

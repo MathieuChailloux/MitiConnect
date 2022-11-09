@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 
-import os, sys, shutil, time
+import os, sys, shutil, time, numpy
 
 import qgis
 from qgis.PyQt import uic, QtWidgets
@@ -76,13 +76,12 @@ def createGraphabProject(landuse,codes,out_dir,project_name,
         'NODATA' : nodata,
         'SIZEPATCHES' : patch_size }
     return applyProcessingAlg(PROVIDER,'create_project',params,feedback=feedback)
-def createGraphabLinkset(project,name,frictionPath,feedback=None):
+def createGraphabLinkset(project,name,frictionPath,type=1,feedback=None):
     params = { 'CODE' : '',
         'EXTCOST' : frictionPath,
         'INPUT' : project,
         'NAME' : name,
-        #'TYPE' : 1 }
-        'TYPE' : 1 }
+        'TYPE' : type }
     return applyProcessingAlg(PROVIDER,'create_linkset',params,feedback=feedback)
 def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         feedback=None):
@@ -111,7 +110,11 @@ def computeGlobalMetric(project,graphName,metricName=0,unit=0,
     return computeMetric(project,graphName,metricName=metricName,unit=unit,
         d=d,p=p,localMetric=False,feedback=feedback)
         
-
+def getRegression(layer):
+    distArr = [f["Dist"] for f in layer.getFeatures()]
+    distMArr = [f["DistM"] for f in layer.getFeatures()]
+    res = numpy.polyfit(distArr,distMArr,1)
+    return res
 
 class LaunchItem(DictItem):
 
@@ -125,6 +128,7 @@ class LaunchItem(DictItem):
     def __init__(self,dict,pluginModel=None,feedback=None):
         super().__init__(dict,feedback=feedback)
         self.pluginModel = pluginModel
+        self.paramRegr = None
         
     @classmethod
     def fromValues(cls,scName,spName,extent,pluginModel=None,feedback=None):
@@ -137,7 +141,10 @@ class LaunchItem(DictItem):
             dict[cls.EXTENT] = None
         castDict = utils.castDict(dict)
         return cls(castDict,feedback=feedback)
-        
+    def getRegression(self):
+        return self.paramRegr
+    def setRegression(self,val):
+        self.paramRegr = val
     def getScName(self):
         return self.dict[self.SCENARIO]
     def getSpName(self):
@@ -341,6 +348,16 @@ class LaunchModel(DictModel):
                     pluginModel=self.pluginModel,feedback=self.feedback)
                     self.addItem(isItem)
         self.layoutChanged.emit()
+        
+    def computeRegression(self,item):
+        linksetName = self.getItemLinksetName(item)
+        layer = qgsUtils.getLoadedLayerByName(linksetName)
+        if layer is None:
+            self.feedback.user_error("Could not find layer for linkset %s needed in regression of item %s"%(
+                linksetName,item))
+        scItem, spItem, extItem = self.getItems(item)
+        item.paramRegr = getRegression(layer)
+        
         
     def clearFile(self,filename):
         if utils.fileExists(filename):
@@ -564,7 +581,22 @@ class LaunchModel(DictModel):
         classes,array,nodata = qgsUtils.getRasterValsArrayND(friction)
         feedback.pushDebugInfo("classes = " + str(classes))
         feedback.pushDebugInfo("nodata = " + str(nodata))
+        # if not spItem.isInitialState():
+            # isSc = self.pluginModel.scenarioModel.getInitialState()
+            # isName = isSc.getName()
+            # isItem = self.getItemFromNames(isName,spName,isName)
+            # item.paramRegr
         createGraphabLinkset(project,linksetName,friction,feedback=feedback)
+        if scItem.isInitialState():
+            self.computeRegression(item)
+            feedback.pushDebugInfo("paramRegr of %s set to %s"%(item.getNames(),item.paramRegr))
+        # if spItem.isInitialState():
+            # item.paramRegr = getRegression(loaded_layer)
+        # else:
+            # isSc = self.pluginModel.scenarioModel.getInitialState()
+            # isName = isSc.getName()
+            # isItem = self.getItemFromNames(isName,spName,isName)
+            # item.paramRegr
             
             
     def applyItemGraphabGraph(self,item,eraseFlag=False,feedback=None):
@@ -599,8 +631,28 @@ class LaunchModel(DictModel):
                         if graphGroup.name() == graphName:
                             graphGroup.setItemVisibilityChecked(True)
                     return
-        createGraphabGraph(project,linksetName,
-            dist=maxDisp,graphName=graphName,feedback=feedback)
+        if scItem.isInitialState():
+            createGraphabGraph(project,linksetName,
+                dist=maxDisp,graphName=graphName,feedback=feedback)
+        else:
+            # itemA, itemB = item.paramRegr
+            isSc = self.pluginModel.scenarioModel.getInitialState()
+            isName = isSc.getName()
+            isItem = self.getItemFromNames(isName,spName,extName)
+            regr = isItem.getRegression()
+            feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
+            if regr is None:
+                self.computeRegression(isItem)
+            regr = isItem.getRegression()
+            if regr is None:
+                feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
+            isA, isB = isItem.paramRegr
+            maxDispCost = float(isA * maxDisp + isB)
+            createGraphabGraph(project,linksetName,
+                unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)
+            
+            
+            
                 
     def computeLocalMetric(self,item,eraseFlag=False,feedback=None):
         if feedback is None:

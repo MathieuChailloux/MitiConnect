@@ -288,9 +288,11 @@ class LaunchModel(DictModel):
             qgsTreatments.mergeVectorLayers(scExtentLayers,crs,extPath,feedback=feedback)
         # Apply specie extent mode
         spLanduse = self.getSpBaseLanduse(spItem)
-        if spItem.isMaxExtentMode():
-            self.feedback.pushDebugInfo("copymode")
-            shutil.copy(extPath,out_path)
+        if spItem.isMaxExtentMode() or extItem.isInitialState():
+            self.feedback.pushDebugInfo("Copying %s to %s"%(extPath,out_path))
+            extLayer = qgsUtils.loadVectorLayer(extPath)
+            qgsUtils.writeShapefile(extLayer,out_path)
+            # shutil.copy(extPath,out_path)
         elif spItem.isBufferMode():
             # bufferVal = float(spItem.getExtentVal
             bufferMulVal, maxDisp = float(spItem.getExtentVal()), int(spItem.getMaxDisp())

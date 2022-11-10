@@ -495,7 +495,7 @@ class LanduseModel(DictModel):
         out_path = self.getItemOutPath(item)
         qgsUtils.removeLayerFromPath(out_path)
         qgsUtils.removeRaster(out_path)
-        min_type, nodata_val = Qgis.UInt16, 65535
+        min_type, nodata_val = self.pluginModel.baseType, self.pluginModel.nodataVal
         qgsTreatments.applyMergeRaster(paths,out_path,out_type=min_type,
             nodata_val=nodata_val,context=context,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)

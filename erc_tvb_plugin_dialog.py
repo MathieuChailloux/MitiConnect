@@ -246,13 +246,14 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
     # def getScenariosDir(self):
         # self.scDir = utils.joinPath(workspace,"Scenarios")
         # return 
-    def getScenarioDir(self,scDir):
-        return utils.joinPath(self.scDir,scDir)
+    # def getScenarioDir(self,scDir):
+        # return utils.joinPath(self.scDir,scDir)
     def initializeWorkspace(self,workspace,name):
         utils.mkDir(workspace)
         self.pluginModel.paramsModel.setWorkspace(workspace)
-        self.scDir = utils.joinPath(workspace,"Scenarios")
-        utils.mkDir(self.scDir)
+        self.workspace.setFilePath(workspace)
+        # self.scDir = utils.joinPath(workspace,"Scenarios")
+        # utils.mkDir(self.scDir)
         projectFile = utils.joinPath(workspace, name + ".xml")
         self.saveModelAs(projectFile)
                 

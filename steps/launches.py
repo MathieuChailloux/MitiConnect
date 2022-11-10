@@ -121,8 +121,9 @@ class LaunchItem(DictItem):
     SCENARIO = 'SCENARIO'
     SPECIE = 'SPECIE'
     EXTENT = 'EXTENT'
+    MAX_DISP = 'MAX_DISP'
     
-    FIELDS = [ SCENARIO, SPECIE, EXTENT ]
+    FIELDS = [ SCENARIO, SPECIE, EXTENT, MAX_DISP ]
     DISPLAY_FIELDS = FIELDS
     
     def __init__(self,dict,pluginModel=None,feedback=None):
@@ -131,14 +132,16 @@ class LaunchItem(DictItem):
         self.paramRegr = None
         
     @classmethod
-    def fromValues(cls,scName,spName,extent,pluginModel=None,feedback=None):
+    def fromValues(cls,scName,spName,extent,maxDisp=None,pluginModel=None,feedback=None):
         dict = { cls.SCENARIO : scName, cls.SPECIE : spName,
-            cls.EXTENT : extent}
+            cls.EXTENT : extent, cls.MAX_DISP : maxDisp }
         return cls(dict,pluginModel=pluginModel,feedback=feedback)
     @classmethod
     def fromDict(cls,dict,feedback=None):
         if cls.EXTENT not in dict:
             dict[cls.EXTENT] = None
+        if cls.MAX_DISP not in dict:
+            dict[cls.MAX_DISP] = None
         castDict = utils.castDict(dict)
         return cls(castDict,feedback=feedback)
     def getRegression(self):
@@ -153,6 +156,10 @@ class LaunchItem(DictItem):
         return self.dict[self.EXTENT]
     def setExtName(self,val):
         self.dict[self.EXTENT] = val
+    def getMaxDisp(self):
+        return self.dict[self.MAX_DISP]
+    def setMaxDisp(self,val):
+        self.dict[self.MAX_DISP] = val
     def getScSpNames(self):
         return (self.getScName(), self.getSpName())
     def getNames(self):
@@ -349,33 +356,68 @@ class LaunchModel(DictModel):
                     self.addItem(isItem)
         self.layoutChanged.emit()
         
-    def computeRegression(self,item):
+    def getItemRegression(self,item):
         linksetName = self.getItemLinksetName(item)
         layer = qgsUtils.getLoadedLayerByName(linksetName)
         if layer is None:
             self.feedback.user_error("Could not find layer for linkset %s needed in regression of item %s"%(
                 linksetName,item))
         scItem, spItem, extItem = self.getItems(item)
-        item.paramRegr = getRegression(layer)
-    def getMaxDispCost(self,item,feedback):
+        res = getRegression(layer)
+        return res
+    # def getMaxDispCost(self,item,feedback):
+        # scName, spName, extName = item.getNames()
+        # scItem, spItem, extItem = self.getItems(item)
+        # maxDisp = spItem.getMaxDisp()
+        # if scItem.isInitialState():
+            # isItem = item
+        # else:
+            # isSc = self.pluginModel.scenarioModel.getInitialState()
+            # isName = isSc.getName()
+            # isItem = self.getItemFromNames(isName,spName,extName)
+        # regr = isItem.getRegression()
+        # feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
+        # if regr is None:
+            # self.computeRegression(isItem)
+        # regr = isItem.getRegression()
+        # if regr is None:
+            # feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
+        # isA, isB = regr
+        # maxDispCost = float(isA * maxDisp + isB)
+        # return maxDispCost
+    def computeMaxDispCost(self,item,feedback):
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
-        maxDisp = spItem.getMaxDisp()
+        # Retrieve IS item
         if scItem.isInitialState():
             isItem = item
         else:
             isSc = self.pluginModel.scenarioModel.getInitialState()
             isName = isSc.getName()
             isItem = self.getItemFromNames(isName,spName,extName)
-        regr = isItem.getRegression()
-        feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
-        if regr is None:
-            self.computeRegression(isItem)
-        regr = isItem.getRegression()
-        if regr is None:
-            feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
-        isA, isB = regr
-        maxDispCost = float(isA * maxDisp + isB)
+        maxDispCost = isItem.getMaxDisp()
+        if maxDispCost is None:
+            maxDisp = spItem.getMaxDisp()
+            if scItem.isInitialState():
+                isItem = item
+            else:
+                isSc = self.pluginModel.scenarioModel.getInitialState()
+                isName = isSc.getName()
+                isItem = self.getItemFromNames(isName,spName,extName)
+            regr = self.getItemRegression(isItem)
+            feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
+            if regr is None:
+                feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
+            isA, isB = regr
+            maxDispCost = float(isA * maxDisp + isB)
+            isItem.setMaxDisp(maxDispCost)
+        item.setMaxDisp(maxDispCost)
+        self.layoutChanged.emit()
+        return maxDispCost
+    def getMaxDispCost(self,item,feedback):
+        maxDispCost = item.getMaxDisp()
+        if maxDispCost is None:
+            maxDispCost = self.computeMaxDispCost(item,feedback)
         return maxDispCost
         
         
@@ -607,9 +649,8 @@ class LaunchModel(DictModel):
             # isItem = self.getItemFromNames(isName,spName,isName)
             # item.paramRegr
         createGraphabLinkset(project,linksetName,friction,feedback=feedback)
-        if scItem.isInitialState():
-            self.computeRegression(item)
-            feedback.pushDebugInfo("paramRegr of %s set to %s"%(item.getNames(),item.paramRegr))
+        self.computeMaxDispCost(item,feedback)
+        feedback.pushDebugInfo("Max disp cost of %s set to %s"%(item.getNames(),item.getMaxDisp()))
         # if spItem.isInitialState():
             # item.paramRegr = getRegression(loaded_layer)
         # else:
@@ -672,6 +713,7 @@ class LaunchModel(DictModel):
         metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         self.feedback.pushDebugInfo("l = " + str(l))
+        # maxDispCost = self.getMaxDispCost(item,feedback)
         maxDispCost = self.getMaxDispCost(item,feedback)
         # Mode = max disp <=> p = 0.05
         dispMode = 1
@@ -704,6 +746,7 @@ class LaunchModel(DictModel):
         self.feedback.pushDebugInfo("g = " + str(g))
         metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
         self.feedback.pushDebugInfo("metricStr = " + str(metricStr))
+        # maxDispCost = self.getMaxDispCost(item,feedback)
         maxDispCost = self.getMaxDispCost(item,feedback)
         # Mode = max disp <=> p = 0.05
         dispMode = 1
@@ -942,7 +985,7 @@ class LaunchConnector(TableToDialogConnector):
                     else:
                         if cmpInit:
                             if percentFlag:
-                                finalVal = (val - initVal) / initVal
+                                finalVal = ((val - initVal) / initVal) * 100
                             else:
                                 finalVal = val - initVal
                         else:

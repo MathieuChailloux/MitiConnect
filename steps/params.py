@@ -48,7 +48,7 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
         self.parser_name = "ParamsModel"
         self.is_runnable = False
         self.localMetric = 0
-        self.globalMetric = 0
+        self.globalMetric = 1
         self.distParam = 1000
         self.probaParam = 0
         # self.workspace = None

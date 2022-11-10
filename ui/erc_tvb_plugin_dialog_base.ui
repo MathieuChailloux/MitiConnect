@@ -110,7 +110,7 @@
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Save BioDispersal project as</string>
+              <string>Create new project</string>
              </property>
              <property name="text">
               <string/>
@@ -133,7 +133,7 @@
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Save BioDispersal project as</string>
+              <string>Save project as</string>
              </property>
              <property name="text">
               <string/>
@@ -198,7 +198,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>Open BioDispersal project</string>
+              <string>Open project</string>
              </property>
              <property name="text">
               <string/>
@@ -258,7 +258,7 @@
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Save BioDispersal project</string>
+              <string>Save project</string>
              </property>
              <property name="text">
               <string/>

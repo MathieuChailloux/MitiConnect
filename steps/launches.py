@@ -92,7 +92,7 @@ def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         'NAMELINKSET' : linkset }
     return applyProcessingAlg(PROVIDER,'create_graph',params,feedback=feedback)
 def computeMetric(project,graphName,metricName=0,unit=0,
-        d=1000,p=0,localMetric=True,feedback=None):
+        d=1000,p=1,localMetric=True,feedback=None):
     params = { 'DISTUNIT' : unit,
         'DPARAMETER' : d,
         'GRAPHNAME' : graphName,
@@ -357,6 +357,26 @@ class LaunchModel(DictModel):
                 linksetName,item))
         scItem, spItem, extItem = self.getItems(item)
         item.paramRegr = getRegression(layer)
+    def getMaxDispCost(self,item,feedback):
+        scName, spName, extName = item.getNames()
+        scItem, spItem, extItem = self.getItems(item)
+        maxDisp = spItem.getMaxDisp()
+        if scItem.isInitialState():
+            isItem = item
+        else:
+            isSc = self.pluginModel.scenarioModel.getInitialState()
+            isName = isSc.getName()
+            isItem = self.getItemFromNames(isName,spName,extName)
+        regr = isItem.getRegression()
+        feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
+        if regr is None:
+            self.computeRegression(isItem)
+        regr = isItem.getRegression()
+        if regr is None:
+            feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
+        isA, isB = regr
+        maxDispCost = float(isA * maxDisp + isB)
+        return maxDispCost
         
         
     def clearFile(self,filename):
@@ -605,7 +625,6 @@ class LaunchModel(DictModel):
         feedback.pushDebugInfo("applyItemGraphabGraph")
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
-        maxDisp = spItem.getMaxDisp()
         checkGraphabInstalled(feedback)
         projName = self.getItemGraphabProjectName(item)
         project = self.getItemGraphabProjectFile(item)
@@ -632,23 +651,7 @@ class LaunchModel(DictModel):
                             graphGroup.setItemVisibilityChecked(True)
                     return
         # Retrieve regression values
-        if scItem.isInitialState():
-            # createGraphabGraph(project,linksetName,
-                # dist=maxDisp,graphName=graphName,feedback=feedback)
-            isItem = item
-        else:
-            isSc = self.pluginModel.scenarioModel.getInitialState()
-            isName = isSc.getName()
-            isItem = self.getItemFromNames(isName,spName,extName)
-        regr = isItem.getRegression()
-        feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
-        if regr is None:
-            self.computeRegression(isItem)
-        regr = isItem.getRegression()
-        if regr is None:
-            feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
-        isA, isB = regr
-        maxDispCost = float(isA * maxDisp + isB)
+        maxDispCost = self.getMaxDispCost(item,feedback)
         # Build graph
         createGraphabGraph(project,linksetName,
             unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)
@@ -669,14 +672,20 @@ class LaunchModel(DictModel):
         metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         self.feedback.pushDebugInfo("l = " + str(l))
+        maxDispCost = self.getMaxDispCost(item,feedback)
+        # Mode = max disp <=> p = 0.05
+        dispMode = 1
+        # Mode = 1 <=> max disp value expressed in cost unit
+        dispUnit = 1
         # Compute metric value
         if eraseFlag or metricStr not in self.fields:
-            val = computeLocalMetric(project,graphName,metricName=l,d=d,p=p,feedback=feedback)
+            val = computeLocalMetric(project,graphName,metricName=l,
+                d=maxDispCost,unit=dispUnit,p=dispMode,feedback=feedback)
         else:
             val = item.dict[metricStr]
             if not val:
-                val = computeLocalMetric(project,graphName,
-                    metricName=l,d=d,p=p,feedback=feedback)
+                val = computeLocalMetric(project,graphName,metricName=l,
+                    d=maxDispCost,unit=dispUnit,p=dispMode,feedback=feedback)
         # Update table
         self.addField(metricStr)
         item.dict[metricStr] = val
@@ -692,7 +701,14 @@ class LaunchModel(DictModel):
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
+        self.feedback.pushDebugInfo("g = " + str(g))
         metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
+        self.feedback.pushDebugInfo("metricStr = " + str(metricStr))
+        maxDispCost = self.getMaxDispCost(item,feedback)
+        # Mode = max disp <=> p = 0.05
+        dispMode = 1
+        # Mode = 1 <=> max disp value expressed in cost unit
+        dispUnit = 1
         # Check graph
         # projName = self.getItemGraphabProjectName(item)
         # gProj = self.pluginModel.graphabPlugin.getProject(projName)
@@ -702,12 +718,13 @@ class LaunchModel(DictModel):
             # pass
         # Compute metric value
         if eraseFlag or metricStr not in self.fields:
-            val = computeGlobalMetric(project,graphName,metricName=g,d=d,p=p,feedback=feedback)
+            val = computeGlobalMetric(project,graphName,metricName=g,
+                d=maxDispCost,unit=dispUnit,p=dispMode,feedback=feedback)
         else:
             val = item.dict[metricStr]
             if not val:
-                val = computeGlobalMetric(project,graphName,
-                    metricName=g,d=d,p=p,feedback=feedback)
+                val = computeGlobalMetric(project,graphName,metricName=g,
+                    d=maxDispCost,unit=dispUnit,p=dispMode,feedback=feedback)
         # Update table
         self.addField(metricStr)
         item.dict[metricStr] = val

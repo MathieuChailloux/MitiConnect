@@ -123,8 +123,8 @@ class LaunchItem(DictItem):
     EXTENT = 'EXTENT'
     MAX_DISP = 'MAX_DISP'
     
-    FIELDS = [ SCENARIO, SPECIE, EXTENT, MAX_DISP ]
-    DISPLAY_FIELDS = FIELDS
+    BASE_FIELDS = [ SCENARIO, SPECIE, EXTENT, MAX_DISP ]
+    # DISPLAY_FIELDS = FIELDS
     
     def __init__(self,dict,pluginModel=None,feedback=None):
         super().__init__(dict,feedback=feedback)
@@ -132,9 +132,13 @@ class LaunchItem(DictItem):
         self.paramRegr = None
         
     @classmethod
-    def fromValues(cls,scName,spName,extent,maxDisp=None,pluginModel=None,feedback=None):
+    def fromValues(cls,scName,spName,extent,maxDisp=None,pluginModel=None,
+            fields=[],feedback=None):
         dict = { cls.SCENARIO : scName, cls.SPECIE : spName,
             cls.EXTENT : extent, cls.MAX_DISP : maxDisp }
+        missingFields = [f for f in fields if f not in dict]
+        for f in missingFields:
+            dict[f] = None
         return cls(dict,pluginModel=pluginModel,feedback=feedback)
     @classmethod
     def fromDict(cls,dict,feedback=None):
@@ -166,10 +170,13 @@ class LaunchItem(DictItem):
         return (self.getScName(), self.getSpName(), self.getExtName())
         
     def equals(self,other):
+        if other is None:
+            return False
         selfNames = self.getNames()
         otherNames = other.getNames()
         return selfNames == otherNames
-
+    def __eq__(self,other):
+        return self.equals(other)
 
 # Scenario
         
@@ -179,8 +186,8 @@ class LaunchModel(DictModel):
         itemClass = getattr(sys.modules[__name__], LaunchItem.__name__)
         super().__init__(itemClass,
             feedback=pluginModel.feedback,
-            fields=LaunchItem.FIELDS,
-            display_fields=LaunchItem.DISPLAY_FIELDS)
+            fields=list(LaunchItem.BASE_FIELDS),
+            display_fields=list(LaunchItem.BASE_FIELDS))
         # super().__init__(self,itemClass,feedback=pluginModel.feedback,
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.pluginModel = pluginModel
@@ -333,30 +340,36 @@ class LaunchModel(DictModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
         
-    def reload(self):
+    def reload(self,eraseFlag=False):
         scModel = self.pluginModel.scenarioModel
-        self.items = []
+        if eraseFlag:
+            self.items = []
+            self.fields = list(LaunchItem.BASE_FIELDS)
+        itemsAdded = []
         for scItem in scModel.items:
             scName = scItem.getName()
             extentSc = scModel.getItemExtentSc(scItem)
             extName = extentSc.getName() if extentSc else extentSc
             for spItem in self.pluginModel.speciesModel.items:
                 spName = spItem.getName()
-                # existingItem = self.getItemFromNames(scName,spName,extName)
-                # if existingItem:
-                    # if existingItem.getExtName() != extName:
-                        # existingItem.setName(extName)
-                # else:
                 launchItem = LaunchItem.fromValues(scName,spName,extName,
-                    pluginModel=self.pluginModel,feedback=self.feedback)
+                    pluginModel=self.pluginModel,fields=self.fields,
+                    feedback=self.feedback)
                 self.addItem(launchItem)
+                itemsAdded.append(launchItem)
                 if not scItem.isInitialState():
                     isScItem = scModel.getInitialState()
                     isScName = isScItem.getName()
                     isItem = LaunchItem.fromValues(isScName,spName,extName,
-                    pluginModel=self.pluginModel,feedback=self.feedback)
+                    pluginModel=self.pluginModel,fields=self.fields,
+                    feedback=self.feedback)
                     self.addItem(isItem)
+                    itemsAdded.append(isItem)
+        if not eraseFlag:
+            self.items = [i for i in self.items if i in itemsAdded]
         self.layoutChanged.emit()
+    def reloadErase(self):
+        self.reload(eraseFlag=True)
         
     def getItemRegression(self,item):
         linksetName = self.getItemLinksetName(item)
@@ -802,7 +815,9 @@ class LaunchConnector(TableToDialogConnector):
     def connectComponents(self):
         super().connectComponents()
         self.model.pluginModel.speciesModel.layoutChanged.connect(self.refreshSpecies)
+        self.model.pluginModel.speciesModel.layoutChanged.connect(self.model.reload)
         self.model.pluginModel.scenarioModel.layoutChanged.connect(self.refreshScenarios)
+        self.model.pluginModel.scenarioModel.layoutChanged.connect(self.model.reload)
         self.dlg.landuseRun.clicked.connect(self.landuseRun)
         self.dlg.frictionRun.clicked.connect(self.frictionRun)
         self.dlg.projectRun.clicked.connect(self.graphabProjectRun)
@@ -810,14 +825,14 @@ class LaunchConnector(TableToDialogConnector):
         self.dlg.graphRun.clicked.connect(self.graphabGraphRun)
         self.dlg.localMetricsRun.clicked.connect(self.computeLocalMetric)
         self.dlg.compareScenariosRun.clicked.connect(self.computeGlobalMetric)
-        self.dlg.reloadButton.clicked.connect(self.reload)
+        self.dlg.reloadButton.clicked.connect(self.model.reloadErase)
         # self.model.pluginModel.speciesModel.layoutChanged.connect(self.reload)
         # self.model.pluginModel.scenarioModel.layoutChanged.connect(self.reload)
         
-    def reload(self):
-        self.items = []
-        self.model.reload()
-        self.model.layoutChanged.emit()
+    # def reload(self):
+        # self.items = []
+        # self.model.reload()
+        # self.model.layoutChanged.emit()
         
     def getSelectedScenarios(self):
         scNames = self.dlg.scenariosSelection.checkedItems()

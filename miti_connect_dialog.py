@@ -40,12 +40,12 @@ PLUGIN_DIR = os.path.dirname(__file__)
 UI_DIR = os.path.join(PLUGIN_DIR,'ui')
 STEPS_DIR = os.path.join(PLUGIN_DIR,'steps')
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    UI_DIR, 'erc_tvb_plugin_dialog_base.ui'))
+    UI_DIR, 'miti_connect_dialog_base.ui'))
 CREATE_PROJECT_CLASS, _ = uic.loadUiType(os.path.join(
     UI_DIR, 'new_project.ui'))
 
 
-class PluginModel(abstract_model.MainModel):
+class MitiConnectModel(abstract_model.MainModel):
 
     def __init__(self,graphabPlugin,feedback):
         self.parser_name = "ERC-TVB"
@@ -191,10 +191,10 @@ class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
         return None
             
 
-class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
+class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
     def __init__(self, graphabPlugin,parent=None):
         """Constructor."""
-        super(ErcTvbPluginDialog, self).__init__(parent)
+        super(MitiConnectDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -206,18 +206,18 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
             
     def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
-        self.feedback.pushInfo("ERC1 OK")
+        # self.feedback.pushInfo("ERC1 OK")
         utils.print_func = self.feedback.print_func
         qgsTreatments.nodata_val = 0
         self.context = QgsProcessingContext()
         self.context.setFeedback(self.feedback)
         # self.feedback.switchDebugMode()
         # self.feedback.pushInfo("hey")
-        self.pluginModel = PluginModel(self.graphabPlugin,self.feedback)
-        self.pluginModel.feedback.pushInfo("ERC2 OK")
+        self.pluginModel = MitiConnectModel(self.graphabPlugin,self.feedback)
+        # self.pluginModel.feedback.pushInfo("ERC2 OK")
         self.paramsConnector = params.ParamsConnector(self,self.pluginModel.paramsModel)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)
-        self.importConnector.feedback.pushInfo("ERC3 OK")
+        # self.importConnector.feedback.pushInfo("ERC3 OK")
         self.landuseConnector = data.LanduseConnector(self,self.pluginModel.landuseModel)
         self.speciesConnector = species.SpeciesConnector(self,self.pluginModel.speciesModel)
         self.frictionConnector = friction.FrictionConnector(self,self.pluginModel.frictionModel)
@@ -259,7 +259,7 @@ class ErcTvbPluginDialog(abstract_model.MainDialog, FORM_CLASS):
                 
     # Exception hook, i.e. function called when exception raised.
     # Displays traceback and error message in log tab.
-    # Ignores CustomException : exception raised from erc_tvb and already displayed.
+    # Ignores CustomException : exception raised from MitiConnect and already displayed.
     def exceptionHook(self,excType, excValue, tracebackobj):
         self.feedback.pushDebugInfo("exceptionHook")
         tbinfofile = StringIO()

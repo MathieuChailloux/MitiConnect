@@ -3,27 +3,27 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=ERC-TVB
+name=MitiConnect
 qgisMinimumVersion=3.0
-description=ERC-TVB integrates ecological continuities in Avoid, Minimize, Mitigate sequence
-version=0.1
+description=MitiConnect integrates ecological connecitivy in mitigation hierarchy based on landscape graphs.
+version=0.2
 author=INRAE
 email=mathieu.chailloux@inrae.fr
 
-about=ERC-TVB integrates ecological continuities in Avoid, Minimize, Mitigate sequence.
+about=MitiConnect integrates ecological connecitivy in mitigation hierarchy based on landscape graphs. Using Graphab tool and its dedicated QGIS plugin graphab4qgis, MitiConnect eases the definition of mitigation scenarios through its user-friendly interface. User can prepare data, define target species ecological parameters such as dispersal capacities, creates new scenarios by stacking landuse modifications, and manages all treatments from MitiConnect interface.
 
-tracker=https://github.com/MathieuChailloux/ERC-TVB/issues
-repository=https://github.com/MathieuChailloux/ERC-TVB
+tracker=https://github.com/MathieuChailloux/MitiConnect/issues
+repository=https://github.com/MathieuChailloux/MitiConnect
 # End of mandatory metadata
 
 # Recommended items:
 
-hasProcessingProvider=no
+hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=ecologocial, continuities, landscape, avoid, minimize, mitigate
+tags=ecologocial, continuities, connectivity, landscape, mitigation, hierarchy, graph
 
 homepage=
 category=Plugins

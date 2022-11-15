@@ -3,7 +3,10 @@ PLUGINNAME=MitiConnect
 ARCHIVE_DIR=$(PLUGINNAME)
 ARCHIVE_NAME=$(PLUGINNAME).zip
 TO_COPY_DIRS=algs help i18n icons steps ui
-SUBMODULE_DIRS=qgis_lib_mc graphab4qgis
+LIB_DIR=qgis_lib_mc
+GRAPHAB_DIR=graphab4qgis
+#SUBMODULE_DIRS=qgis_lib_mc graphab4qgis
+#SUBMODULE_DIRS=qgis_lib_mc
 
 GRAPHAB_EXE=
 
@@ -41,11 +44,19 @@ archive:
 	for d in $(TO_COPY_DIRS); do \
 		cp -r $$d $(ARCHIVE_DIR) ; \
 	done
-	for d in $(SUBMODULE_DIRS); do \
-		cp -r $$d $(ARCHIVE_DIR) ; \
-		rm -rf $(ARCHIVE_DIR)/$$d/.git ; \
-		rm -f $(ARCHIVE_DIR)/$$d/.gitignore ; \
-	done
+	# LIB directory
+	cp -r $(LIB_DIR) $(ARCHIVE_DIR)
+	rm -rf $(ARCHIVE_DIR)/$(LIB_DIR)/.git
+	rm -rf $(ARCHIVE_DIR)/$(LIB_DIR)/.gitignore
+	# GRAPHAB directory
+	cp -r $(GRAPHAB_DIR) $(ARCHIVE_DIR)
+	rm -rf $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/.git
+	rm -rf $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/.gitignore
+	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/README.md
+	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/LICENSE
+	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/pylintrc
+	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/metadata.txt
+	#rm -rf $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/README.md
 	#rm -f $(ARCHIVE_DIR)/graphab4qgis/
 	# for d in $(TESTCASES); do \
 		# rm -rf $(ARCHIVE_DIR)/sample_data/EPCI_Clermontais_2012/$$d/outputs ; \
@@ -62,7 +73,7 @@ archive:
 	cp *.md $(ARCHIVE_DIR)
 	cp LICENSE $(ARCHIVE_DIR)
 	cp metadata.txt $(ARCHIVE_DIR)
-	rm -f $(ARCHIVE_DIR)/resources.py
+	#rm -f $(ARCHIVE_DIR)/resources.py
 	#cp resources.qrc $(ARCHIVE_DIR)
 	echo "$(PLUGINNAME) commit number "  > $(COMMIT_FILE)
 	echo $(COMMIT_ID) >> $(COMMIT_FILE)

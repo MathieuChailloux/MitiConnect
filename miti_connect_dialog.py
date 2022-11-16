@@ -23,11 +23,12 @@
 """
 
 import os, sys
+from builtins import IOError, OSError
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.gui import QgsFileWidget
-from qgis.core import Qgis, QgsProcessingContext
+from qgis.core import Qgis, QgsProcessingContext, QgsProcessingException
 import traceback
 from io import StringIO
 
@@ -260,8 +261,10 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
     # Exception hook, i.e. function called when exception raised.
     # Displays traceback and error message in log tab.
     # Ignores CustomException : exception raised from MitiConnect and already displayed.
-    def exceptionHook(self,excType, excValue, tracebackobj):
+    def pluginExcHook(self,excType, excValue, tracebackobj):
         self.feedback.pushDebugInfo("exceptionHook")
+        self.feedback.pushDebugInfo(str(excType))
+        self.feedback.pushDebugInfo(str(excType.__name__))
         tbinfofile = StringIO()
         traceback.print_tb(tracebackobj, None, tbinfofile)
         tbinfofile.seek(0)
@@ -278,6 +281,16 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
             self.feedback.internal_error(str(excValue))
         elif excType == utils.TodoError:
             self.feedback.todo_error(str(excValue))
+        elif excType == QgsProcessingException:
+            self.feedback.pushDebugInfo("Graphab catched")
+            try:
+                msg1 = str(excValue).split("Exception:")[1]
+                msg2 = msg1.split("at org")[0]
+                self.feedback.pushDebugInfo(msg)
+                self.feedback.error_msg(msg2,prefix="Graphab error")
+            except Exception as e:
+                raise e
+                self.feedback.error_msg(msg,prefix="Unexpected error")
         else:
             self.feedback.error_msg(msg,prefix="Unexpected error")
         self.mTabWidget.setCurrentWidget(self.logTab)

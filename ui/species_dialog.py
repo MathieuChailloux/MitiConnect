@@ -72,7 +72,7 @@ class SpeciesItem(abstract_model.DictItem):
     EXTENT_MODE = 'EXTENT_MODE'
     EXTENT_VAL = 'EXTENT_VAL'
     FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
-    DISPLAY_FIELDS = [ ID, FULL_NAME ]
+    DISPLAY_FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE ]
     
     @classmethod
     def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,

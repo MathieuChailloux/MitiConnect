@@ -794,6 +794,19 @@ class LaunchModel(DictModel):
         super().removeItems(indexes)
         self.pluginModel.removeImports(names)
 
+    # BASE_FIELDS = [ SCENARIO, SPECIE, EXTENT, MAX_DISP ]
+    def getHeaderString(self,col):
+        if col < 4:
+            h = [self.tr('Scenario'),
+                self.tr('Specie'),
+                self.tr('Extent'),
+                self.tr('Dispersal capacity')]
+            return h[col]
+        else:
+            return self.fields[col]
+
+
+
 class LaunchConnector(TableToDialogConnector):
 
     def __init__(self,dlg,model):

@@ -28,7 +28,7 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsApplication
-from qgis.utils import qgis_excepthook
+# from qgis.utils import qgis_excepthook
 
 # Initialize Qt resources from file resources.py
 from .resources import *

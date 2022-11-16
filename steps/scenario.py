@@ -198,6 +198,11 @@ class ScenarioModel(DictModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
 
+    def getHeaderString(self,col):
+        h = [self.tr('Name'),
+            self.tr('Description'),
+            self.tr('Base scenario')]
+        return h[col]
 
 class ScenarioConnector(TableToDialogConnector):
 

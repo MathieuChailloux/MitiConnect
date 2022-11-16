@@ -102,6 +102,14 @@ class SpeciesModel(DictModel):
     def mkItemFromDict(self,dict,parent=None,feedback=None):
         return SpeciesItem.fromDict(dict)
 
+    def getHeaderString(self,col):
+        h = [self.tr('ID'),
+            self.tr('Full name'),
+            self.tr('Max dispersal'),
+            self.tr('Min patch area'),
+            self.tr('Land use ID')]
+        return h[col]
+
 
 class SpeciesConnector(TableToDialogConnector):
 

@@ -317,7 +317,7 @@ class ImportModel(DictModel):
             self.tr('Input layer'),
             self.tr('Value'),
             self.tr('Status')]
-        return h[col] 
+        return h[col]
         
     # def mkItemFromDict(self,dict,parent=None,feedback=None):
         # item = ImportItem.fromDict(dict=dict,feedback=self.feedback)
@@ -503,6 +503,10 @@ class LanduseModel(DictModel):
     def mkItemFromDict(self,dict,feedback=None):
         return LanduseItem(dict)
         
+    def getHeaderString(self,col):
+        h = [self.tr('Name'),
+            self.tr('Imports')]
+        return h[col]
 
 class LanduseConnector(AbstractConnector):
 

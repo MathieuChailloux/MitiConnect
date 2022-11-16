@@ -453,15 +453,19 @@ class LaunchModel(DictModel):
                     i.dict[metricStr] = None
         projName = self.getItemGraphabProjectName(item)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
-        if gProj:
-            if step <= 5:
+        if step <= 5:
+            if gProj:
                 graphName = self.getItemGraphName(item)
                 # graph = getGraph(gProj,graphName)
                 # if graph:
                     # qgsUtils.removeGroups(graphName)
                 gProj.removeGraph(graphName)
+            projDir = self.getItemGraphabProjectDir(item)
+            self.feedback.pushDebugInfo("Deleting " + str(projDir))
+            shutil.rmtree(projDir,ignore_errors=True)
                 # assert(False)
-            if step <= 4:
+        if step <= 4:
+            if gProj:
                 self.feedback.pushDebugInfo("proj")
                 linksetName = self.getItemLinksetName(item)
                 # linkset = getLinkset(gProj,linksetName)

@@ -132,11 +132,12 @@ class FrictionModel(ExtensiveTableModel):
         self.feedback.pushDebugInfo("valuesToAdd " + str(valuesToAdd))
         self.addRowFromImport(valuesToAdd,scName)
         
-    def getHeaderStr(self,col):
+    def getHeaderString(self,col):
         if col < 2:
             h = [self.tr('Value'),self.tr('Description')]
-            return h
-        return None
+            return h[col]
+        else:
+            return self.fields[col]
         
     def flags(self, index):
         if index.column() in [0]:

@@ -181,12 +181,12 @@ class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
             n = self.projectName.text()
             if not n.isalnum():
                 feedbacks.launchDialog(self,self.tr("Wrong value"),
-                    self.tr("Project name '" + str(n) + "' must be an alphanumeric string"))
+                    self.tr("Project name '") + str(n) + str("' must be an alphanumeric string"))
                 continue
             joined = utils.joinPath(d,n)
             if utils.fileExists(joined):
                 feedbacks.launchDialog(self,self.tr("Wrong value"),
-                    self.tr("Directory '" + str(joined) + "' already exists"))
+                    self.tr("Directory '") + str(joined) + str("' already exists"))
                 continue
             return (d,n,joined)
         return None

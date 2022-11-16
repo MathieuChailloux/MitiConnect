@@ -44,14 +44,8 @@ class ImportItem(DictItemWithChild):
     INPUT = 'INPUT'
     MODE = 'MODE'
     VALUE = 'VALUE'
-    STATUS = 'STATUS'
-    DISPLAY_FIELDS = [ NAME, INPUT, VALUE, STATUS ]
+    DISPLAY_FIELDS = [ NAME, INPUT, VALUE ]
     FIELDS = DISPLAY_FIELDS
-    
-    INPUT_IDX = 0
-    MODE_IDX = 1
-    VALUE_IDX = 2
-    STATUS_IDX = 3
         
     @staticmethod
     def getItemClass(childTag):
@@ -315,8 +309,7 @@ class ImportModel(DictModel):
     def getHeaderString(self,col):
         h = [self.tr('Name'),
             self.tr('Input layer'),
-            self.tr('Value'),
-            self.tr('Status')]
+            self.tr('Value')]
         return h[col]
         
     # def mkItemFromDict(self,dict,parent=None,feedback=None):

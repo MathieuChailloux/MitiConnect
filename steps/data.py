@@ -64,8 +64,7 @@ class ImportItem(DictItemWithChild):
         dict = { ImportItem.NAME : dlgItem.getName(),
             ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
             ImportItem.MODE : is_vector,
-            ImportItem.VALUE : val,
-            ImportItem.STATUS : False }
+            ImportItem.VALUE : val }
         return dict 
         
     def getName(self):

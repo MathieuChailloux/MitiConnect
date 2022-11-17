@@ -127,15 +127,11 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     MODEL = 'MODEL'
     BURN_VAL = 'BURN_VAL'
     # DISPLAY_FIELDS = ['NAME','BASE']
-    STATUS_LANDUSE = 'LANDUSE'
-    STATUS_FRICTION = 'FRICTION'
-    STATUS_GRAPH = 'GRAPH'
     
     LANDUSE_MODE = 0
     
     BASE_FIELDS = [ NAME, DESCR, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
-    #STATUS_FIELDS = [ STATUS_LANDUSE, STATUS_FRICTION, STATUS_GRAPH ]
     FIELDS = BASE_FIELDS + RECLASS_FIELDS
     DISPLAY_FIELDS = BASE_FIELDS
     
@@ -150,14 +146,12 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     def fromValues(cls, name, descr="", layer=None, base=None,
             baseLayer=None,
             extentFlag=True, mode=0, reclassField=None, burnVal=1,
-            statusLanduse=False,statusFrict=False,statusGraph=False,
             feedback=None):
         dict = { cls.NAME : name, cls.DESCR : descr, cls.BASE : base,
             cls.BASE_LAYER : baseLayer, cls.LAYER : layer,
             cls.EXTENT_FLAG : extentFlag, cls.MODE : mode,
             cls.RECLASS_FIELD : reclassField,
-            cls.BURN_VAL : burnVal, cls.STATUS_LANDUSE : statusLanduse,
-            cls.STATUS_FRICTION : statusFrict, cls.STATUS_GRAPH : statusGraph }
+            cls.BURN_VAL : burnVal }
         return cls(dict, feedback=feedback)
         
     def __deepcopy__(self):
@@ -191,12 +185,6 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.dict[self.BURN_VAL]
     def getBurnField(self):
         return self.dict[self.RECLASS_FIELD]
-    def getStatusLanduse(self):
-        return bool(self.dict[self.STATUS_LANDUSE])
-    def getStatusFriction(self):
-        return bool(self.dict[self.STATUS_FRICTION])
-    def getStatusGraph(self):
-        return bool(self.dict[self.STATUS_GRAPH])
     def isInitialState(self):
         return self.getMode() == 3
     def isLanduseMode(self):
@@ -241,8 +229,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             # val = None
         # dict = { ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
             # ImportItem.MODE : is_vector,
-            # ImportItem.VALUE : val,
-            # ImportItem.STATUS : False }
+            # ImportItem.VALUE : val }
                 
     # Mandatory to redefine it for import links reasons
     @classmethod

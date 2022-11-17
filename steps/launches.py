@@ -460,10 +460,6 @@ class LaunchModel(DictModel):
                 # if graph:
                     # qgsUtils.removeGroups(graphName)
                 gProj.removeGraph(graphName)
-            projDir = self.getItemGraphabProjectDir(item)
-            self.feedback.pushDebugInfo("Deleting " + str(projDir))
-            shutil.rmtree(projDir,ignore_errors=True)
-                # assert(False)
         if step <= 4:
             if gProj:
                 self.feedback.pushDebugInfo("proj")
@@ -472,10 +468,13 @@ class LaunchModel(DictModel):
                 # if linkset:
                 gProj.removeLinkset(linksetName)
         if step <=3:
-            project = self.getItemGraphabProjectFile(item)
-            if os.path.isfile(project):
-                projName = self.getItemGraphabProjectName(item)
-                qgsUtils.removeGroups(projName)
+            #project = self.getItemGraphabProjectFile(item)
+            #if os.path.isfile(project):
+            projName = self.getItemGraphabProjectName(item)
+            qgsUtils.removeGroups(projName)
+            projDir = self.getItemGraphabProjectDir(item)
+            self.feedback.pushDebugInfo("Deleting " + str(projDir))
+            shutil.rmtree(projDir,ignore_errors=True)
         if step <= 2:
             frPath = self.getItemFriction(item)
             self.clearFile(frPath)

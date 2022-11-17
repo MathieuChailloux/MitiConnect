@@ -81,7 +81,7 @@ archive:
 	echo $(LIB_COMMIT) >> $(COMMIT_FILE)
 	echo $(GRAPHAB_COMMIT) >> $(COMMIT_FILE)
 	zip -r $(ARCHIVE_NAME) $(ARCHIVE_DIR)
-	#rm -rf $(ARCHIVE_DIR)
+	rm -rf $(ARCHIVE_DIR)
 
 ui:
 	pyuic5 -o MitiConnect_dialog.py MitiConnect_dialog.ui

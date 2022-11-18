@@ -112,6 +112,11 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.data_item = raster_data_item
         self.class_model = class_model
         self.setupUi(self)
+        self.initGui()
+        self.updateUi()
+        self.connectComponents()
+        
+    def initGui(self):
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.rasterDataLayerCombo,self.rasterDataLayerOpen)
         self.layerComboDlg.setRasterMode()
@@ -119,8 +124,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.reclass_model = raster_data_item.child
         else:
             self.reclass_model = ReclassModel(feedback=self.feedback)
-        self.updateUi()
-        self.connectComponents()
+        self.rasterDataLayerOpen.setFilter(qgsUtils.getRasterFilters())
 
     def connectComponents(self):
         self.rasterDataDialogView.setModel(self.reclass_model)

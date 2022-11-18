@@ -92,15 +92,18 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.feedback=parent.feedback
         self.data_item = vector_data_item
         self.setupUi(self)
-        self.layerComboDlg = qgsUtils.LayerComboDialog(self,
-            self.vectorLayerCombo,self.vectorLayerFile)
-        self.layerComboDlg.setVectorMode()
+        self.initGui()
         self.connectComponents()
         self.updateUi()
 
     # def mkItem(self):
         # layer = self.vectorLayerFile.fileInfo()
-        
+
+    def initGui(self):
+        self.layerComboDlg = qgsUtils.LayerComboDialog(self,
+            self.vectorLayerCombo,self.vectorLayerFile)
+        self.layerComboDlg.setVectorMode()
+        self.vectorLayerFile.setFilter(qgsUtils.getVectorFilters())
         
     def connectComponents(self):
         self.vectorLayerCombo.layerChanged.connect(self.setLayer)

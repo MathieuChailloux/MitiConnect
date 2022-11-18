@@ -103,7 +103,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.vectorLayerCombo,self.vectorLayerFile)
         self.layerComboDlg.setVectorMode()
-        self.vectorLayerFile.setFilter(qgsUtils.getVectorFilters())
+        #self.vectorLayerFile.setFilter(qgsUtils.getVectorFilters())
         
     def connectComponents(self):
         self.vectorLayerCombo.layerChanged.connect(self.setLayer)

@@ -124,7 +124,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.reclass_model = raster_data_item.child
         else:
             self.reclass_model = ReclassModel(feedback=self.feedback)
-        self.rasterDataLayerOpen.setFilter(qgsUtils.getRasterFilters())
+        #self.rasterDataLayerOpen.setFilter(qgsUtils.getRasterFilters())
 
     def connectComponents(self):
         self.rasterDataDialogView.setModel(self.reclass_model)

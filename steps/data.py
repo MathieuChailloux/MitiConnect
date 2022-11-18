@@ -55,7 +55,7 @@ class ImportItem(DictItemWithChild):
     def childToDict(dlgItem):
         is_vector = type(dlgItem) is VectorDlgItem
         if is_vector:
-            if dlgItem.getBurnMode():
+            if dlgItem.isBurnFieldMode():
                 val = dlgItem.getBurnField()
             else:
                 val = dlgItem.getBurnVal()
@@ -206,6 +206,9 @@ class ImportModel(DictModel):
                 selected = qgsUtils.mkTmpPath(name + '_selection.gpkg')
                 qgsTreatments.extractByExpression(input_path,expr,selected,
                     context=context,feedback=feedback)
+                selected_layer = qgsUtils.loadVectorLayer(selected)
+                if selected_layer.featureCount() == 0:
+                    self.feedback.user_error("Empty selection, please verify expression")
             else:
                 selected = input_path
             # Bufferization
@@ -217,7 +220,7 @@ class ImportModel(DictModel):
             else:
                 buffered = selected
             # Burn by field mode
-            if childItem.getBurnMode():
+            if childItem.isBurnFieldMode():
                 burnField = childItem.getBurnField()
                 name = item.getName()
                 unique_path = qgsUtils.mkTmpPath(name + '_unique.gpkg')
@@ -241,7 +244,8 @@ class ImportModel(DictModel):
                     self.feedback.pushDebugInfo("initVal = " + str(initVal))
                     self.feedback.pushDebugInfo("initVal type = " + str(initVal.__class__.__name__))
                     if len(reclassDict) > 0:
-                        self.feedback.pushDebugInfo("reclassDict type = " + str(list(reclassDict)[0].__class__.__name__))
+                        self.feedback.pushDebugInfo("reclassDict type = "
+                            + str(list(reclassDict)[0].__class__.__name__))
                     tmpVal = f[outField]
                     outVal = reclassDict[initVal]
                     row = [tmpVal,tmpVal,outVal]

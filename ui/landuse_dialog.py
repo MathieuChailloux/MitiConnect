@@ -27,7 +27,7 @@ import os, sys
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from ..qgis_lib_mc import abstract_model, feedbacks
+from ..qgis_lib_mc import abstract_model, feedbacks, utils
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -52,7 +52,8 @@ class LanduseDialogModel(abstract_model.DictModel):
     FIELDS = [ NAME ]
     
     def __init__(self, name, string_list,pluginModel):
-        itemClass = getattr(sys.modules[__name__], LanduseDialogItem.__name__)
+        itemClass = utils.getModuleRelativePath(__name__,LanduseDialogItem.__name__)
+        #itemClass = getattr(sys.modules[__name__], LanduseDialogItem.__name__)
         super().__init__(itemClass=itemClass,feedback = pluginModel.feedback)
         self.pluginModel = pluginModel
         # self.feedback = pluginModel.feedback

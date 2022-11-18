@@ -120,6 +120,9 @@
         <property name="text">
          <string>Species identifier</string>
         </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="6" column="0">
@@ -132,6 +135,9 @@
         </property>
         <property name="text">
          <string>Habitat codes</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -172,6 +178,9 @@
         <property name="text">
          <string>Land use layer</string>
         </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="2" column="0">
@@ -184,6 +193,9 @@
         </property>
         <property name="text">
          <string>Dispersal distance</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -227,6 +239,9 @@
         <property name="text">
          <string>Species group</string>
         </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -239,6 +254,9 @@
         </property>
         <property name="text">
          <string>Species complete name</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -265,6 +283,9 @@
         </property>
         <property name="text">
          <string>Minimal patch area</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

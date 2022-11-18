@@ -83,8 +83,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>895</width>
-            <height>624</height>
+            <width>903</width>
+            <height>631</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -94,10 +94,99 @@
            </sizepolicy>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0">
+            <widget class="QToolButton" name="openProject">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Open project</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources.qrc">
+               <normaloff>:/plugins/MitiConnect/icons/mActionFileOpen.svg</normaloff>:/plugins/MitiConnect/icons/mActionFileOpen.svg</iconset>
+             </property>
+             <property name="autoRaise">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="8">
+            <widget class="QToolButton" name="langFr">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources.qrc">
+               <normaloff>:/plugins/MitiConnect/icons/frFlag.svg</normaloff>:/plugins/MitiConnect/icons/frFlag.svg</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <property name="autoRaise">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="5">
             <widget class="QLabel" name="projectName">
              <property name="text">
               <string>No project loaded</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="7">
+            <widget class="QToolButton" name="langEn">
+             <property name="toolTip">
+              <string>English</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources.qrc">
+               <normaloff>:/plugins/MitiConnect/icons/enFlag.svg</normaloff>:/plugins/MitiConnect/icons/enFlag.svg</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <property name="autoRaise">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QToolButton" name="aboutButton">
+             <property name="toolTip">
+              <string>About</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources.qrc">
+               <normaloff>:/plugins/MitiConnect/icons/iconHelpConsole.svg</normaloff>:/plugins/MitiConnect/icons/iconHelpConsole.svg</iconset>
+             </property>
+             <property name="autoRaise">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -147,108 +236,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="7">
-            <widget class="QToolButton" name="langEn">
-             <property name="toolTip">
-              <string>English</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../resources.qrc">
-               <normaloff>:/plugins/MitiConnect/icons/enFlag.svg</normaloff>:/plugins/MitiConnect/icons/enFlag.svg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-             <property name="autoRaise">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="6">
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>790</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="0">
-            <widget class="QToolButton" name="openProject">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Open project</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../resources.qrc">
-               <normaloff>:/plugins/MitiConnect/icons/mActionFileOpen.svg</normaloff>:/plugins/MitiConnect/icons/mActionFileOpen.svg</iconset>
-             </property>
-             <property name="autoRaise">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QToolButton" name="aboutButton">
-             <property name="toolTip">
-              <string>About</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../resources.qrc">
-               <normaloff>:/plugins/MitiConnect/icons/iconHelpConsole.svg</normaloff>:/plugins/MitiConnect/icons/iconHelpConsole.svg</iconset>
-             </property>
-             <property name="autoRaise">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="8">
-            <widget class="QToolButton" name="langFr">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="icon">
-              <iconset resource="../resources.qrc">
-               <normaloff>:/plugins/MitiConnect/icons/frFlag.svg</normaloff>:/plugins/MitiConnect/icons/frFlag.svg</iconset>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-             <property name="autoRaise">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="3">
             <widget class="QToolButton" name="saveProject">
              <property name="sizePolicy">
@@ -271,6 +258,19 @@
               <bool>true</bool>
              </property>
             </widget>
+           </item>
+           <item row="0" column="6">
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>790</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item row="1" column="0" colspan="9">
             <widget class="QTabWidget" name="mTabWidget">
@@ -336,7 +336,7 @@
                      </sizepolicy>
                     </property>
                     <property name="text">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome in MitiConnect !&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://github.com/MathieuChailloux/ erc_tvb_plugin/blob/master/docs/drafts/README.md&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/ erc_tvb_plugin/blob/master/docs/drafts/README.md&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Video tutorials : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLh9oFe6PuPCXgsR9DAxP9uyhp9BEu8X3c&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PL0Wd1JAi6QuHdwALwwJqj5TcfNYvjRbcs&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Configuration should be frequently saved (buttons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; in top left corner).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome in MitiConnect !&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://github.com/MathieuChailloux/MitiConnect&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/MitiConnect&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Video tutorials : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Configuration should be frequently saved (buttons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; in top left corner).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="wordWrap">
                      <bool>true</bool>
@@ -609,7 +609,7 @@
                              <item>
                               <widget class="QLabel" name="selectionLabel">
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -624,8 +624,14 @@
                                <property name="text">
                                 <string>Import layers</string>
                                </property>
+                               <property name="scaledContents">
+                                <bool>true</bool>
+                               </property>
                                <property name="alignment">
                                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                               </property>
+                               <property name="wordWrap">
+                                <bool>false</bool>
                                </property>
                               </widget>
                              </item>
@@ -878,14 +884,14 @@
                           <item row="0" column="0">
                            <widget class="QLabel" name="label_113">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
                             </property>
                             <property name="minimumSize">
                              <size>
-                              <width>100</width>
+                              <width>0</width>
                               <height>0</height>
                              </size>
                             </property>
@@ -898,6 +904,12 @@
                             </property>
                             <property name="text">
                              <string>Merge data</string>
+                            </property>
+                            <property name="scaledContents">
+                             <bool>true</bool>
+                            </property>
+                            <property name="wordWrap">
+                             <bool>false</bool>
                             </property>
                            </widget>
                           </item>
@@ -1143,14 +1155,14 @@
                          <item>
                           <widget class="QLabel" name="label_111">
                            <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
                            </property>
                            <property name="minimumSize">
                             <size>
-                             <width>180</width>
+                             <width>0</width>
                              <height>0</height>
                             </size>
                            </property>
@@ -1164,6 +1176,9 @@
                            <property name="text">
                             <string>Classes</string>
                            </property>
+                           <property name="scaledContents">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                          <item>
@@ -1172,7 +1187,7 @@
                             <enum>Qt::Horizontal</enum>
                            </property>
                            <property name="sizeType">
-                            <enum>QSizePolicy::MinimumExpanding</enum>
+                            <enum>QSizePolicy::Expanding</enum>
                            </property>
                            <property name="sizeHint" stdset="0">
                             <size>
@@ -1316,7 +1331,7 @@
                       <item>
                        <widget class="QLabel" name="label_102">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
@@ -1330,6 +1345,12 @@
                         </property>
                         <property name="text">
                          <string>Species</string>
+                        </property>
+                        <property name="scaledContents">
+                         <bool>true</bool>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>false</bool>
                         </property>
                        </widget>
                       </item>
@@ -1367,8 +1388,8 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</normaloff>:/plugins/BioDispersal/icons/symbologyAdd.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/symbologyAdd.svg</normaloff>:/plugins/MitiConnect/icons/symbologyAdd.svg</iconset>
                         </property>
                         <property name="autoRaise">
                          <bool>true</bool>
@@ -1396,8 +1417,8 @@
                          <string/>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>../../backups/MitiConnect/icons/mActionDeleteSelected.svg</normaloff>../../backups/MitiConnect/icons/mActionDeleteSelected.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</iconset>
                         </property>
                         <property name="autoRaise">
                          <bool>true</bool>
@@ -1489,8 +1510,8 @@
                       <string/>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>:/plugins/BioDispersal/icons/mActionRefresh.svg</normaloff>:/plugins/BioDispersal/icons/mActionRefresh.svg</iconset>
+                      <iconset resource="../resources.qrc">
+                       <normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</iconset>
                      </property>
                      <property name="autoRaise">
                       <bool>true</bool>
@@ -1518,8 +1539,8 @@
                       <string/>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>:/plugins/BioDispersal/icons/mActionFileOpen.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileOpen.svg</iconset>
+                      <iconset resource="../resources.qrc">
+                       <normaloff>:/plugins/MitiConnect/icons/mActionFileOpen.svg</normaloff>:/plugins/MitiConnect/icons/mActionFileOpen.svg</iconset>
                      </property>
                      <property name="autoRaise">
                       <bool>true</bool>
@@ -1547,8 +1568,8 @@
                       <string/>
                      </property>
                      <property name="icon">
-                      <iconset>
-                       <normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</normaloff>:/plugins/BioDispersal/icons/mActionFileSaveAs.svg</iconset>
+                      <iconset resource="../resources.qrc">
+                       <normaloff>:/plugins/MitiConnect/icons/mActionFileSaveAs.svg</normaloff>:/plugins/MitiConnect/icons/mActionFileSaveAs.svg</iconset>
                      </property>
                      <property name="autoRaise">
                       <bool>true</bool>
@@ -2197,33 +2218,36 @@
                       <enum>QFrame::Raised</enum>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_17">
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>9</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                       <number>1</number>
-                      </property>
                       <item row="0" column="0">
                        <widget class="QLabel" name="bufferInGroupLabel_18">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>150</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
                         <property name="text">
                          <string>Select scenarios</string>
+                        </property>
+                        <property name="scaledContents">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
                       <item row="0" column="1" colspan="3">
                        <widget class="QgsCheckableComboBox" name="scenariosSelection">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
                         <property name="minimumSize">
                          <size>
                           <width>0</width>
@@ -2290,7 +2314,7 @@
                       <item row="1" column="0">
                        <widget class="QLabel" name="bufferInGroupLabel_19">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
@@ -2298,10 +2322,19 @@
                         <property name="text">
                          <string>Select species</string>
                         </property>
+                        <property name="scaledContents">
+                         <bool>true</bool>
+                        </property>
                        </widget>
                       </item>
                       <item row="1" column="1" colspan="3">
                        <widget class="QgsCheckableComboBox" name="speciesSelection">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
                         <property name="minimumSize">
                          <size>
                           <width>0</width>
@@ -2322,13 +2355,16 @@
                       <item row="2" column="0">
                        <widget class="QLabel" name="bufferInGroupLabel_20">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="text">
                          <string>Base layers</string>
+                        </property>
+                        <property name="scaledContents">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
@@ -2361,8 +2397,8 @@
                          <string>1 - Land Use </string>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/play.svg</normaloff>:/plugins/MitiConnect/icons/play.svg</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -2401,8 +2437,8 @@
                          <string>2 - Friction</string>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/play.svg</normaloff>:/plugins/MitiConnect/icons/play.svg</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -2453,6 +2489,9 @@
                            <property name="text">
                             <string>Local metric</string>
                            </property>
+                           <property name="scaledContents">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                          <item>
@@ -2491,6 +2530,9 @@
                            <property name="text">
                             <string>Global metric</string>
                            </property>
+                           <property name="scaledContents">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                          <item>
@@ -2527,13 +2569,16 @@
                       <item row="3" column="0">
                        <widget class="QLabel" name="bufferInGroupLabel_21">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="text">
                          <string>Graphab</string>
+                        </property>
+                        <property name="scaledContents">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
@@ -2566,8 +2611,8 @@
                          <string>3 - Project</string>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/play.svg</normaloff>:/plugins/MitiConnect/icons/play.svg</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -2606,8 +2651,8 @@
                          <string>4 - Linkset</string>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/play.svg</normaloff>:/plugins/MitiConnect/icons/play.svg</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -2646,8 +2691,8 @@
                          <string>5 - Graph</string>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/play.svg</normaloff>:/plugins/MitiConnect/icons/play.svg</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -2676,13 +2721,16 @@
                       <item row="5" column="0">
                        <widget class="QLabel" name="bufferInGroupLabel_22">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="text">
                          <string>Metrics</string>
+                        </property>
+                        <property name="scaledContents">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
@@ -2715,8 +2763,8 @@
                          <string>6 - Spatialize</string>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/play.svg</normaloff>:/plugins/MitiConnect/icons/play.svg</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -2755,8 +2803,8 @@
                          <string>7 - Compare scenarios</string>
                         </property>
                         <property name="icon">
-                         <iconset>
-                          <normaloff>:/plugins/BioDispersal/icons/play.svg</normaloff>:/plugins/BioDispersal/icons/play.svg</iconset>
+                         <iconset resource="../resources.qrc">
+                          <normaloff>:/plugins/MitiConnect/icons/play.svg</normaloff>:/plugins/MitiConnect/icons/play.svg</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -2928,18 +2976,18 @@
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Nom étape&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Description générale&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Ceci est une description générale&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Description détaillée&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;  &lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;param1&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; : description du param 1&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;  &lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;param2&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; : description du param 2&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Ceci est un test&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600;&quot;&gt;Nom étape&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600;&quot;&gt;Description générale&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;Ceci est une description générale&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600;&quot;&gt;Description détaillée&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600;&quot;&gt;  &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-style:italic;&quot;&gt;param1&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; : description du param 1&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600;&quot;&gt;  &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-style:italic;&quot;&gt;param2&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; : description du param 2&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;Ceci est un test&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="openLinks">
           <bool>false</bool>
@@ -3071,8 +3119,6 @@ p, li { white-space: pre-wrap; }
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

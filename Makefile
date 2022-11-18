@@ -21,7 +21,7 @@ COMMIT_FILE = $(PLUGINNAME)/git-versions.txt
 
 TESTCASES=
 
-.PHONY: archive
+.PHONY: archive ui
 
 default: compile
 
@@ -84,4 +84,9 @@ archive:
 	rm -rf $(ARCHIVE_DIR)
 
 ui:
-	pyuic5 -o MitiConnect_dialog.py MitiConnect_dialog.ui
+	pyuic5 -o ui/miti_connect_dialog_base.py ui/miti_connect_dialog_base.ui
+	pyuic5 -o ui/vector_data_dialog_ui.py ui/vector_data_dialog.ui
+	pyuic5 -o ui/raster_data_dialog_ui.py ui/raster_data_dialog.ui
+	pyuic5 -o ui/landuse_dialog_ui.py ui/landuse_dialog.ui
+	pyuic5 -o ui/species_dialog_ui.py ui/species_dialog.ui
+	pyuic5 -o ui/scenario_dialog_ui.py ui/scenario_dialog.ui

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>373</width>
+    <width>380</width>
     <height>319</height>
    </rect>
   </property>
@@ -14,23 +14,94 @@
    <string>Create new land use layer</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="2" colspan="3">
-    <widget class="QDialogButtonBox" name="buttonBox">
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="label">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>25</height>
+       <height>16777215</height>
       </size>
      </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+     <property name="text">
+      <string>Land use name</string>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="2" column="1" rowspan="2" colspan="4">
+   <item row="0" column="2" colspan="3">
+    <widget class="QLineEdit" name="landuseDialogName">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>266</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="3">
+    <widget class="QToolButton" name="landuseDialogReload">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</iconset>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QToolButton" name="landuseDialogRemove">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</iconset>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QToolButton" name="landuseDialogUp">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../icons/up-arrow.png</normaloff>../icons/up-arrow.png</iconset>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" rowspan="2" colspan="3">
     <widget class="QTableView" name="landuseDialogView">
      <property name="minimumSize">
       <size>
@@ -49,72 +120,24 @@
       <iconset>
        <normaloff>../icons/down-arrow.png</normaloff>../icons/down-arrow.png</iconset>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="2" colspan="3">
-    <widget class="QLineEdit" name="landuseDialogName">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>20</height>
-      </size>
+     <property name="autoRaise">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="1" column="3">
-    <widget class="QToolButton" name="landuseDialogReload">
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="label">
-     <property name="minimumSize">
-      <size>
-       <width>100</width>
-       <height>0</height>
-      </size>
-     </property>
+   <item row="4" column="2" colspan="3">
+    <widget class="QDialogButtonBox" name="buttonBox">
      <property name="maximumSize">
       <size>
-       <width>100</width>
-       <height>16777215</height>
+       <width>16777215</width>
+       <height>25</height>
       </size>
      </property>
-     <property name="text">
-      <string>Land use name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="3">
-    <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>266</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="2" column="0">
-    <widget class="QToolButton" name="landuseDialogUp">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icons/up-arrow.png</normaloff>../icons/up-arrow.png</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4">
-    <widget class="QToolButton" name="landuseDialogRemove">
-     <property name="text">
-      <string>...</string>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
      </property>
     </widget>
    </item>

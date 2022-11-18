@@ -142,7 +142,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.vectorFieldMode.setChecked(is_field_mode)
         self.vectorFieldCombo.setEnabled(is_field_mode)
         self.vectorFixedMode.setChecked(not is_field_mode)
-        self.vectorFixedValue.setEnabled(not is_field_mode)
+        #self.vectorFixedValue.setEnabled(not is_field_mode)
         
     def setFieldMode(self,checked):
         self.setBurnMode(checked)
@@ -181,7 +181,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.BURN_MODE] = burn_field_mode
             fieldname = self.vectorFieldCombo.currentField()
             dict[VectorDlgItem.BURN_FIELD] = fieldname
-            if not fieldname:
+            if burn_field_mode and not fieldname:
                 feedbacks.paramError("No field selected")
                 continue
             if not burn_field_mode:

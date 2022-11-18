@@ -7,45 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>388</width>
-    <height>119</height>
+    <height>95</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Create new scenario from landuse</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="minimumSize">
-      <size>
-       <width>90</width>
-       <height>0</height>
-      </size>
+   <item row="2" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-     <property name="maximumSize">
-      <size>
-       <width>100</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Scenario name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="scName">
-     <property name="minimumSize">
-      <size>
-       <width>200</width>
-       <height>20</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>20</height>
-      </size>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
@@ -66,6 +41,9 @@
      <property name="text">
       <string>Landuse layer</string>
      </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item row="1" column="1">
@@ -84,11 +62,8 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_2">
      <property name="minimumSize">
       <size>
        <width>90</width>
@@ -102,18 +77,18 @@
       </size>
      </property>
      <property name="text">
-      <string>Landuse layer</string>
+      <string>Scenario name</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QgsFileWidget" name="scLayer">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="scName">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>200</width>
        <height>20</height>
       </size>
      </property>
@@ -125,25 +100,8 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QgsFileWidget</class>
-   <extends>QWidget</extends>
-   <header>qgsfilewidget.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

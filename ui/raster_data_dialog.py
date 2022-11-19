@@ -120,8 +120,8 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.rasterDataLayerCombo,self.rasterDataLayerOpen)
         self.layerComboDlg.setRasterMode()
-        if raster_data_item:
-            self.reclass_model = raster_data_item.child
+        if self.data_item:
+            self.reclass_model = self.data_item.child
         else:
             self.reclass_model = ReclassModel(feedback=self.feedback)
         #self.rasterDataLayerOpen.setFilter(qgsUtils.getRasterFilters())

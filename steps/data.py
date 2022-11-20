@@ -138,7 +138,8 @@ class ImportModel(DictModel):
                 values = qgsTreatments.getVectorUniqueVals(layer,fieldname,
                     feedback=self.feedback)
             else:
-                val = item.child.getBurnVal()
+                #val = item.child.getBurnVal()
+                val = None
                 values = [val]
         else:
             values = item.getValues()

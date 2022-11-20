@@ -189,9 +189,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
                 continue
             if not burn_field_mode:
                 burnVal = self.vectorFixedValue.value()
-                if burnVal <= 0:
-                    feedbacks.paramError("Burn value must be strictly positive")
-                    continue
+                #if burnVal <= 0:
+                #    feedbacks.paramError("Burn value must be strictly positive")
+                #    continue
             dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()

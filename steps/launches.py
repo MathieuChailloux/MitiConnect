@@ -513,10 +513,10 @@ class LaunchModel(DictModel):
             # Get base layer
             isSc = self.pluginModel.scenarioModel.getInitialState()
             isName = isSc.getName()
-            isItem = self.getItemFromNames(isName,spName,isName)
+            isItem = self.getItemFromNames(isName,spName,extName)
             isLayer = self.getItemLanduse(isItem)
             if not os.path.isfile(isLayer):
-                feedback.user_error("Landuse layer does not exit for " + str(isItem))
+                feedback.user_error("Landuse layer %s does not exist for %s"%(isLayer,isItem))
             # Apply landuse modifications
             scHierarchy = self.pluginModel.scenarioModel.getItemHierarchy(scItem)
             feedback.pushDebugInfo("scHierarchy = %s"%([s.getName() for s in scHierarchy]))
@@ -651,7 +651,7 @@ class LaunchModel(DictModel):
                     self.clearStep(item,4)
                     # gProj.removeLinkset(linksetName)
                 else:
-                    linksetGroup = gProj.projectGroup.children()[1]
+                    linksetGroup = gProj.getLinksetGraph()
                     for layer in linksetGroup.children():
                         if layer.name() == linksetName:
                             layer.setItemVisibilityChecked(True)
@@ -703,7 +703,7 @@ class LaunchModel(DictModel):
                     # gProj.removeGraph(graphName)
                     # assert(False)
                 else:
-                    graphsGroup = gProj.projectGroup.children()[0]
+                    graphsGroup = gProj.getGraphGroup()
                     graphsGroup.setItemVisibilityChecked(True)
                     for graphGroup in graphsGroup.children():
                         if graphGroup.name() == graphName:

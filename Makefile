@@ -56,6 +56,7 @@ archive:
 	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/LICENSE
 	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/pylintrc
 	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/metadata.txt
+	rm -f $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/processing/graphab-2.8.0.jar
 	#rm -rf $(ARCHIVE_DIR)/$(GRAPHAB_DIR)/README.md
 	#rm -f $(ARCHIVE_DIR)/graphab4qgis/
 	# for d in $(TESTCASES); do \

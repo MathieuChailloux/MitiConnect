@@ -291,8 +291,10 @@ class LaunchModel(DictModel):
         if not scExtentLayers:
             extPath = maxExtent
         else:
-            extPath = qgsUtils.mkTmpPath("extentsMerged.gpkg")
-            qgsTreatments.mergeVectorLayers(scExtentLayers,crs,extPath,feedback=feedback)
+            mergedPath = qgsUtils.mkTmpPath("extentsMerged.gpkg")
+            qgsTreatments.mergeVectorLayers(scExtentLayers,crs,mergedPath,feedback=feedback)
+            extPath = qgsUtils.mkTmpPath("extentsMergedDissolved.gpkg")
+            qgsTreatments.dissolveLayer(mergedPath,extPath,feedback=feedback)
         # Apply specie extent mode
         spLanduse = self.getSpBaseLanduse(spItem)
         if spItem.isMaxExtentMode() or extItem.isInitialState():
@@ -612,6 +614,7 @@ class LaunchModel(DictModel):
         if not utils.fileExists(friction):
             self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
         codes = spItem.getCodesVal()
+        self.feedback.pushDebugInfo("codes = " + str(codes))
         if not codes:
             self.feedback.user_error("No habitat code specified for specie "
                 + str(spName))

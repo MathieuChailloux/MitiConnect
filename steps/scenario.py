@@ -166,22 +166,28 @@ class ScenarioModel(DictModel):
     def rasterizeLayer(self,item,feedback=None):
         if feedback is None:
             feedback = self.feedback
-        absLayer = self.pluginModel.getOrigPath(item.getLayer())
+        absLayerPath = self.pluginModel.getOrigPath(item.getLayer())
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         name = item.getName()
         toNormPath = qgsUtils.mkTmpPath(name + "_toNorm.tif")
         outPath = qgsUtils.mkTmpPath(name + ".tif")
         mode = item.getMode()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
+        # Reproject if needed
+        absLayer = qgsUtils.loadVectorLayer(absLayerPath)
+        if absLayer.crs() != crs:
+            reprojected = qgsUtils.mkTmpPath(name + "_reprojected.gpkg")
+            qgsTreatments.applyReprojectLayer(absLayerPath,crs,reprojected,feedback=feedback)
+            absLayerPath = reprojected
         if item.isFixedMode():
             # Fixed mode
-            qgsTreatments.applyRasterization(absLayer,toNormPath,
+            qgsTreatments.applyRasterization(absLayerPath,toNormPath,
                 maxExtent,resolution,burn_val=item.getBurnVal(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
         elif item.isFieldMode():
             # Field mode
             rasterPath = qgsUtils.mkTmpPath(name + "_raster.tif")
-            qgsTreatments.applyRasterization(absLayer,rasterPath,
+            qgsTreatments.applyRasterization(absLayerPath,rasterPath,
                 maxExtent,resolution,field=item.getBurnField(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
             qgsTreatments.applyReclassifyByTable(rasterPath,

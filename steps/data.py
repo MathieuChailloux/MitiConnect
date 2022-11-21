@@ -221,6 +221,7 @@ class ImportModel(DictModel):
             else:
                 buffered = selected
             # Burn by field mode
+            raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
             if childItem.isBurnFieldMode():
                 burnField = childItem.getBurnField()
                 name = item.getName()
@@ -230,7 +231,7 @@ class ImportModel(DictModel):
                 qgsTreatments.addUniqueValue(buffered,burnField,outField,
                     unique_path,assoc_path,context=context,feedback=feedback)
                 # Rasterize
-                raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
+                #raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
                 qgsTreatments.applyRasterization(unique_path,raster_path,
                     extent,resolution,field=outField,out_type=min_type,
                     nodata_val=nodata_val,all_touch=all_touch,
@@ -260,10 +261,10 @@ class ImportModel(DictModel):
                 # Burn by fixed value mode
                 burnVal = childItem.getBurnVal()
                 # min_type, nodata_val = Qgis.UInt16, 0
-                qgsTreatments.applyRasterization(input_path,out_path,
+                qgsTreatments.applyRasterization(input_path,raster_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
-                to_norm_path = None
+                to_norm_path = raster_path
         else:
             # Raster mode
             keepValues = False

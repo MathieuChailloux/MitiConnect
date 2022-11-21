@@ -430,7 +430,9 @@ class LaunchModel(DictModel):
         self.layoutChanged.emit()
         return maxDispCost
     def getMaxDispCost(self,item,feedback):
+        self.feedback.pushDebugInfo("getMaxDispCost %s"%(item))
         maxDispCost = item.getMaxDisp()
+        self.feedback.pushDebugInfo("maxDispCost %s"%(maxDispCost))
         if maxDispCost is None:
             maxDispCost = self.computeMaxDispCost(item,feedback)
         return maxDispCost
@@ -441,25 +443,30 @@ class LaunchModel(DictModel):
             qgsUtils.removeLayerFromPath(filename)
             qgsUtils.removeRaster(filename)
     def clearStep(self,item,step=1):
+        self.feedback.pushDebugInfo("clearStep " + str(step))
         if step <= 7:
             metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
             if metricStr in self.fields:
-                for i in self.items:
-                    i.dict[metricStr] = None
+                item.dict[metricStr] = None
+                self.layoutChanged.emit()
         if step <= 6:
             metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
             if metricStr in self.fields:
-                for i in self.items:
-                    i.dict[metricStr] = None
+                item.dict[metricStr] = None
+                self.layoutChanged.emit()
         projName = self.getItemGraphabProjectName(item)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
         if step <= 5:
             if gProj:
                 graphName = self.getItemGraphName(item)
-                # graph = getGraph(gProj,graphName)
-                # if graph:
-                    # qgsUtils.removeGroups(graphName)
+                #graph = getGraph(gProj,graphName)
+                #if graph:
+                #    qgsUtils.removeGroups(graphName)
                 gProj.removeGraph(graphName)
+            self.feedback.pushDebugInfo("SETTING DISP TO NONE " + str(item))
+            item.setMaxDisp(None)
+            self.layoutChanged.emit()
+            #assert(False)
         if step <= 4:
             if gProj:
                 self.feedback.pushDebugInfo("proj")
@@ -691,13 +698,17 @@ class LaunchModel(DictModel):
         linksetName = self.getItemLinksetName(item)
         self.pluginModel.loadProject(project)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        self.feedback.pushDebugInfo("gproj graph")
+        if eraseFlag:
+            self.clearStep(item,5)
         if gProj:
             feedback.pushDebugInfo("gProj")
             graph = getGraph(gProj,graphName)
             if graph:
                 feedback.pushDebugInfo("graph")
                 if eraseFlag:
-                    self.clearStep(item,5)
+                    pass
+                    #self.clearStep(item,5)
                     # feedback.pushDebugInfo("erase")
                     # qgsUtils.removeGroups(graphName)
                     # gProj.removeGraph(graphName)

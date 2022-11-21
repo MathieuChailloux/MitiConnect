@@ -169,12 +169,13 @@ class ScenarioModel(DictModel):
         absLayer = self.pluginModel.getOrigPath(item.getLayer())
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         name = item.getName()
+        toNormPath = qgsUtils.mkTmpPath(name + "_toNorm.tif")
         outPath = qgsUtils.mkTmpPath(name + ".tif")
         mode = item.getMode()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         if item.isFixedMode():
             # Fixed mode
-            qgsTreatments.applyRasterization(absLayer,outPath,
+            qgsTreatments.applyRasterization(absLayer,toNormPath,
                 maxExtent,resolution,burn_val=item.getBurnVal(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
         elif item.isFieldMode():
@@ -184,10 +185,11 @@ class ScenarioModel(DictModel):
                 maxExtent,resolution,field=item.getBurnField(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
             qgsTreatments.applyReclassifyByTable(rasterPath,
-                item.getReclassTable(),outPath,
+                item.getReclassTable(),toNormPath,
                 boundaries_mode=2,feedback=feedback)
         else:
             feedback.user_error("Unexpected scenario mode : " + str(mode))
+        self.pluginModel.normalizeRaster(toNormPath,out_paht=outPath)
         return outPath
                                 
     def updateFromXML(self,root,feedback=None):

@@ -34,6 +34,7 @@ from io import StringIO
 
 from .qgis_lib_mc import feedbacks, log, utils, abstract_model, qgsTreatments
 from .steps import (params, data, species, friction, scenario, launches)#, species, friction, scenarios)
+from .ui import (vector_data_dialog, raster_data_dialog, landuse_dialog, scenario_dialog)
 from . import tabs
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer

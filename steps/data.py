@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
@@ -462,9 +463,9 @@ class LanduseModel(DictModel):
 
     def __init__(self, pluginModel):
         itemClass = getattr(sys.modules[__name__], LanduseItem.__name__)
+        super().__init__(itemClass,feedback=pluginModel.feedback)
         self.pluginModel = pluginModel
         self.currImportNames = []
-        super().__init__(itemClass,feedback=pluginModel.feedback)
                     
     def updateImportName(self):
         pass

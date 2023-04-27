@@ -277,11 +277,11 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
         if excType == utils.CustomException:
             self.feedback.pushDebugInfo("Ignoring custom exception : " + str(excValue))
         elif excType == utils.UserError:
-            self.feedback.user_error(str(excValue))
+            self.feedback.user_error(str(excValue),fatal=False)
         elif excType == utils.InternalError:
-            self.feedback.internal_error(str(excValue))
+            self.feedback.internal_error(str(excValue),fatal=False)
         elif excType == utils.TodoError:
-            self.feedback.todo_error(str(excValue))
+            self.feedback.todo_error(str(excValue),fatal=False)
         elif excType == QgsProcessingException:
             self.feedback.pushDebugInfo("Graphab catched")
             try:

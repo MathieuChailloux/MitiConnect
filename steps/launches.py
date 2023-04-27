@@ -27,7 +27,12 @@ import os, sys, shutil, time, numpy
 import qgis
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
-from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
+from qgis.core import (
+    Qgis,
+    QgsProcessingContext,
+    QgsProcessingUtils,
+    QgsProcessingAlgRunnerTask,
+    QgsApplication)
 
 from ..qgis_lib_mc import utils
 from ..qgis_lib_mc.utils import CustomException, joinPath
@@ -973,35 +978,52 @@ class LaunchConnector(TableToDialogConnector):
         self.iterateRunExtent(self.landuseItemRun)
         self.feedback.endSection()
         
+    def checkJavaInstalled(self):
+        provider = QgsApplication.processingRegistry().providerById('mitiConnect')
+        java_cmd = provider.getJavaCommand()
+        try:
+            utils.checkCmd(java_cmd)
+        except utils.UserError:
+            msg = self.tr("Command ")
+            msg += str(java_cmd)
+            msg += self.tr(" does not exist, please install Java first")
+            msg += " (https://www.java.com/en/download/)"
+            raise utils.UserError(msg)
+        
     def frictionRun(self):
         self.feedback.beginSection("Computing friction layer(s)")
+        # params = {'INPUT' : 'D:/IRSTEA/ERC/tests/Simon2/wetransfer_perimetre_toulouse_metro_3km-dbf_2022-09-21_1435/UA_2018_L93.shp',
+                   # 'OUTPUT' : 'D:/tmp/tmp.gpkg' }
+        # context = QgsProcessingContext()
+        # alg_name = 'native:dissolve'
+        # alg = QgsApplication.processingRegistry().algorithmById(alg_name)
+        # task = QgsProcessingAlgRunnerTask(alg, params, context, self.feedback)
+        # QgsApplication.taskManager().addTask(task)
         self.iterateRunExtent(self.model.applyItemFriction)
-        # step_feedback = feedbacks.ProgressMultiStepFeedback(len(scenarios),self.feedback)
-        # for cpt, sc in enumerate(scenarios,start=1):
-            # self.model.applyItemFriction(sc,species,feedback=step_feedback)
-            # step_feedback.setCurrentStep(cpt)
         self.feedback.endSection()
-            # for sp in species:
-                # self.feedback.pushDebugInfo("TODO : friction Run "
-                    # + sc.getName() + " - " + sp.getName())
     def graphabProjectRun(self):
         self.feedback.beginSection("Creating Graphab project(s)")
+        self.checkJavaInstalled()
         self.iterateRunExtent(self.model.applyItemGraphabProject)
         self.feedback.endSection()
     def graphabLinksetRun(self):
         self.feedback.beginSection("Creating linkset(s)")
+        self.checkJavaInstalled()
         self.iterateRunExtent(self.model.applyItemGraphabLinkset)
         self.feedback.endSection()
     def graphabGraphRun(self):
         self.feedback.beginSection("Creating graphs(s)")
+        self.checkJavaInstalled()
         self.iterateRunExtent(self.model.applyItemGraphabGraph)
         self.feedback.endSection()
     def computeLocalMetric(self):
         self.feedback.beginSection("Computing local metric(s)")
+        self.checkJavaInstalled()
         self.iterateRunExtent(self.model.computeLocalMetric)
         self.feedback.endSection()
     def computeGlobalMetric(self):
         self.feedback.beginSection("Computing global metric(s)")
+        self.checkJavaInstalled()
         # Get UI state
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()

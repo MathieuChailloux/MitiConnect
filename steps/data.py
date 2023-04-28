@@ -262,7 +262,7 @@ class ImportModel(DictModel):
                 # Burn by fixed value mode
                 burnVal = childItem.getBurnVal()
                 # min_type, nodata_val = Qgis.UInt16, 0
-                qgsTreatments.applyRasterization(input_path,raster_path,
+                qgsTreatments.applyRasterization(buffered,raster_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
                     all_touch=all_touch,context=context,feedback=feedback)
                 to_norm_path = raster_path

@@ -186,7 +186,7 @@ class ImportModel(DictModel):
         self.pluginModel.paramsModel.checkInit()
         input_rel_path = item.getInput()
         input_path = self.pluginModel.getOrigPath(input_rel_path)
-        # input = qgsUtils.loadLayer(input_path)
+        inputLayer = qgsUtils.loadLayer(input_path)
         # out_type = Qgis.Byte
         reclassified = qgsUtils.mkTmpPath('reclassified.tif')
         to_norm_path = None
@@ -203,13 +203,13 @@ class ImportModel(DictModel):
             # Feature selection
             if expr:
                 selected = qgsUtils.mkTmpPath(name + '_selection.gpkg')
-                qgsTreatments.extractByExpression(input_path,expr,selected,
+                qgsTreatments.extractByExpression(inputLayer,expr,selected,
                     context=context,feedback=feedback)
                 selected_layer = qgsUtils.loadVectorLayer(selected)
                 if selected_layer.featureCount() == 0:
                     self.feedback.user_error("Empty selection, please verify expression")
             else:
-                selected = input_path
+                selected = inputLayer
             # Bufferization
             if childItem.isBufferMode():
                 buffered = qgsUtils.mkTmpPath(name + '_buffered.gpkg')

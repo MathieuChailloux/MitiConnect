@@ -55,17 +55,14 @@ class ImportItem(DictItemWithChild):
     @staticmethod
     def childToDict(dlgItem):
         is_vector = type(dlgItem) is VectorDlgItem
-        if is_vector:
-            if dlgItem.isBurnFieldMode():
-                val = dlgItem.getBurnField()
-            else:
-                val = dlgItem.getBurnVal()
-        else:
-            val = None
+        # if is_vector:
+            # val = dlgItem.getValue()
+        # else:
+            # val = None
         dict = { ImportItem.NAME : dlgItem.getName(),
             ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
             ImportItem.MODE : is_vector,
-            ImportItem.VALUE : val }
+            ImportItem.VALUE : dlgItem.getValue() }
         return dict 
         
     def getName(self):
@@ -307,6 +304,10 @@ class ImportModel(DictModel):
         names = [self.items[ind.row()].getName() for ind in indexes]
         super().removeItems(indexes)
         self.pluginModel.removeImports(names)
+    def removeFromName(self,name):
+        self.items = [i for i in self.items if i.getName() != name]
+        self.layoutChanged.emit()
+        self.pluginModel.removeImports(name)
         
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -425,11 +426,21 @@ class ImportConnector(TableToDialogConnector):
             self.feedback.pushDebugInfo("No dlgItem given")
         
     def updateFromDlgItem(self,item,dlgItem):
-        initName, newName = item.getName(), dlgItem.getName()
+        diffName = item.getName() != dlgItem.getName()
         self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
-        item.updateFromDlgItem(dlgItem)
-        if initName != newName:
-            self.model.pluginModel.renameImport(initName,newName)
+        # Diff
+        diffInput = item.getInput() != dlgItem.getLayerPath()
+        isVector = item.isVector()
+        # diffMode = item.getMode() != dlgItem.getMode()
+        diffValue = item.getValue() != dlgItem.getValue()
+        if diffInput or diffValue:
+            # DELETE then create NEW
+            self.model.removeFromName(item.getName())
+            self.addDlgItem(dlgItem,isVector)
+        elif diffName:
+            # Update name 
+            item.updateFromDlgItem(dlgItem)
+            self.model.pluginModel.renameImport(item.getName(),dlgItem.getName())
         
 
 class LanduseItem(DictItem):

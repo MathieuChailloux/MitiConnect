@@ -73,6 +73,13 @@ class VectorDlgItem(abstract_model.DictItem):
     def getBufferExpr(self):
         return self.dict[self.BUFFER_EXPR]
         
+    def getValue(self):
+        if self.isBurnFieldMode():
+            val = self.getBurnField()
+        else:
+            val = self.getBurnVal()
+        return val
+        
     # def getValues(self):
         # if self.isBurnFieldMode():
             # layer = self.getLayerPath()

@@ -90,6 +90,9 @@ class RasterDlgItem(abstract_model.DictItemWithChild):
     def getValues(self):
         return self.getReclassModel().getValues()
         
+    def getValue(self):
+        return None
+        
     @staticmethod
     def getItemClass(childTag):
         return ReclassModel

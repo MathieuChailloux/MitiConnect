@@ -23,6 +23,7 @@
 """
 
 import os, sys, shutil, time, numpy
+from functools import partial
 
 import qgis
 from qgis.PyQt import uic, QtWidgets
@@ -31,7 +32,9 @@ from qgis.core import (
     Qgis,
     QgsProcessingContext,
     QgsProcessingUtils,
+    QgsTask,
     QgsProcessingAlgRunnerTask,
+    QgsProcessingFeedback,
     QgsApplication)
 
 from ..qgis_lib_mc import utils
@@ -80,14 +83,62 @@ def createGraphabProject(landuse,codes,out_dir,project_name,
         'NAMEPROJECT' : project_name,
         'NODATA' : nodata,
         'SIZEPATCHES' : patch_size }
-    return applyProcessingAlg(PROVIDER,'create_project',params,feedback=feedback)
+    context = QgsProcessingContext()
+    res = applyProcessingAlg(PROVIDER,'create_project',params,feedback=feedback,background=True)
+    return res
+def createGraphabProjectBackground(landuse,codes,out_dir,project_name,
+        nodata=None,patch_size=0,feedback=None):
+    # params = {
+        # 'DIRPATH' : out_dir,
+        # 'INPUT' : landuse,
+        # 'LANDCODE' : code_str,
+        # 'NAMEPROJECT' : project_name,
+        # 'NODATA' : nodata,
+        # 'SIZEPATCHES' : patch_size }
+    # context = QgsProcessingContext()
+    # alg_name = 'mitiConnect:create_project'
+    # alg = QgsApplication.processingRegistry().algorithmById(alg_name)
+    # task = QgsProcessingAlgRunnerTask(alg, params, context, None)
+    # def task_finished(context, successful, results):
+        # if not successful:
+            # raise CustomException("ERROR")
+        # if results:
+            # if "OUTPUT" in results:
+                # pass
+                # qgsUtils.loadRasterLayer(results["OUTPUT"],loadProject=True)
+            # else:
+                # raise CustomException("No OUTPUT in " + str(results))
+        # else:
+            # raise CustomException("No results")
+    # task.executed.connect(partial(task_finished, context))
+    # QgsApplication.taskManager().addTask(task)
+    params = {'INPUT' : 'D:/IRSTEA/ERC/tests/BO/Source/Reservoirs/RBP_PRAIRIE.shp',
+           'OUTPUT' : 'TEMPORARY_OUTPUT' }
+    context = QgsProcessingContext()
+    alg_name = 'native:dissolve'
+    alg = QgsApplication.processingRegistry().algorithmById(alg_name)
+    task = QgsProcessingAlgRunnerTask(alg, params, context, feedback=self.feedback)
+    def task_finished(context, successful, results):
+        assert(False)
+        if not successful:
+            raise CustomException("ERROR")
+        if results:
+            if "OUTPUT" in results:
+                qgsUtils.loadVectorLayer(results["OUTPUT"],loadProject=True)
+            else:
+                raise CustomException("No OUTPUT in " + str(results))
+        else:
+            raise CustomException("No results")
+        # self.feedback.endSection()
+    # task.executed.connect(partial(task_finished, context))
+    QgsApplication.taskManager().addTask(task)
 def createGraphabLinkset(project,name,frictionPath,type=1,feedback=None):
     params = { 'CODE' : '',
         'EXTCOST' : frictionPath,
         'INPUT' : project,
         'NAME' : name,
         'TYPE' : type }
-    return applyProcessingAlg(PROVIDER,'create_linkset',params,feedback=feedback)
+    applyProcessingAlg(PROVIDER,'create_linkset',params,feedback=feedback)
 def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         feedback=None):
     params = { 'DIST' : dist,
@@ -95,7 +146,7 @@ def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         'INPUT' : project,
         'NAMEGRAPH' : graphName,
         'NAMELINKSET' : linkset }
-    return applyProcessingAlg(PROVIDER,'create_graph',params,feedback=feedback)
+    applyProcessingAlg(PROVIDER,'create_graph',params,feedback=feedback)
 def computeMetric(project,graphName,metricName=0,unit=0,
         d=1000,p=1,localMetric=True,feedback=None):
     params = { 'DISTUNIT' : unit,
@@ -615,20 +666,20 @@ class LaunchModel(DictModel):
         landuse = self.getItemLanduse(item)
         friction = self.getItemFriction(item)
         if not utils.fileExists(landuse):
-            self.feedback.user_error("No landuse file %s for specie %s in scenario %s"%(landuse,spName,scName))
+            feedback.user_error("No landuse file %s for specie %s in scenario %s"%(landuse,spName,scName))
         if not utils.fileExists(friction):
-            self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
+            feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
         codes = spItem.getCodesVal()
-        self.feedback.pushDebugInfo("codes = " + str(codes))
+        feedback.pushDebugInfo("codes = " + str(codes))
         if not codes:
-            self.feedback.user_error("No habitat code specified for specie "
+            feedback.user_error("No habitat code specified for specie "
                 + str(spName))
         minArea = spItem.getMinArea()
         # Get outputs
         outDir = self.getItemBaseDir(item)
         projectFolder = os.path.dirname(project)
-        self.feedback.pushDebugInfo("project = " + str(project))
-        self.feedback.pushDebugInfo("projName = " + str(projName))
+        feedback.pushDebugInfo("project = " + str(project))
+        feedback.pushDebugInfo("projName = " + str(projName))
         if os.path.isfile(project):
             if eraseFlag:
                 self.clearStep(item,3)
@@ -636,12 +687,66 @@ class LaunchModel(DictModel):
                 # time.sleep(5)
                 # qgsUtils.removeFolder(projectFolder)
             else:
-                self.feedback.pushInfo("Graphab file " + str(project) + " already exists")
+                feedback.pushInfo("Graphab file " + str(project) + " already exists")
                 self.pluginModel.loadProject(project)
                 return
-        createGraphabProject(landuse,codes,outDir,projName,
-            nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=feedback)
-
+        # res = createGraphabProjectBackground(landuse,codes,outDir,projName,
+            # nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=self.feedback)
+        res = createGraphabProjectBackground(landuse,codes,outDir,projName,
+            nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=None)
+        return res
+    def prepareGraphabProject(self,item,eraseFlag=False,feedback=None):
+        if feedback is None:
+            feedback = self.feedback
+        feedback.pushDebugInfo("prepareGraphabProject " + str(item))
+        scName, spName, extName = item.getNames()
+        scItem, spItem, extItem = self.getItems(item)
+        checkGraphabInstalled(feedback)
+        projName = self.getItemGraphabProjectName(item)
+        project = self.getItemGraphabProjectFile(item)
+        landuse = self.getItemLanduse(item)
+        friction = self.getItemFriction(item)
+        if not utils.fileExists(landuse):
+            feedback.user_error("No landuse file %s for specie %s in scenario %s"%(landuse,spName,scName))
+        if not utils.fileExists(friction):
+            feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
+        codes = spItem.getCodesVal()
+        feedback.pushDebugInfo("codes = " + str(codes))
+        code_str = ",".join(codes)
+        if not codes:
+            feedback.user_error("No habitat code specified for specie "
+                + str(spName))
+        minArea = spItem.getMinArea()
+        # Get outputs
+        outDir = self.getItemBaseDir(item)
+        projectFolder = os.path.dirname(project)
+        feedback.pushDebugInfo("project = " + str(project))
+        feedback.pushDebugInfo("projName = " + str(projName))
+        if os.path.isfile(project):
+            if eraseFlag:
+                self.clearStep(item,3)
+                # qgsUtils.removeGroups(projName)
+                # time.sleep(5)
+                # qgsUtils.removeFolder(projectFolder)
+            else:
+                feedback.pushInfo("Graphab file " + str(project) + " already exists")
+                self.pluginModel.loadProject(project)
+                return None
+        params = {
+            'DIRPATH' : outDir,
+            'INPUT' : landuse,
+            'LANDCODE' : code_str,
+            'NAMEPROJECT' : projName,
+            'NODATA' : -self.pluginModel.nodataVal,
+            'SIZEPATCHES' : minArea }
+        alg_name = PROVIDER + ':create_project'
+        alg = QgsApplication.processingRegistry().algorithmById(alg_name)
+        context = QgsProcessingContext()
+        task = QgsProcessingAlgRunnerTask(alg, params, context, None)
+        return task
+    # def callGraphabProject(self,params,feedback=None)
+        # createGraphabProject(landuse,codes,outDir,projName,
+            # nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=self.feedback)
 
     def applyItemGraphabLinkset(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
@@ -933,6 +1038,29 @@ class LaunchConnector(TableToDialogConnector):
             # scMap[baseSc] = scenariosOrdered
         return (scMap, cpt)
         
+    def getLaunchItems(self):
+        scenarios = self.getSelectedScenarios()
+        species = self.getSelectedSpecies()
+        eraseFlag = self.dlg.eraseResults.isChecked()
+        # Build scMap
+        scMap, nbSc = self.groupByExtent(scenarios)
+        
+        # nb steps feedback
+        nb_steps = nbSc * len(species)
+        step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
+        cpt=0
+        step_feedback.setCurrentStep(cpt)
+        # Iteration
+        res = []
+        for baseSc, scenarios in scMap.items():
+            extName = baseSc.getName()
+            for sp in species:
+                spName = sp.getName()
+                for sc in scenarios:
+                    scName = sc.getName()
+                    li = self.model.getItemFromNames(scName,spName,extName)
+                    res.append(li)
+        return res
     def iterateRunExtent(self,func):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
@@ -946,6 +1074,7 @@ class LaunchConnector(TableToDialogConnector):
         cpt=0
         step_feedback.setCurrentStep(cpt)
         # Iteration
+        res = []
         for baseSc, scenarios in scMap.items():
             extName = baseSc.getName()
             for sp in species:
@@ -956,9 +1085,30 @@ class LaunchConnector(TableToDialogConnector):
                     if li is None:
                         self.feedback.internal_error("No item found for "
                             + extName + " - " + spName + " - " + scName)
-                    func(li,eraseFlag=eraseFlag,feedback=step_feedback)
+                    res.append(func(li,eraseFlag=eraseFlag,feedback=step_feedback))
                     cpt+=1
                     step_feedback.setCurrentStep(cpt)
+        return res
+    def iterateRunExtentBackground(self,funcPre):
+        tasks = self.iterateRunExtent(funcPre)
+        self.feedback.pushDebugInfo("tasks = " + str(tasks))
+        def task_finished(n, successful, results):
+            if not successful:
+                raise CustomException("ERROR")
+            QgsApplication.taskManager().addTask(tasks[n+1])
+        for cpt, t in enumerate(tasks[:-1]):
+            t.executed.connect(partial(task_finished,cpt))
+        QgsApplication.taskManager().addTask(tasks[0])
+    def iterateRunExtentBackground2(self,func):
+        launchItems = self.getLaunchItems()
+        def task_finished(n, successful, results):
+            if not successful:
+                raise CustomException("ERROR")
+            QgsApplication.taskManager().addTask(tasks[n+1])
+        for cpt, t in enumerate(tasks[:-1]):
+            t.executed.connect(partial(task_finished,cpt))
+        QgsApplication.taskManager().addTask(tasks[0])
+            
     
     def landuseItemRun(self,item,feedback=None,eraseFlag=None):
         out_path = self.model.getItemLanduse(item)
@@ -994,17 +1144,84 @@ class LaunchConnector(TableToDialogConnector):
         self.feedback.beginSection("Computing friction layer(s)")
         # params = {'INPUT' : 'D:/IRSTEA/ERC/tests/Simon2/wetransfer_perimetre_toulouse_metro_3km-dbf_2022-09-21_1435/UA_2018_L93.shp',
                    # 'OUTPUT' : 'D:/tmp/tmp.gpkg' }
+        # params = {'INPUT' : 'D:/IRSTEA/ERC/tests/BO/Source/Reservoirs/RBP_PRAIRIE.shp',
+                   # 'OUTPUT' : 'D:/tmp/tmp.gpkg' }
         # context = QgsProcessingContext()
         # alg_name = 'native:dissolve'
         # alg = QgsApplication.processingRegistry().algorithmById(alg_name)
         # task = QgsProcessingAlgRunnerTask(alg, params, context, self.feedback)
+        # def task_finished(context, successful, results):
+            # if not successful:
+                # raise CustomException("ERROR")
+            # if results:
+                # if "OUTPUT" in results:
+                    # qgsUtils.loadVectorLayer(results["OUTPUT"],loadProject=True)
+                # else:
+                    # raise CustomException("No OUTPUT in " + str(results))
+            # else:
+                # raise CustomException("No results")
+            # self.feedback.endSection()
+        # task.executed.connect(partial(task_finished, context))
         # QgsApplication.taskManager().addTask(task)
         self.iterateRunExtent(self.model.applyItemFriction)
+        self.feedback.endSection()
+    def graphabProjectRunBase(self):
+        self.feedback.beginSection("Creating projects(s)")
+        self.checkJavaInstalled()
+        self.iterateRunExtent(self.model.applyItemGraphabProject)
         self.feedback.endSection()
     def graphabProjectRun(self):
         self.feedback.beginSection("Creating Graphab project(s)")
         self.checkJavaInstalled()
-        self.iterateRunExtent(self.model.applyItemGraphabProject)
+        launchItems = self.getLaunchItems()
+        eraseFlag = self.dlg.eraseResults.isChecked()
+        tasks = [self.model.prepareGraphabProject(li,eraseFlag=eraseFlag) for li in launchItems]
+        for task in tasks:
+            QgsApplication.taskManager().addTask(task)
+        self.feedback.endSection()
+    def graphabProjectRun2FromFunc(self):
+        self.feedback.beginSection("Creating Graphab project(s)")
+        self.checkJavaInstalled()
+        # self.iterateRunExtent(self.model.applyItemGraphabProject)
+        # self.iterateRunExtentBackground(self.model.prepareGraphabProject)
+        launchItems = self.getLaunchItems()
+        self.feedback.pushDebugInfo("launchItems = " + str(launchItems))
+        self.feedback.pushDebugInfo("nb li = " + str(len(launchItems)))
+        eraseFlag = self.dlg.eraseResults.isChecked()
+        def funcBack(task,wait_time):
+            nb_steps = len(launchItems)
+            wait_time = wait_time / nb_steps
+            total = 0
+            iterations = 0
+            res = []
+            for i in range(nb_steps):
+                sleep(wait_time)
+                task.setProgress(i)
+                # arandominteger = random.randint(0, 500)
+                # total += arandominteger
+                iterations += 1
+                # check task.isCanceled() to handle cancellation
+                if task.isCanceled():
+                    assert(False)
+                    # stopped(task)
+                    # return None
+                resLi = self.applyItemGraphabProject(li,eraseFlag=eraseFlag)
+            res += resLi
+            return res
+        task = QgsTask.fromFunction('Creating graphab projects', funcBack)
+        QgsApplication.taskManager().addTask(task)
+        self.feedback.endSection()
+    def graphabProjectRunSubTasks(self):
+        self.feedback.beginSection("Creating Graphab project(s)")
+        self.checkJavaInstalled()
+        launchItems = self.getLaunchItems()
+        eraseFlag = self.dlg.eraseResults.isChecked()
+        tasks = [self.model.prepareGraphabProject(li,eraseFlag=eraseFlag) for li in launchItems]
+        # mainTask = QgsTask("Main task")
+        for i in range(len(launchItems)-1):
+            # mainTask.addSubTask(tasks[i])
+            tasks[i+1].addSubTask(tasks[i], [], QgsTask.ParentDependsOnSubTask)
+        QgsApplication.taskManager().addTask(tasks[0])
         self.feedback.endSection()
     def graphabLinksetRun(self):
         self.feedback.beginSection("Creating linkset(s)")

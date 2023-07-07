@@ -143,10 +143,11 @@ class FrictionModel(ExtensiveTableModel):
             return self.fields[col]
         
     def flags(self, index):
-        if index.column() in [0]:
-            flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
-        else:
-            flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+        # if index.column() in [0]:
+            # flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        # else:
+            # flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+        flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
         return flags
         
         

@@ -309,16 +309,19 @@ class ScenarioConnector(TableToDialogConnector):
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)
         
+    # Updates friction model on scenario item modification
     def updateFrictionFromDlg(self,item):
         if item:
             if item.isLanduseMode():
                 pass
             elif item.isFixedMode():
                 burnVal = str(item.getBurnVal())
-                self.model.pluginModel.frictionModel.updateScenario(item.getName(),[""],[burnVal])
+                # self.model.pluginModel.frictionModel.updateFromScenario(item.getName(),[""],[burnVal])
+                self.model.pluginModel.classModel.updateFromScenario(item.getName(),[""],[burnVal])
             elif item.isFieldMode():
                 values, classes = item.reclassModel.getValuesAndClasses()
-                self.model.pluginModel.frictionModel.updateScenario(item.getName(),values,classes)
+                # self.model.pluginModel.frictionModel.updateFromScenario(item.getName(),values,classes)
+                self.model.pluginModel.classModel.updateFromScenario(item.getName(),values,classes)
             self.model.pluginModel.frictionModel.layoutChanged.emit()
         else:
             self.feedback.pushDebugInfo("Empty item")

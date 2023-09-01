@@ -45,6 +45,9 @@ class ClassItem(DictItem):
         return self.dict[self.NEW_VAL]
     def getOrigin(self):
         return self.dict[self.ORIGIN]
+        
+    def equals(self,other):
+        return ((self.getOrigin() == other.getOrigin()) and (self.getInitVal() == other.getInitVal()))
 
 
 class ClassModel(DictModel):
@@ -55,8 +58,8 @@ class ClassModel(DictModel):
         self.pluginModel = pluginModel
         
     def addRow(self,origin,initVal,newVal):
-        d = { ClassItem.INIT_VAL : initVal,
-              ClassItem.NEW_VAL : newVal,
+        d = { ClassItem.INIT_VAL : str(initVal),
+              ClassItem.NEW_VAL : str(newVal),
               ClassItem.ORIGIN : origin }
         item = ClassItem(d,feedback=self.feedback)
         self.addItem(item)
@@ -76,7 +79,7 @@ class ClassModel(DictModel):
     def getClassTable(self,name):
         table = {}
         for i in self.items:
-            if self.getOrigin(i) == name:
+            if i.getOrigin() == name:
                 outVal = i.dict[self.idField]
                 inVal = str(i.dict[self.IMPORT_VAL])
                 table[inVal] = outVal
@@ -84,7 +87,7 @@ class ClassModel(DictModel):
     def getClassDict(self,name):
         table = {}
         for i in self.items:
-            if self.getOrigin(i) == name:
+            if i.getOrigin() == name:
                 outVal = i.dict[self.idField]
                 inVal = str(i.dict[self.IMPORT_VAL])
                 table[inVal] = outVal
@@ -102,21 +105,25 @@ class ClassModel(DictModel):
         self.feedback.pushDebugInfo("updateFromScenario " + str(codes))
         assert(len(initVals) == len(codes))
         # Remove reclass item with matching name
-        self.items = [i for i in self.items if self.getOrigin(i) != scName]
+        self.items = [i for i in self.items if i.getOrigin() != scName]
         valuesToAdd = []
         for initVal, code in zip(initVals,codes):
             self.addRow(scName,initVal,code)
         self.layoutChanged.emit()
         
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        baseFlags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        if index.column() in [2]:
+            baseFlags = baseFlags | Qt.ItemIsEditable
+        return baseFlags
+        
         
     # FIELDS = [ INPUT, MODE, VALUE, STATUS ]
-    # def getHeaderString(self,col):
-        # h = [self.tr('Origin'),
-            # self.tr('Initial value'),
-            # self.tr('New value')]
-        # return h[col]
+    def getHeaderString(self,col):
+        h = [self.tr('Origin'),
+            self.tr('Initial value'),
+            self.tr('New value')]
+        return h[col]
         
 class ClassConnector(AbstractConnector):
     

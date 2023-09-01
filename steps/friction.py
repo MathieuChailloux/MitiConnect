@@ -75,7 +75,7 @@ class FrictionModel(ExtensiveTableModel):
     def addRowFromClassItem(self,item):
         d = { self.ROW_CODE : item.getNewVal(),
             self.IMPORT : item.getOrigin(),
-            self.IMPORT_VAL : str(item.getInitVal()),
+            self.IMPORT_VAL : item.getInitVal(),
             self.ROW_DESCR : "" }
         rowItem = self.createRowFromDict(d)
         self.addRowItem(rowItem)
@@ -181,12 +181,10 @@ class FrictionModel(ExtensiveTableModel):
             return self.fields[col]
         
     def flags(self, index):
-        # if index.column() in [0]:
-            # flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
-        # else:
-            # flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
-        flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
-        return flags
+        baseFlags = Qt.ItemIsSelectable | Qt.ItemIsEnabled 
+        if index.column() > 2:
+            baseFlags = baseFlags | Qt.ItemIsEditable
+        return baseFlags
         
         
           

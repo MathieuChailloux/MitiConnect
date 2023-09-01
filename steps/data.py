@@ -248,6 +248,7 @@ class ImportModel(DictModel):
                     context=context,feedback=feedback)
                 # Reclassify
                 assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
+                # reclassTable = self.pluginModel.classModel.getReclassTable(name)
                 reclassDict = self.pluginModel.classModel.getReclassDict(name)
                 self.feedback.pushDebugInfo("reclassDict = " + str(reclassDict))
                 reclassTable = []
@@ -262,7 +263,6 @@ class ImportModel(DictModel):
                     outVal = reclassDict[initVal]
                     row = [tmpVal,tmpVal,outVal]
                     reclassTable += row
-                # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(raster_path,reclassTable,
                     reclassified,out_type=min_type,nodata_val=nodata_val,
                     boundaries_mode=2,context=context,feedback=feedback)

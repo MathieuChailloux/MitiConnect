@@ -76,12 +76,17 @@ class ClassModel(DictModel):
         self.items = [ i for i in self.items if i.dict[ClassItem.ORIGIN] != origin ]
         self.layoutChanged.emit()
         
+    # Build table parameter for alg reclassifyByTable [min1, max1, val1, min2, ...]
     def getReclassTable(self,name):
         table = []
         for i in self.items:
             if i.getOrigin() == name:
                 inVal = i.getInitVal()
-                line = [inVal, inVal, i.getNewVal()]
+                try:
+                    newVal = int(i.getNewVal())
+                except ValueError:
+                    newVal = self.pluginModel.nodataVal
+                line = [inVal, inVal, newVal ]
                 table.extend(line)
         return table
     def getReclassDict(self,name):
@@ -89,6 +94,13 @@ class ClassModel(DictModel):
         for i in self.items:
             if i.getOrigin() == name:
                 table[i.getInitVal()] = i.getNewVal()
+            if i.getOrigin() == name:
+                inVal = i.getInitVal()
+                try:
+                    newVal = int(i.getNewVal())
+                except ValueError:
+                    newVal = self.pluginModel.nodataVal
+                table[inVal] = newVal
         return table
         
     def renameOrigin(self,oldName,newName):

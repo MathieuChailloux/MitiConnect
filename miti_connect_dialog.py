@@ -297,8 +297,9 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
                 self.feedback.pushDebugInfo(msg)
                 self.feedback.error_msg(msg2,prefix="Graphab error")
             except Exception as e:
-                raise e
+                # raise e
                 self.feedback.error_msg(msg,prefix="Unexpected error")
+                # self.feedback.internal_error(msg)
         else:
             self.feedback.error_msg(msg,prefix="Unexpected error")
         self.mTabWidget.setCurrentWidget(self.logTab)

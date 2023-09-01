@@ -72,7 +72,7 @@ class ReclassModel(abstract_model.DictModel):
         return table
 
 
-class RasterDlgItem(abstract_model.DictItemWithChild):
+class RasterDlgItem(abstract_model.DictItem):
 
     NAME = 'NAME'
     INPUT = 'INPUT'
@@ -85,10 +85,10 @@ class RasterDlgItem(abstract_model.DictItemWithChild):
         return self.dict[self.NAME]
     def getLayerPath(self):
         return self.dict[self.INPUT]
-    def getReclassModel(self):
-        return self.getChild()
-    def getValues(self):
-        return self.getReclassModel().getValues()
+    # def getReclassModel(self):
+        # return self.getChild()
+    # def getValues(self):
+        # return self.getReclassModel().getValues()
         
     def getValue(self):
         return None
@@ -113,7 +113,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.feedback=parent.feedback
         self.data_item = raster_data_item
-        self.class_model = class_model
+        # self.class_model = class_model
         self.setupUi(self)
         self.initGui()
         self.updateUi()
@@ -123,27 +123,27 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.rasterDataLayerCombo,self.rasterDataLayerOpen)
         self.layerComboDlg.setRasterMode()
-        if self.data_item:
-            self.reclass_model = self.data_item.child
-        else:
-            self.reclass_model = ReclassModel(feedback=self.feedback)
+        # if self.data_item:
+            # self.reclass_model = self.data_item.child
+        # else:
+            # self.reclass_model = ReclassModel(feedback=self.feedback)
         #self.rasterDataLayerOpen.setFilter(qgsUtils.getRasterFilters())
 
     def connectComponents(self):
-        self.rasterDataDialogView.setModel(self.reclass_model)
+        # self.rasterDataDialogView.setModel(self.reclass_model)
         self.rasterDataLayerCombo.layerChanged.connect(self.setLayer)
-        self.reclass_model.layoutChanged.emit()
+        # self.reclass_model.layoutChanged.emit()
         
     def setLayer(self,layer):
         if layer:
             vals = qgsTreatments.getRasterUniqueVals(layer,
                 feedback=self.feedback)
-            # self.values = vals
-            nb_vals = len(vals)
-            free_vals = self.class_model.getFreeVals(nb_vals)
-            self.reclass_model.items = [ReclassItem.fromValues(in_val,out_val,feedback=self.feedback)
-                for (in_val, out_val) in zip(vals, free_vals)]
-            self.reclass_model.layoutChanged.emit() 
+            self.values = vals
+            # nb_vals = len(vals)
+            # free_vals = self.class_model.getFreeVals(nb_vals)
+            # self.reclass_model.items = [ReclassItem.fromValues(in_val,out_val,feedback=self.feedback)
+                # for (in_val, out_val) in zip(vals, free_vals)]
+            # self.reclass_model.layoutChanged.emit() 
     
     def updateUi(self):
         if self.data_item:
@@ -177,14 +177,15 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[RasterDlgItem.INPUT] = layer_path
             # dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)
-            self.data_item.setChild(self.rasterDataDialogView.model())
+            # self.data_item.setChild(self.rasterDataDialogView.model())
             # self.data_item.values = self.values
             # self.data_item.isScenario = self.isScenario.isChecked()
             # self.data_item.setChild(self.reclass_model)
             return self.data_item
         return None
         
-    def getReclassTable(self):
-        return self.reclass_model.getReclassTable()
+    # def getReclassTable(self):
+        # return self.reclass_model.getReclassTable()
     def getValues(self):
-        return self.reclass_model.getValues()
+        return self.values
+        # return self.reclass_model.getValues()

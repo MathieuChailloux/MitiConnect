@@ -76,21 +76,19 @@ class ClassModel(DictModel):
         self.items = [ i for i in self.items if i.dict[ClassItem.ORIGIN] != origin ]
         self.layoutChanged.emit()
         
-    def getClassTable(self,name):
-        table = {}
+    def getReclassTable(self,name):
+        table = []
         for i in self.items:
             if i.getOrigin() == name:
-                outVal = i.dict[self.idField]
-                inVal = str(i.dict[self.IMPORT_VAL])
-                table[inVal] = outVal
+                inVal = i.getInitVal()
+                line = [inVal, inVal, i.getNewVal()]
+                table.extend(line)
         return table
-    def getClassDict(self,name):
+    def getReclassDict(self,name):
         table = {}
         for i in self.items:
             if i.getOrigin() == name:
-                outVal = i.dict[self.idField]
-                inVal = str(i.dict[self.IMPORT_VAL])
-                table[inVal] = outVal
+                table[i.getInitVal()] = i.getNewVal()
         return table
         
     def renameOrigin(self,oldName,newName):

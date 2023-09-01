@@ -85,8 +85,8 @@ class ImportItem(DictItemWithChild):
     def isVector(self):
         return self.dict[self.MODE]
         
-    def getReclassTable(self):
-        return self.child.getReclassTable()
+    # def getReclassTable(self):
+        # return self.child.getReclassTable()
     def getValues(self):
         return self.child.getValues()
         

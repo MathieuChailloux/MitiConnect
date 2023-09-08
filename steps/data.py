@@ -162,7 +162,7 @@ class ImportModel(DictModel):
         # for initVal, newVal in zip(values,freeVals):
             # self.pluginModel.classModel.addRow(origin,initVal,newVal)
     def addClassItems(self,item):
-        values = self.getItemValues(item)
+        # values = self.getItemValues(item)
         name = item.getName()
         classModel = self.pluginModel.classModel
         classModel.removeItemsWithOrigin(name)
@@ -175,8 +175,8 @@ class ImportModel(DictModel):
                     feedback=self.feedback)
                 classModel.addRowFromValues(name,values)
             else:
-                val = item.child.getBurnVal()
-                classModel.addRow(name,initVal,newVal)
+                newVal = item.child.getBurnVal()
+                classModel.addRow(name,"",newVal)
                 # classModel.layoutChanged.emit()
         else:
             values = item.getValues()
@@ -269,7 +269,8 @@ class ImportModel(DictModel):
                 to_norm_path = reclassified
             else:
                 # Burn by fixed value mode
-                burnVal = childItem.getBurnVal()
+                classItem = self.pluginModel.classModel.getItemFromOrigin(name,"")
+                burnVal = self.pluginModel.classModel.getItemReclassVal(classItem)
                 # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyRasterization(buffered,raster_path,
                     extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
@@ -388,6 +389,10 @@ class ImportConnector(TableToDialogConnector):
         dlgItem = item.getChild()
         # self.pathFieldToAbs(item,VectorDlgItem.INPUT)
         if item.isVector():
+            if not item.child.isBurnFieldMode():
+                classItem = self.model.pluginModel.classModel.getItemFromOrigin(item.getName(),"")
+                burnVal = self.model.pluginModel.classModel.getItemReclassVal(classItem)
+                dlgItem.setBurnVal(burnVal)
             item_dlg = VectorDataDialog(dlgItem,self.dlg)
         else:
             item_dlg = RasterDataDialog(dlgItem,self.dlg,

@@ -33,11 +33,22 @@ class ClassItem(DictItem):
     INIT_VAL = 'INIT_VAL'
     NEW_VAL = 'NEW_VAL'
     ORIGIN = 'ORIGIN'
+    DESCRIPTION = 'DESCRIPTION'
     
-    FIELDS = [ ORIGIN, INIT_VAL, NEW_VAL ]
+    FIELDS = [ ORIGIN, INIT_VAL, NEW_VAL, DESCRIPTION ]
     
     def __init__(self,dict,pluginModel=None,feedback=None):
-        super().__init__(dict,feedback=feedback)
+        # castDict = {
+            # self.INIT_VAL : str(dict[self.INIT_VAL]),
+            # self.NEW_VAL : str(dict[self.NEW_VAL]),
+            # self.ORIGIN : dict[self.ORIGIN],
+            # self.DESCRIPTION : dict[self.DESCRIPTION] }
+        # super().__init__(castDict,feedback=feedback)
+        super().__init__(dict,feedback=feedback)    
+        
+    @classmethod
+    def fromDict(cls,dict,feedback=None):
+        return cls(dict,feedback=feedback)
         
     def getInitVal(self):
         return self.dict[self.INIT_VAL]
@@ -45,6 +56,8 @@ class ClassItem(DictItem):
         return self.dict[self.NEW_VAL]
     def getOrigin(self):
         return self.dict[self.ORIGIN]
+    def getDescription(self):
+        return self.dict[self.DESCRIPTION]
         
     def equals(self,other):
         return ((self.getOrigin() == other.getOrigin()) and (self.getInitVal() == other.getInitVal()))
@@ -57,10 +70,15 @@ class ClassModel(DictModel):
         super().__init__(itemClass,feedback=pluginModel.feedback)
         self.pluginModel = pluginModel
         
-    def addRow(self,origin,initVal,newVal):
+    # @classmethod
+    # def fromDict(cls,dict,feedback=None):
+        # return cls(dict,feedback=feedback)
+        
+    def addRow(self,origin,initVal,newVal,descr=""):
         d = { ClassItem.INIT_VAL : str(initVal),
               ClassItem.NEW_VAL : str(newVal),
-              ClassItem.ORIGIN : origin }
+              ClassItem.ORIGIN : origin,
+              ClassItem.DESCRIPTION : descr }
         item = ClassItem(d,feedback=self.feedback)
         self.addItem(item)
         self.pluginModel.frictionModel.addRowFromClassItem(item)
@@ -72,6 +90,20 @@ class ClassModel(DictModel):
             self.addRow(origin,initVal,newVal)
         # self.layoutChanged.emit()
         
+    def getItemFromOrigin(self,origin,initVal):
+        for i in self.items:
+            if i.getOrigin() == origin and i.getInitVal() == initVal:
+                return i
+        self.feedback.internal_error("No class item found matching origin {} and value {}".format(
+            origin,initVal))
+            
+    def getItemReclassVal(self,item):
+        try:
+            newVal = int(item.getNewVal())
+        except ValueError:
+            newVal = self.pluginModel.nodataVal
+        return newVal
+    
     def removeItemsWithOrigin(self,origin):
         self.items = [ i for i in self.items if i.dict[ClassItem.ORIGIN] != origin ]
         self.layoutChanged.emit()
@@ -82,10 +114,7 @@ class ClassModel(DictModel):
         for i in self.items:
             if i.getOrigin() == name:
                 inVal = i.getInitVal()
-                try:
-                    newVal = int(i.getNewVal())
-                except ValueError:
-                    newVal = self.pluginModel.nodataVal
+                newVal = self.getItemReclassVal(i)
                 line = [inVal, inVal, newVal ]
                 table.extend(line)
         return table
@@ -96,10 +125,7 @@ class ClassModel(DictModel):
                 table[i.getInitVal()] = i.getNewVal()
             if i.getOrigin() == name:
                 inVal = i.getInitVal()
-                try:
-                    newVal = int(i.getNewVal())
-                except ValueError:
-                    newVal = self.pluginModel.nodataVal
+                newVal = self.getItemReclassVal(i)
                 table[inVal] = newVal
         return table
         
@@ -123,7 +149,7 @@ class ClassModel(DictModel):
         
     def flags(self, index):
         baseFlags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
-        if index.column() in [2]:
+        if index.column() in [2,3]:
             baseFlags = baseFlags | Qt.ItemIsEditable
         return baseFlags
         
@@ -132,7 +158,8 @@ class ClassModel(DictModel):
     def getHeaderString(self,col):
         h = [self.tr('Origin'),
             self.tr('Initial value'),
-            self.tr('New value')]
+            self.tr('New value'),
+            self.tr('Description')]
         return h[col]
         
 class ClassConnector(AbstractConnector):
@@ -146,4 +173,11 @@ class ClassConnector(AbstractConnector):
         super().connectComponents()
         print("connectComponents")
         # self.model.layoutChanged.connect(self.model.pluginModel.frictionModel.updateFromImports)
-        # self.model.itemChanged.connect(self.model.pluginModel.frictionModel.updateFromImports)
+        self.model.dataChanged.connect(self.onItemUpdated)
+        
+    def onItemUpdated(self,index):
+        rowIdx, colIdx = index.row(), index.column()
+        self.feedback.pushDebugInfo("onItemUpdated {} {}".format(rowIdx,colIdx))
+        classItem = self.model.getNItem(rowIdx)
+        self.model.pluginModel.frictionModel.updateFromClassItem(classItem)
+        

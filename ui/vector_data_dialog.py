@@ -80,6 +80,9 @@ class VectorDlgItem(abstract_model.DictItem):
             val = self.getBurnVal()
         return val
         
+    def setBurnVal(self,burnVal):
+        self.dict[self.BURN_VAL] = burnVal
+        
     # def getValues(self):
         # if self.isBurnFieldMode():
             # layer = self.getLayerPath()
@@ -152,7 +155,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.vectorFieldMode.setChecked(is_field_mode)
         self.vectorFieldCombo.setEnabled(is_field_mode)
         self.vectorFixedMode.setChecked(not is_field_mode)
-        #self.vectorFixedValue.setEnabled(not is_field_mode)
+        self.vectorFixedValue.setEnabled(not is_field_mode)
         
     def setFieldMode(self,checked):
         self.setBurnMode(checked)

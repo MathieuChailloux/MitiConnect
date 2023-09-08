@@ -27,9 +27,20 @@ import os
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
 
-from ..qgis_lib_mc.abstract_model import ExtensiveTableModel, AbstractConnector
+from ..qgis_lib_mc.abstract_model import DictItem, ExtensiveTableModel, AbstractConnector
 from ..qgis_lib_mc import utils, qgsUtils
 
+
+class TestItemDelegate(QtWidgets.QItemDelegate):
+
+    def __init__(self):
+        super().__init__()
+        # QtGui.QItemDelegate.__init__(self)
+        
+    def createEditor(self, parent, option, index):
+        # if index.column()==0:
+        lineedit=QtWidgets.QLineEdit(parent)
+        return lineedit
 
 class FrictionModel(ExtensiveTableModel):
 
@@ -43,6 +54,23 @@ class FrictionModel(ExtensiveTableModel):
         ExtensiveTableModel.__init__(self,parentModel,baseFields=self.BASE_FIELDS)
         self.feedback.pushInfo("FM1 " + str(self.__class__.__name__))
         self.feedback.pushInfo("FM2 " + str(self.itemClass.__class__.__name__))
+        
+    # @classmethod
+    # def fromDict(cls,dict,feedback=None):
+        # return cls(dict,feedback=feedback)
+        
+    # def mkItemFromXML(self,root,feedback=None):
+        # d = dict(root.attrib)
+        # d[ExtensiveTableModel.ROW_CODE] = int(d[ExtensiveTableModel.ROW_CODE])
+        # return DictItem(d,feedback=feedback)
+        
+    def getMatchingItem(self,item):
+        for i in self.items:
+            if self.getItemValue(i) == self.getItemValue(item):
+                return i
+            elif (self.getItemImport(i) == self.getItemImport(item)) and (self.getItemImportVal(i) == self.getItemImportVal(item)):
+                return i
+        return None
         
     def reload(self):
         colNames = self.parentModel.speciesModel.getNames()
@@ -73,13 +101,21 @@ class FrictionModel(ExtensiveTableModel):
         return l
         
     def addRowFromClassItem(self,item):
-        d = { self.ROW_CODE : item.getNewVal(),
+        d = { self.ROW_CODE : int(item.getNewVal()),
             self.IMPORT : item.getOrigin(),
-            self.IMPORT_VAL : item.getInitVal(),
+            self.IMPORT_VAL : str(item.getInitVal()),
             self.ROW_DESCR : "" }
         rowItem = self.createRowFromDict(d)
         self.addRowItem(rowItem)
         self.layoutChanged.emit()
+    # Called on class table update
+    def updateFromClassItem(self,item):
+        for i in self.items:
+            if self.getItemImport(i) == item.getOrigin() and self.getItemImportVal(i) == item.getInitVal():
+                i.dict[self.ROW_CODE] = int(item.getNewVal())
+                i.dict[self.ROW_DESCR] = item.getDescription()
+                self.feedback.pushDebugInfo("friction item updated")
+                return
         
     def updateFromImports(self):
         codes = set(self.getCodes())
@@ -87,13 +123,14 @@ class FrictionModel(ExtensiveTableModel):
         classCodes = set()
         # Add new values
         for i in self.parentModel.classModel.items:
-            newVal = i.getNewVal()
+            newVal = int(i.getNewVal())
             classCodes.add(newVal)
             self.feedback.pushDebugInfo("updateFromImports2 {}".format(newVal))
             if newVal in codes:
                 continue
             self.addRowFromClassItem(i)
         # Remove deleted values
+        self.feedback.pushDebugInfo("classCodes {}".format(classCodes))
         toDelete = codes - classCodes
         self.feedback.pushDebugInfo("toDelete {}".format(toDelete))
         self.items = [i for i in self.items if self.getItemValue(i) not in toDelete]
@@ -201,6 +238,7 @@ class FrictionConnector(AbstractConnector):
             
     def connectComponents(self):
         super().connectComponents()
+        self.dlg.frictionView.setItemDelegate(TestItemDelegate())
         self.dlg.frictionLoadClass.clicked.connect(self.model.reloadFriction)
         # self.dlg.frictionRun.clicked.connect(self.applyItems)
         # self.dlg.classView.setModel(self.model)

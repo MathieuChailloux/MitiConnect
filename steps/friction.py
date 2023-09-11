@@ -110,12 +110,28 @@ class FrictionModel(ExtensiveTableModel):
         self.layoutChanged.emit()
     # Called on class table update
     def updateFromClassItem(self,item):
-        for i in self.items:
+        for cpt, i in enumerate(self.items):
             if self.getItemImport(i) == item.getOrigin() and self.getItemImportVal(i) == item.getInitVal():
-                i.dict[self.ROW_CODE] = int(item.getNewVal())
-                i.dict[self.ROW_DESCR] = item.getDescription()
-                self.feedback.pushDebugInfo("friction item updated")
+                # i.dict[self.ROW_CODE] = int(item.getNewVal())
+                newValStr = item.getNewVal()
+                if newValStr.isdigit():
+                    codes = set(self.getCodes())
+                    newVal = int(newValStr)
+                    if newVal == self.getItemValue(i):
+                        i.dict[self.ROW_DESCR] = item.getDescription()
+                        self.feedback.pushDebugInfo("friction item id updated")
+                    else:
+                        codes = set(self.getCodes())
+                        if newVal in codes:
+                            self.removeItemsFromRows([cpt])
+                        else:
+                            i.dict[self.ROW_CODE] = newVal
+                            # i.dict[self.ROW_DESCR] = item.getDescription()
+                            self.feedback.pushDebugInfo("friction item descr updated")
+                else:
+                    self.removeItemsFromRows([cpt])
                 return
+        self.addRowFromClassItem(item)
         
     def updateFromImports(self):
         codes = set(self.getCodes())
@@ -123,7 +139,11 @@ class FrictionModel(ExtensiveTableModel):
         classCodes = set()
         # Add new values
         for i in self.parentModel.classModel.items:
-            newVal = int(i.getNewVal())
+            newValStr = i.getNewVal()
+            if newValStr.isdigit():
+                newVal = int(newValStr)
+            else:
+                continue
             classCodes.add(newVal)
             self.feedback.pushDebugInfo("updateFromImports2 {}".format(newVal))
             if newVal in codes:

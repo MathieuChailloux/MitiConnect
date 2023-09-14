@@ -290,7 +290,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.layerComboDlg.setVectorMode()
         self.connectComponents()
         self.updateUi(dlgItem)
-        self.name = dlgItem.getName()
+        # self.name = dlgItem.getName()
         self.reloadFlag = True
         # self.updateUi(dlgItem)
         # self.feedback.pushDebugInfo("TESTES")
@@ -333,8 +333,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.reclassModel.loadValues(values,freeCodes)
             self.reclassModel.layoutChanged.emit()
             
-    def setValues(self):
-        dict = self.frictionModel.getReclassDict(self.name)
+    # def setValues(self):
+        # dict = self.frictionModel.getReclassDict(self.name)
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)

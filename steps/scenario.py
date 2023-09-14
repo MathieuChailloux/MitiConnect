@@ -38,6 +38,8 @@ from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog, ScenarioInitialStateDialog
 from ..ui.plot_window import PlotWindow
 
+from . import friction
+
 # Scenario
         
 class ScenarioModel(DictModel):
@@ -190,8 +192,9 @@ class ScenarioModel(DictModel):
             qgsTreatments.applyRasterization(absLayerPath,rasterPath,
                 maxExtent,resolution,field=item.getBurnField(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
+            reclassTable = self.pluginModel.getReclassTable(name)
             qgsTreatments.applyReclassifyByTable(rasterPath,
-                item.getReclassTable(),toNormPath,
+                reclassTable,toNormPath,
                 boundaries_mode=2,feedback=feedback)
         else:
             feedback.user_error("Unexpected scenario mode : " + str(mode))
@@ -240,7 +243,10 @@ class ScenarioConnector(TableToDialogConnector):
             self.pathFieldToRel(dlg_item,ScenarioItem.LAYER)
             # if dlg_item.isLanduseMode():
                  # self.pathFieldToRel(dlg_item,ScenarioItem.BASE)
-            self.updateFrictionFromDlg(dlg_item)
+            # self.updateFrictionFromDlg(dlg_item)
+    def postDlgNew(self,dlg_item):
+        self.feedback.pushDebugInfo("postDlgNew = " + str(dlg_item))
+        self.updateFrictionFromDlg(dlg_item)
     
     # def openDialog(self,item): 
         # self.feedback.pushDebugInfo("item = " + str(item))
@@ -311,6 +317,7 @@ class ScenarioConnector(TableToDialogConnector):
         
     # Updates friction model on scenario item modification
     def updateFrictionFromDlg(self,item):
+        self.feedback.pushDebugInfo("updateFrictionFromDlg")
         if item:
             if item.isLanduseMode():
                 pass
@@ -319,9 +326,14 @@ class ScenarioConnector(TableToDialogConnector):
                 # self.model.pluginModel.frictionModel.updateFromScenario(item.getName(),[""],[burnVal])
                 self.model.pluginModel.classModel.updateFromScenario(item.getName(),[""],[burnVal])
             elif item.isFieldMode():
+                newValStr = friction.NEW_VAL_STR
                 values, classes = item.reclassModel.getValuesAndClasses()
+                classes2 = [c.split(" - ")[0] for c in classes]
+                nbNew = classes2.count(newValStr)
+                freeVals = self.model.pluginModel.frictionModel.getFreeVals(nbNew)
+                classes3 = [int(freeVals.pop(0)) if c == newValStr else int(c) for c in classes2]
                 # self.model.pluginModel.frictionModel.updateFromScenario(item.getName(),values,classes)
-                self.model.pluginModel.classModel.updateFromScenario(item.getName(),values,classes)
+                self.model.pluginModel.classModel.updateFromScenario(item.getName(),values,classes3)
             self.model.pluginModel.frictionModel.layoutChanged.emit()
         else:
             self.feedback.pushDebugInfo("Empty item")

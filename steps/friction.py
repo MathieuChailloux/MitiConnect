@@ -30,6 +30,7 @@ from qgis.PyQt.QtCore import Qt
 from ..qgis_lib_mc.abstract_model import DictItem, ExtensiveTableModel, AbstractConnector
 from ..qgis_lib_mc import utils, qgsUtils
 
+NEW_VAL_STR = "New Value"
 
 class TestItemDelegate(QtWidgets.QItemDelegate):
 
@@ -41,6 +42,31 @@ class TestItemDelegate(QtWidgets.QItemDelegate):
         # if index.column()==0:
         lineedit=QtWidgets.QLineEdit(parent)
         return lineedit
+        
+class CodesItemDelegate(QtWidgets.QItemDelegate):
+
+    def __init__(self,frictionModel):
+        super().__init__()
+        self.frictionModel = frictionModel
+        
+    def createEditor(self, parent, option, index):
+        # if index.column()==0:
+        combo=QtWidgets.QComboBox(parent)
+        elements = self.frictionModel.getCodesStrComplete()
+        combo.insertItems(0,elements)
+        combo.insertItem(0,NEW_VAL_STR)
+        return combo
+        
+    # def setModelData(self, editor, model, index):
+        # editorIndex=editor.currentIndex()
+        # if editorIndex == 0:
+            # newVal = self.frictionModel.getFreeVal()
+        # else:
+            # currIdx = editor.currentIndex()
+            # currText = editor.currentText()
+            # newVal = 
+        # model.setData(index, text,role=Qt.EditRole)
+        
 
 class FrictionModel(ExtensiveTableModel):
 
@@ -84,20 +110,32 @@ class FrictionModel(ExtensiveTableModel):
         codes = [ self.getItemValue(i) for i in self.items ]
         freeVals = utils.getIntValues(nbVals,exclude_values=codes)
         return freeVals
-    def getCodes(self):
-        codes = [ self.getItemValue(i) for i in self.items ]
+    def getFreeVal(self):
+        return self.getFreeVals(1)[0]
+    def getInitVals(self,origin):
+        vals = [self.getItemImportVal(i) for i in self.items if self.getItemImport(i) == origin]
+        return vals
+    def getCodes(self,origin=None):
+        if origin:
+            codes = [ self.getItemValue(i) for i in self.items if self.getItemImport(i) == origin ]
+        else:
+            codes = [ self.getItemValue(i) for i in self.items ]
         return codes
-    def getCodesStrComplete(self):
-        l = []
+    def getItemStr(self,item):
+        s = str(item.dict[self.idField])
+        s += " - "
+        s += str(item.dict[self.IMPORT])
+        s += " - "
+        s += str(item.dict[self.IMPORT_VAL])
+        s += " - "
+        s += str(item.dict[self.ROW_DESCR])
+        return s
+    def getCodesStrComplete(self,withNewVal=False,origin=None):
+        l = [NEW_VAL_STR] if withNewVal else []
         for i in self.items:
-            s = str(i.dict[self.idField])
-            s += " - "
-            s += str(i.dict[self.IMPORT])
-            s += " - "
-            s += str(i.dict[self.IMPORT_VAL])
-            s += " - "
-            s += str(i.dict[self.ROW_DESCR])
-            l.append(s)
+            if origin is None or origin == self.getItemImport(i):
+                s = self.getItemStr(i)
+                l.append(s)
         return l
         
     def addRowFromClassItem(self,item):
@@ -242,6 +280,27 @@ class FrictionModel(ExtensiveTableModel):
         if index.column() > 2:
             baseFlags = baseFlags | Qt.ItemIsEditable
         return baseFlags
+        
+        
+    # used to init combo box in dialogs: find a best location for these functions ?
+    def initComboCodes(self,combo,val=None):
+        itemsStr = self.getCodesStrComplete(withNewVal=True)
+        combo.insertItems(0,itemsStr)
+        if val is None or val == "":
+            combo.setCurrentIndex(0)
+        else:
+            codes = self.getCodes()
+            idx = codes.index(val)
+            combo.setCurrentIndex(idx+1)
+            
+    def getCodeFromCombo(self,combo):
+        idx = combo.currentIndex()
+        if idx == 0:
+            code = self.getFreeVals(1)[0]
+        else:
+            codes = self.getCodes()
+            code = codes[idx-1]
+        return code
         
         
           

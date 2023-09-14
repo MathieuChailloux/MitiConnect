@@ -234,6 +234,9 @@
          <string>Values reclassification</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="3" column="0" colspan="2">
+          <widget class="QTableView" name="scDialogView"/>
+         </item>
          <item row="0" column="0">
           <widget class="QRadioButton" name="scFieldMode">
            <property name="enabled">
@@ -244,19 +247,6 @@
            </property>
            <property name="checked">
             <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="scFixedMode">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Fixed value</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -285,24 +275,21 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="scBurnVal">
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="scFixedMode">
            <property name="enabled">
             <bool>true</bool>
            </property>
-           <property name="minimumSize">
-            <size>
-             <width>200</width>
-             <height>20</height>
-            </size>
-           </property>
            <property name="text">
-            <string>0</string>
+            <string>Fixed value</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QTableView" name="scDialogView"/>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="scBurnVal"/>
          </item>
         </layout>
        </widget>

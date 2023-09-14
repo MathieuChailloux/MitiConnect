@@ -146,6 +146,7 @@ class ClassModel(DictModel):
         for initVal, code in zip(initVals,codes):
             self.addRow(scName,initVal,code)
         self.layoutChanged.emit()
+        self.pluginModel.frictionModel.updateFromImports()
         
     def flags(self, index):
         baseFlags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -180,4 +181,5 @@ class ClassConnector(AbstractConnector):
         self.feedback.pushDebugInfo("onItemUpdated {} {}".format(rowIdx,colIdx))
         classItem = self.model.getNItem(rowIdx)
         self.model.pluginModel.frictionModel.updateFromClassItem(classItem)
+        self.model.pluginModel.importModel.updateFromClassItem(classItem)
         

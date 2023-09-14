@@ -93,14 +93,35 @@ class VectorDlgItem(abstract_model.DictItem):
         # return values
 
 
+# def initComboCodes(frModel,combo,val=None):
+    # itemsStr = frModel.getCodesStrComplete()
+    # combo.insertItems(0,itemsStr)
+    # if val is None or val == "":
+        # combo.setCurrentIndex(0)
+    # else:
+        # codes = frModel.getCodes()
+        # idx = codes.index(val)
+        # combo.setCurrentIndex(idx+1)
+        
+# def getCodeFromCombo(frModel,combo):
+    # idx = combo.currentIndex()
+    # if idx == 0:
+        # code = frModel.getFreeVals(1)[0]
+    # else:
+        # codes = frModel.getCodes()
+        # code = codes[idx-1]
+    # return code
+    
+
 # TODO : idée : génération automatique XML depuis QDialog 
 # en fonction des widgets ??
 class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, vector_data_item, parent):
+    def __init__(self, vector_data_item, parent, frictionModel):
         """Constructor."""
         super(VectorDataDialog, self).__init__(parent)
         self.feedback=parent.feedback
         self.data_item = vector_data_item
+        self.frictionModel = frictionModel
         self.setupUi(self)
         self.initGui()
         self.connectComponents()
@@ -132,9 +153,12 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.vectorLayerCombo.setLayer(None)
             self.layerComboDlg.setLayerPath(self.data_item.getLayerPath())
             self.vectorSelectionExpression.setExpression(self.data_item.getExpression())
-            self.setBurnMode(self.data_item.getBurnMode())
+            burnMode = self.data_item.getBurnMode()
+            self.setBurnMode(burnMode)
             self.vectorFieldCombo.setField(self.data_item.getBurnField())
-            self.vectorFixedValue.setValue(self.data_item.getBurnVal())
+            burnVal = None if burnMode else self.data_item.getBurnVal() 
+            # self.vectorFixedValue.setValue(burnVal)
+            self.frictionModel.initComboCodes(self.vectorFixedCombo,burnVal)
             self.vectorAllTouch.setChecked(self.data_item.getAllTouch())
             bm = self.data_item.isBufferMode()
             self.vectorBufferMode.setChecked(bm)
@@ -155,7 +179,8 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.vectorFieldMode.setChecked(is_field_mode)
         self.vectorFieldCombo.setEnabled(is_field_mode)
         self.vectorFixedMode.setChecked(not is_field_mode)
-        self.vectorFixedValue.setEnabled(not is_field_mode)
+        # self.vectorFixedValue.setEnabled(not is_field_mode)
+        self.vectorFixedCombo.setEnabled(not is_field_mode)
         
     def setFieldMode(self,checked):
         self.setBurnMode(checked)
@@ -194,15 +219,19 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.BURN_MODE] = burn_field_mode
             fieldname = self.vectorFieldCombo.currentField()
             dict[VectorDlgItem.BURN_FIELD] = fieldname
-            if burn_field_mode and not fieldname:
-                feedbacks.paramError("No field selected")
-                continue
+            if burn_field_mode:
+                if not fieldname:
+                    feedbacks.paramError("No field selected")
+                    continue
+                dict[VectorDlgItem.BURN_VAL] = ""
             if not burn_field_mode:
-                burnVal = self.vectorFixedValue.value()
+                # burnVal = self.vectorFixedValue.value()
+                dict[VectorDlgItem.BURN_VAL] = self.frictionModel.getCodeFromCombo(self.vectorFixedCombo)
                 #if burnVal <= 0:
                 #    feedbacks.paramError("Burn value must be strictly positive")
                 #    continue
-            dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
+            # dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
+            # dict[VectorDlgItem.BURN_VAL] = getCodeFromCombo(self.frictionModel,self.vectorFixedCombo)
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
             dict[VectorDlgItem.BUFFER_EXPR] = self.vectorBufferValue.value()

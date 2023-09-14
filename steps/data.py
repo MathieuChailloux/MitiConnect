@@ -193,6 +193,14 @@ class ImportModel(DictModel):
             # self.addValues(item)
         # assert(False)
         
+    def updateFromClassItem(self,classItem):
+        for i in self.items:
+            if i.isVector() and (not i.child.isBurnFieldMode()) and (i.getName() == classItem.getOrigin()):
+                i.dict[ImportItem.VALUE] = classItem.getNewVal()
+                self.layoutChanged.emit()
+                return
+        
+        
     def applyItemWithContext(self,item,context,feedback):
         name = item.getName()
         self.pluginModel.paramsModel.checkInit()
@@ -393,7 +401,7 @@ class ImportConnector(TableToDialogConnector):
                 classItem = self.model.pluginModel.classModel.getItemFromOrigin(item.getName(),"")
                 burnVal = self.model.pluginModel.classModel.getItemReclassVal(classItem)
                 dlgItem.setBurnVal(burnVal)
-            item_dlg = VectorDataDialog(dlgItem,self.dlg)
+            item_dlg = VectorDataDialog(dlgItem,self.dlg,self.model.pluginModel.frictionModel)
         else:
             item_dlg = RasterDataDialog(dlgItem,self.dlg,
                 class_model=self.model.pluginModel.frictionModel)
@@ -402,7 +410,7 @@ class ImportConnector(TableToDialogConnector):
         # return dlgItem
         
     def openImportVectorNew(self,checked):
-        item_dlg = VectorDataDialog(None,self.dlg)
+        item_dlg = VectorDataDialog(None,self.dlg,self.model.pluginModel.frictionModel)
         dlgItem = item_dlg.showDialog()
         self.addDlgItem(dlgItem,True)
         

@@ -29,6 +29,7 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsFieldProxyModel 
 
 from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks
+from ..steps import friction
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 SC_DIALOG, _ = uic.loadUiType(os.path.join(
@@ -112,7 +113,8 @@ class ScenarioReclassModel(abstract_model.DictModel):
         
 
 # class ScenarioItem(abstract_model.DictItemWithChildren):
-class ScenarioItem(abstract_model.DictItemWithChild):
+# class ScenarioItem(abstract_model.DictItemWithChild):
+class ScenarioItem(abstract_model.DictItem):
     
     NAME = 'NAME'
     DESCR = 'DESCR'
@@ -136,7 +138,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     DISPLAY_FIELDS = BASE_FIELDS
     
     def __init__(self,dict,feedback=None):
-        super().__init__(dict,feedback=feedback,child=None)
+        super().__init__(dict,feedback=feedback)
         reclassModel = ScenarioReclassModel(feedback=feedback)
         self.setReclassModel(reclassModel)
         # self.reclassModel = se lf.child
@@ -204,7 +206,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.reclassModel.getReclassTable()
         
     def setReclassModel(self,model):
-        super().setChild(model)
+        # super().setChild(model)
         self.reclassModel = model
         # self.children = [model]
         
@@ -288,6 +290,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.layerComboDlg.setVectorMode()
         self.connectComponents()
         self.updateUi(dlgItem)
+        self.name = dlgItem.getName()
         self.reloadFlag = True
         # self.updateUi(dlgItem)
         # self.feedback.pushDebugInfo("TESTES")
@@ -301,6 +304,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scField.fieldChanged.connect(self.changeField)
         self.scBase.setModel(self.scModel)
         self.scDialogView.setModel(self.reclassModel)
+        self.scDialogView.setItemDelegate(friction.CodesItemDelegate(self.frictionModel))
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
@@ -324,9 +328,13 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.feedback.pushDebugInfo("reload flag = " + str(self.reloadFlag))
         if self.reloadFlag:
             nbVals = len(values)
-            freeCodes = self.frictionModel.getFreeVals(nbVals)
+            # freeCodes = self.frictionModel.getFreeVals(nbVals)
+            freeCodes = [friction.NEW_VAL_STR] * nbVals
             self.reclassModel.loadValues(values,freeCodes)
             self.reclassModel.layoutChanged.emit()
+            
+    def setValues(self):
+        dict = self.frictionModel.getReclassDict(self.name)
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
@@ -364,7 +372,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             reclassField = self.scField.currentField()
             self.feedback.pushDebugInfo("fixedMode = " + str(fixedMode))
             if fixedMode:
-                burnVal = self.scBurnVal.text()
+                # burnVal = self.scBurnVal.text()
+                burnVal = self.frictionModel.getCodeFromCombo(self.scBurnVal)
                 dlgItem = ScenarioItem.fromValues(name,descr=descr,
                     layer=layerPath,base=base,
                     mode=1,burnVal=burnVal,extentFlag=extentFlag,
@@ -390,33 +399,41 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         if dlgItem:
             self.feedback.pushDebugInfo("updateUI " + str(dlgItem.dict))
             self.feedback.pushDebugInfo("updateUI child 1 " + str(dlgItem.reclassModel))
-            self.scName.setText(dlgItem.dict[ScenarioItem.NAME])
-            self.scDescr.setText(dlgItem.dict[ScenarioItem.DESCR])
-            self.scBase.setCurrentText(dlgItem.dict[ScenarioItem.BASE])
+            scName = dlgItem.getName()
+            self.scName.setText(scName)
+            self.scDescr.setText(dlgItem.getDescr())
+            self.scBase.setCurrentText(dlgItem.getBase())
             layer = dlgItem.getLayer()
             if layer and os.path.isfile(layer):
                 self.layerComboDlg.setLayerPath(layer)
-            self.scExtentFlag.setChecked(dlgItem.dict[ScenarioItem.EXTENT_FLAG])
+            self.scExtentFlag.setChecked(dlgItem.getExtentFlag())
             fieldMode = dlgItem.dict[ScenarioItem.MODE] == 2
             self.switchBurnMode(fieldMode)
             if fieldMode:
                 self.feedback.pushDebugInfo("updateUI child 2" + str(dlgItem.reclassModel))
                 # copyModel = dlgItem.reclassModel.__copy__()
                 # self.reclassModel = dlgItem.reclassModel.__copy__()
-                self.scField.setField(dlgItem.dict[ScenarioItem.RECLASS_FIELD])
-                self.reclassModel = dlgItem.reclassModel
+                self.scField.setField(dlgItem.getBurnField())
+                # load model values
+                initVals = self.frictionModel.getInitVals(origin=scName)
+                newVals = self.frictionModel.getCodesStrComplete(origin=scName)
+                # self.reclassModel = dlgItem.reclassModel
+                self.reclassModel = ScenarioReclassModel.fromValues(values=initVals,codes=newVals,feedback=self.feedback)
                 self.feedback.pushDebugInfo("updateUI child 3 " + str(dlgItem.reclassModel))
                 # self.feedback.pushDebugInfo("updateUI child 4 " + str(self.reclassModel))
                 # self.scDialogView.setModel(copyModel)
                 self.scDialogView.setModel(self.reclassModel)
                 self.reclassModel.layoutChanged.emit()
+                burnVal = None
             else:
-                burnVal = str(dlgItem.dict[ScenarioItem.BURN_VAL])
+                # burnVal = str(dlgItem.dict[ScenarioItem.BURN_VAL])
+                burnVal = dlgItem.getBurnVal() 
                 self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
-                self.scBurnVal.setText(burnVal)
+                # self.scBurnVal.setText(burnVal)
+                # self.frictionModel.initComboCodes(self.scBurnVal,burnVal)
         else:
-            burnVal = str(self.frictionModel.getFreeVals(1)[0])
-            self.scBurnVal.setText(burnVal)
+            burnVal = None
+        self.frictionModel.initComboCodes(self.scBurnVal,burnVal)
 
 class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
     def __init__(self, parent, dlgItem, feedback=None):

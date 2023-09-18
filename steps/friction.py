@@ -175,6 +175,7 @@ class FrictionModel(ExtensiveTableModel):
         codes = set(self.getCodes())
         self.feedback.pushDebugInfo("updateFromImports {}".format(codes))
         classCodes = set()
+        toAdd = []
         # Add new values
         for i in self.parentModel.classModel.items:
             newValStr = i.getNewVal()
@@ -186,12 +187,15 @@ class FrictionModel(ExtensiveTableModel):
             self.feedback.pushDebugInfo("updateFromImports2 {}".format(newVal))
             if newVal in codes:
                 continue
-            self.addRowFromClassItem(i)
+            toAdd += i
         # Remove deleted values
         self.feedback.pushDebugInfo("classCodes {}".format(classCodes))
         toDelete = codes - classCodes
         self.feedback.pushDebugInfo("toDelete {}".format(toDelete))
         self.items = [i for i in self.items if self.getItemValue(i) not in toDelete]
+        # Add values
+        for i in toAdd:
+            self.addRowFromClassItem(i)            
         self.layoutChanged.emit()
             
         

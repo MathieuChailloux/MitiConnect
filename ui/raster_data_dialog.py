@@ -81,14 +81,15 @@ class RasterDlgItem(abstract_model.DictItem):
 
     def __init__(self, dict, feedback=None):
         super().__init__(dict,feedback=feedback)
+        self.values = []
     def getName(self):
         return self.dict[self.NAME]
     def getLayerPath(self):
         return self.dict[self.INPUT]
     # def getReclassModel(self):
         # return self.getChild()
-    # def getValues(self):
-        # return self.getReclassModel().getValues()
+    def getValues(self):
+        return self.values
         
     def getValue(self):
         return None
@@ -178,7 +179,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             # dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)
             # self.data_item.setChild(self.rasterDataDialogView.model())
-            # self.data_item.values = self.values
+            self.data_item.values = self.values
             # self.data_item.isScenario = self.isScenario.isChecked()
             # self.data_item.setChild(self.reclass_model)
             return self.data_item

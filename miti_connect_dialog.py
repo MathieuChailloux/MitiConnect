@@ -248,6 +248,7 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
         dlgObj = CreateProjectDialog(parent=self)
         createDlg = dlgObj.showDialog()
         if createDlg:
+            self.clearModels()
             d, n, workspace = createDlg
             if workspace:
                 self.initializeWorkspace(workspace,n)

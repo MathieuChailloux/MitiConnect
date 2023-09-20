@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>488</width>
-    <height>485</height>
+    <height>344</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -172,7 +172,7 @@
       <item row="2" column="0">
        <widget class="QRadioButton" name="scShort">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="minimumSize">
          <size>
@@ -234,9 +234,6 @@
          <string>Values reclassification</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="3" column="0" colspan="2">
-          <widget class="QTableView" name="scDialogView"/>
-         </item>
          <item row="0" column="0">
           <widget class="QRadioButton" name="scFieldMode">
            <property name="enabled">
@@ -247,6 +244,19 @@
            </property>
            <property name="checked">
             <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="scFixedMode">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Fixed value</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -275,21 +285,8 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="scFixedMode">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Fixed value</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1">
-          <widget class="QComboBox" name="scBurnVal"/>
+          <widget class="QSpinBox" name="scBurnVal"/>
          </item>
         </layout>
        </widget>

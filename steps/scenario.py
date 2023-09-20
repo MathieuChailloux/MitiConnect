@@ -301,6 +301,11 @@ class ScenarioConnector(TableToDialogConnector):
             # item = self.mkItemFromDlgItem(dlg_item)
             # self.model.addItem(item)
             self.model.addItem(dlg_item)
+            if dlg_item.shortMode:
+                newName = "{}-short".format(dlg_item.getName())
+                newItem = dlg_item.deepcopy()
+                newItem.setName(newName)
+                self.model.addItem(newItem)
             self.model.layoutChanged.emit()
     
     def updateFromDlgItem(self,item,dlgItem):
@@ -322,18 +327,20 @@ class ScenarioConnector(TableToDialogConnector):
             if item.isLanduseMode():
                 pass
             elif item.isFixedMode():
-                burnVal = str(item.getBurnVal())
+                # burnVal = str(item.getBurnVal())
                 # self.model.pluginModel.frictionModel.updateFromScenario(item.getName(),[""],[burnVal])
-                self.model.pluginModel.classModel.updateFromScenario(item.getName(),[""],[burnVal])
+                # self.model.pluginModel.classModel.updateFromScenario(item.getName(),,burnVal)
+                self.model.pluginModel.classModel.updateFromScenario2(item)
             elif item.isFieldMode():
-                newValStr = friction.NEW_VAL_STR
-                values, classes = item.reclassModel.getValuesAndClasses()
-                classes2 = [c.split(" - ")[0] for c in classes]
-                nbNew = classes2.count(newValStr)
-                freeVals = self.model.pluginModel.frictionModel.getFreeVals(nbNew)
-                classes3 = [int(freeVals.pop(0)) if c == newValStr else int(c) for c in classes2]
-                # self.model.pluginModel.frictionModel.updateFromScenario(item.getName(),values,classes)
-                self.model.pluginModel.classModel.updateFromScenario(item.getName(),values,classes3)
+                # newValStr = friction.NEW_VAL_STR
+                # values, classes = item.reclassModel.getValuesAndClasses()
+                # classes2 = [c.split(" - ")[0] for c in classes]
+                # nbNew = classes2.count(newValStr)
+                # freeVals = self.model.pluginModel.frictionModel.getFreeVals(nbNew)
+                # classes3 = [int(freeVals.pop(0)) if c == newValStr else int(c) for c in classes2]
+                # self.model.pluginModel.classModel.updateFromScenario(item.getName(),values,classes3)
+                # self.model.pluginModel.classModel.updateFromScenario(item.getName(),item.getValues())
+                self.model.pluginModel.classModel.updateFromScenario2(item)
             self.model.pluginModel.frictionModel.layoutChanged.emit()
         else:
             self.feedback.pushDebugInfo("Empty item")

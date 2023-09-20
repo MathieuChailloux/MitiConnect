@@ -906,7 +906,7 @@
                              </font>
                             </property>
                             <property name="text">
-                             <string>Merge data</string>
+                             <string>Create landuse layers</string>
                             </property>
                             <property name="scaledContents">
                              <bool>true</bool>
@@ -1085,7 +1085,7 @@
                                 <enum>Qt::LeftToRight</enum>
                                </property>
                                <property name="text">
-                                <string>Merge</string>
+                                <string>Create</string>
                                </property>
                                <property name="icon">
                                 <iconset>

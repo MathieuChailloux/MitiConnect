@@ -156,14 +156,17 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             burnMode = self.data_item.getBurnMode()
             self.setBurnMode(burnMode)
             self.vectorFieldCombo.setField(self.data_item.getBurnField())
-            burnVal = None if burnMode else self.data_item.getBurnVal() 
-            # self.vectorFixedValue.setValue(burnVal)
-            self.frictionModel.initComboCodes(self.vectorFixedCombo,burnVal)
+            burnVal = self.frictionModel.getFreeVal() if burnMode else self.data_item.getBurnVal() 
+            self.vectorFixedValue.setValue(burnVal)
+            # self.frictionModel.initComboCodes(self.vectorFixedCombo,burnVal)
             self.vectorAllTouch.setChecked(self.data_item.getAllTouch())
             bm = self.data_item.isBufferMode()
             self.vectorBufferMode.setChecked(bm)
             self.vectorBufferValue.setEnabled(bm)
             self.vectorBufferValue.setValue(self.data_item.getBufferExpr())
+        else:
+            self.vectorFixedValue.setValue(self.frictionModel.getFreeVal())
+            
         
     def setLayer(self,layer):
         self.vectorSelectionExpression.setLayer(layer)
@@ -179,8 +182,8 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.vectorFieldMode.setChecked(is_field_mode)
         self.vectorFieldCombo.setEnabled(is_field_mode)
         self.vectorFixedMode.setChecked(not is_field_mode)
-        # self.vectorFixedValue.setEnabled(not is_field_mode)
-        self.vectorFixedCombo.setEnabled(not is_field_mode)
+        self.vectorFixedValue.setEnabled(not is_field_mode)
+        # self.vectorFixedCombo.setEnabled(not is_field_mode)
         
     def setFieldMode(self,checked):
         self.setBurnMode(checked)
@@ -225,8 +228,8 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
                     continue
                 dict[VectorDlgItem.BURN_VAL] = ""
             if not burn_field_mode:
-                # burnVal = self.vectorFixedValue.value()
-                dict[VectorDlgItem.BURN_VAL] = self.frictionModel.getCodeFromCombo(self.vectorFixedCombo)
+                dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
+                # dict[VectorDlgItem.BURN_VAL] = self.frictionModel.getCodeFromCombo(self.vectorFixedCombo)
                 #if burnVal <= 0:
                 #    feedbacks.paramError("Burn value must be strictly positive")
                 #    continue

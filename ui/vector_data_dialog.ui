@@ -341,6 +341,22 @@
       <string>Burn mode</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="vectorFixedMode">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Fixed value</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QgsFieldComboBox" name="vectorFieldCombo">
         <property name="enabled">
@@ -379,27 +395,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="vectorFixedMode">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Fixed value</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
-       <widget class="QComboBox" name="vectorFixedCombo">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
+       <widget class="QSpinBox" name="vectorFixedValue">
         <property name="minimumSize">
          <size>
           <width>0</width>

@@ -59,6 +59,9 @@ class ClassItem(DictItem):
     def getDescription(self):
         return self.dict[self.DESCRIPTION]
         
+    def setNewVal(self,newVal):
+        self.dict[self.NEW_VAL] = newVal
+        
     def equals(self,other):
         return ((self.getOrigin() == other.getOrigin()) and (self.getInitVal() == other.getInitVal()))
 
@@ -90,7 +93,19 @@ class ClassModel(DictModel):
             self.addRow(origin,initVal,newVal)
         # self.layoutChanged.emit()
         
-    def getItemFromOrigin(self,origin,initVal):
+    def getItemsFromOrigin(self,origin):
+        items = [i for i in self.items if i.getOrigin() == origin]
+        return items
+    def getItemFromOrigin(self,origin):
+        items = self.getItemsFromOrigin(origin)
+        nbItems = len(items)
+        if nbItems == 0:
+            return None
+        elif nbItems == 1:
+            return items[0]
+        else:
+            self.internal_error("Multiple matching items for origin {} in {}".format(origin,items))
+    def getItemFromOriginAndVal(self,origin,initVal):
         for i in self.items:
             if i.getOrigin() == origin and i.getInitVal() == initVal:
                 return i
@@ -135,7 +150,7 @@ class ClassModel(DictModel):
                 item.dict[self.IMPORT] = newName
         self.layoutChanged.emit()
         
-    def updateFromScenario(self,scName,initVals,codes):       
+    def updateFromScenario(self,scName,initVals,codes):
         self.feedback.pushDebugInfo("updateFromScenario " + str(scName))
         self.feedback.pushDebugInfo("updateFromScenario " + str(initVals))
         self.feedback.pushDebugInfo("updateFromScenario " + str(codes))
@@ -145,6 +160,37 @@ class ClassModel(DictModel):
         valuesToAdd = []
         for initVal, code in zip(initVals,codes):
             self.addRow(scName,initVal,code)
+        self.layoutChanged.emit()
+        self.pluginModel.frictionModel.updateFromImports()
+    def updateFromScenario2(self,scItem):
+        scName = scItem.getName()
+        if scItem.isInitialState():
+            pass
+        elif scItem.isLanduseMode():
+            pass
+        elif scItem.isFixedMode():
+            burnVal = scItem.getBurnVal()
+            classItem = self.getItemFromOrigin(scName)
+            if classItem:
+                classItem.setNewVal(scItem.getBurnVal())
+            else:
+                freeVal = self.getFreeVal()
+                self.addRow(scName,"",freeVal)
+        elif scItem.isFieldMode():
+            if not scItem.values:
+                self.feedback.internal_error("No field value for {}".format(scItem))
+            items = self.getItemsFromOrigin(scName)
+            classInitVals = [i.getInitVal() for i in items]
+            if classInitVals != scItem.values:
+                self.items = [i for i in self.items if i.getOrigin() != scName]
+            for val in scItem.values:
+                try:
+                    newVal = int(val)
+                except TypeError:
+                    newVal = self.pluginModel.frictionModel.getFreeVal()
+                self.addRow(scName,val,newVal)
+        else:
+            assert(False)
         self.layoutChanged.emit()
         self.pluginModel.frictionModel.updateFromImports()
         

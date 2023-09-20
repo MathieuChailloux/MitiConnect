@@ -184,10 +184,10 @@ class FrictionModel(ExtensiveTableModel):
             else:
                 continue
             classCodes.add(newVal)
-            self.feedback.pushDebugInfo("updateFromImports2 {}".format(newVal))
+            # self.feedback.pushDebugInfo("updateFromImports2 {}".format(newVal))
             if newVal in codes:
                 continue
-            toAdd += i
+            toAdd.append(i)
         # Remove deleted values
         self.feedback.pushDebugInfo("classCodes {}".format(classCodes))
         toDelete = codes - classCodes

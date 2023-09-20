@@ -234,7 +234,7 @@ class ImportModel(DictModel):
             if childItem.isBufferMode():
                 buffered = qgsUtils.mkTmpPath(name + '_buffered.gpkg')
                 bufferExpr = childItem.getBufferExpr()
-                qgsTreatments.applyBufferFromExpr(selected,expr,
+                qgsTreatments.applyBufferFromExpr(selected,bufferExpr,
                     buffered,context=context,feedback=feedback)
             else:
                 buffered = selected
@@ -277,7 +277,7 @@ class ImportModel(DictModel):
                 to_norm_path = reclassified
             else:
                 # Burn by fixed value mode
-                classItem = self.pluginModel.classModel.getItemFromOrigin(name,"")
+                classItem = self.pluginModel.classModel.getItemFromOrigin(name)
                 burnVal = self.pluginModel.classModel.getItemReclassVal(classItem)
                 # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyRasterization(buffered,raster_path,
@@ -398,7 +398,7 @@ class ImportConnector(TableToDialogConnector):
         # self.pathFieldToAbs(item,VectorDlgItem.INPUT)
         if item.isVector():
             if not item.child.isBurnFieldMode():
-                classItem = self.model.pluginModel.classModel.getItemFromOrigin(item.getName(),"")
+                classItem = self.model.pluginModel.classModel.getItemFromOrigin(item.getName())
                 burnVal = self.model.pluginModel.classModel.getItemReclassVal(classItem)
                 dlgItem.setBurnVal(burnVal)
             item_dlg = VectorDataDialog(dlgItem,self.dlg,self.model.pluginModel.frictionModel)

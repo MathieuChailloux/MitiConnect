@@ -190,12 +190,14 @@ class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
                 feedbacks.launchDialog(self,self.tr("Wrong value"),
                     self.tr("Project name '") + str(n) + str("' must be an alphanumeric string"))
                 continue
-            joined = utils.joinPath(d,n)
-            if utils.fileExists(joined):
-                feedbacks.launchDialog(self,self.tr("Wrong value"),
-                    self.tr("Directory '") + str(joined) + str("' already exists"))
-                continue
-            return (d,n,joined)
+            # joined = utils.joinPath(d,n)
+            # joined += ".xml"
+            # if utils.fileExists(joined):
+                # feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    # self.tr("File '") + str(joined) + str("' already exists"))
+                # continue
+            # return (d,n,joined)
+            return (d,n)
         return None
             
 
@@ -249,9 +251,9 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
         createDlg = dlgObj.showDialog()
         if createDlg:
             self.clearModels()
-            d, n, workspace = createDlg
+            workspace, name = createDlg
             if workspace:
-                self.initializeWorkspace(workspace,n)
+                self.initializeWorkspace(workspace,name)
         
     # def getScenariosDir(self):
         # self.scDir = utils.joinPath(workspace,"Scenarios")

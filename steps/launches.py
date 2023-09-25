@@ -618,7 +618,10 @@ class LaunchModel(DictModel):
             self.feedback.user_error("No landuse file %s for specie %s in scenario %s"%(landuse,spName,scName))
         if not utils.fileExists(friction):
             self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
-        codes = spItem.getCodesVal()
+        if spItem.isHabitatCodesMode():
+            codes = spItem.getCodesVal()
+        else:
+            self.internal_error("Not yet implemented : habitat from layer")
         self.feedback.pushDebugInfo("codes = " + str(codes))
         if not codes:
             self.feedback.user_error("No habitat code specified for specie "

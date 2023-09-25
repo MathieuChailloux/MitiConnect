@@ -68,22 +68,29 @@ class SpeciesItem(abstract_model.DictItem):
     MAX_DISP = 'MAX_DISP'
     MIN_AREA = 'MIN_AREA'
     LANDUSE = 'LANDUSE'
-    CODES = 'CODES'
+    HABITAT_MODE = 'HABITAT_MODE'
+    HABITAT_VAL = 'CODES'
     EXTENT_MODE = 'EXTENT_MODE'
     EXTENT_VAL = 'EXTENT_VAL'
     FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
     DISPLAY_FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE ]
     
+    def __init__(self,dict,feedback=None):
+        if self.HABITAT_MODE not in dict:
+            dict[self.HABITAT_MODE] = True
+        super().__init__(dict,feedback=feedback)
+    
     @classmethod
     def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,
-                 patch_unit,landuse,codes,extent_mode,extent_val,
+                 patch_unit,landuse,habitatMode,habitatVal,extent_mode,extent_val,
                  feedback=None):
         dict = { cls.ID : name,
                  cls.FULL_NAME : full_name,
                  cls.MAX_DISP : max_disp,
                  cls.MIN_AREA : min_patch,
                  cls.LANDUSE : landuse,
-                 cls.CODES : codes,
+                 cls.HABITAT_MODE : habitatMode,
+                 cls.HABITAT_VAL : habitatVal,
                  cls.EXTENT_MODE : extent_mode,
                  cls.EXTENT_VAL : extent_val }
         return cls(dict,feedback=feedback)
@@ -101,14 +108,20 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.MIN_AREA]
     def getMaxDisp(self):
         return self.dict[self.MAX_DISP]
+    def getHabitatMode(self):
+        return self.dict[self.HABITAT_MODE]
+    def getHabitatVal(self):
+        return self.dict[self.HABITAT_VAL]
     def getCodesFull(self):
-        return ast.literal_eval(self.dict[self.CODES])
+        return ast.literal_eval(self.dict[self.HABITAT_VAL])
     def getExtentMode(self):
         return self.dict[self.EXTENT_MODE]
     def getExtentVal(self):
         return self.dict[self.EXTENT_VAL]
         
     # getters wrappers
+    def isHabitatCodesMode(self):
+        return self.getHabitatMode() == True
     def isBufferMode(self):
         return self.getExtentMode() == True
     def isMaxExtentMode(self):
@@ -135,8 +148,10 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def connectComponents(self):
         # super().connectComponents()
-        self.speciesBufferMode.clicked.connect(self.switchBufferMode)
-        self.speciesLayerMode.clicked.connect(self.switchLayerMode)
+        self.habitatCodesMode.clicked.connect(self.switchHabitatCodesMode)
+        self.habitatLayerMode.clicked.connect(self.switchHabitatLayerMode)
+        self.speciesBufferMode.clicked.connect(self.switchExtentBufferMode)
+        self.speciesLayerMode.clicked.connect(self.switchExtentLayerMode)
         # dataNames =  self.pluginModel.getDataNames()
         # self.speciesLanduse.insertItems(0,dataNames)
         # testModel = TestModel()
@@ -145,15 +160,27 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pluginModel.landuseModel.layoutChanged.emit()
         # self.pluginModel.frictionModel.layoutChanged.emit()
         
-    def switchMode(self,buffer_mode):
+    # Switch extent mode
+    def switchExtentMode(self,buffer_mode):
         self.speciesBufferMode.setChecked(buffer_mode)
         self.speciesLayerMode.setChecked(not buffer_mode)
         self.speciesExtentBuffer.setEnabled(buffer_mode)
         self.speciesExtentLayer.setEnabled(not buffer_mode)
-    def switchBufferMode(self):
-        self.switchMode(True)
-    def switchLayerMode(self):
-        self.switchMode(False)
+    def switchExtentBufferMode(self):
+        self.switchExtentMode(True)
+    def switchExtentLayerMode(self):
+        self.switchExtentMode(False)
+        
+    # Switch habitat mode
+    def switchHabitatMode(self,extent_mode):
+        self.habitatCodesMode.setChecked(extent_mode)
+        self.habitatLayerMode.setChecked(not extent_mode)
+        self.habitatCodes.setEnabled(extent_mode)
+        self.habitatLayer.setEnabled(not extent_mode)
+    def switchHabitatCodesMode(self):
+        self.switchHabitatMode(True)
+    def switchHabitatLayerMode(self):
+        self.switchHabitatMode(False)
         
     def showDialog(self):
         while self.exec_():
@@ -168,7 +195,11 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             patch_unit = self.speciesPatchUnit.currentIndex()
             # landuse = self.speciesLanduse.currentLayer()
             landuse = self.speciesLanduse.currentText()
-            codes = str(self.habitatCodes.checkedItems())
+            habitat_mode = self.habitatCodesMode.isChecked()
+            if habitat_mode:
+                habitat_val = str(self.habitatCodes.checkedItems())
+            else:
+                habitat_val = self.habitatLayer.filePath()
             # group = self.speciesGroup.currentIndex()
             buffer_mode = self.speciesBufferMode.isChecked()
             layer_mode = self.speciesLayerMode.isChecked()
@@ -177,7 +208,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             buffer_layer = self.speciesExtentLayer.filePath()
             extent_val = buffer_val if buffer_mode else buffer_layer
             item = SpeciesItem.fromValues(name,full_name,max_disp,disp_unit,
-                min_patch,patch_unit,landuse,codes,extent_mode,extent_val,
+                min_patch,patch_unit,landuse,habitat_mode,habitat_val,extent_mode,extent_val,
                 feedback=self.feedback)
             return item
         return None
@@ -196,12 +227,17 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.speciesMinPatch.setValue(dlg_item.getMinArea())
             self.speciesDispUnit.setCurrentIndex(0)
             self.speciesLanduse.setCurrentText(dlg_item.dict[SpeciesItem.LANDUSE])
-            self.habitatCodes.setCheckedItems(dlg_item.getCodesFull())
+            habitat_mode = dlg_item.getHabitatMode()
+            self.switchHabitatMode(habitat_mode)
+            if habitat_mode:
+                self.habitatCodes.setCheckedItems(dlg_item.getCodesFull())
+            else:
+                self.habitatLayer.setFilePath(dlg_item.getHabitatVal())
             # self.habitatCodes.setCheckedItems(dlg_item.dict[SpeciesItem.CODES])
             # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesItem.GROUP])
             extent_mode = dlg_item.dict[SpeciesItem.EXTENT_MODE]
             extent_val = dlg_item.dict[SpeciesItem.EXTENT_VAL]
-            self.switchMode(extent_mode)
+            self.switchExtentMode(extent_mode)
             if extent_mode:
                 self.speciesExtentBuffer.setValue(extent_val)
             else:

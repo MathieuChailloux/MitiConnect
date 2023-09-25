@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>427</width>
-    <height>420</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>420</height>
+    <height>400</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -53,7 +53,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>205</height>
+       <height>190</height>
       </size>
      </property>
      <property name="maximumSize">
@@ -63,12 +63,21 @@
       </size>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
       <item row="2" column="2">
        <widget class="QComboBox" name="speciesDispUnit">
         <property name="minimumSize">
@@ -317,6 +326,9 @@
       <string>Extent</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <property name="topMargin">
+       <number>5</number>
+      </property>
       <item row="1" column="2">
        <widget class="QgsFileWidget" name="speciesExtentLayer">
         <property name="enabled">
@@ -393,12 +405,30 @@
    </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>85</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>78</height>
+      </size>
+     </property>
      <property name="title">
       <string>Habitat</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="habitatLanduseMode">
+       <widget class="QRadioButton" name="habitatCodesMode">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -437,7 +467,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>20</height>
+          <height>27</height>
          </size>
         </property>
        </widget>
@@ -446,6 +476,12 @@
        <widget class="QgsFileWidget" name="habitatLayer">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>27</height>
+         </size>
         </property>
        </widget>
       </item>

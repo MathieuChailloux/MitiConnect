@@ -129,6 +129,17 @@ class SpeciesConnector(TableToDialogConnector):
             pluginModel=self.model.pluginModel,
             feedback=self.feedback)
         return species_dlg 
+        
+    def preDlg(self,item):
+        if item:
+            if not item.isHabitatCodesMode():
+                self.pathFieldToAbs(item,SpeciesItem.HABITAT_VAL)
+            
+    def postDlg(self,dlg_item):
+        if dlg_item:
+            if not dlg_item.isHabitatCodesMode():
+                self.pathFieldToRel(dlg_item,SpeciesItem.HABITAT_VAL)
+        
     
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()

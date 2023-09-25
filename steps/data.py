@@ -64,13 +64,15 @@ class ImportItem(DictItemWithChild):
             ImportItem.MODE : is_vector,
             ImportItem.VALUE : dlgItem.getValue() }
         return dict 
+        return dict 
         
     def getName(self):
         return self.dict[ImportItem.NAME]
     def getInput(self):
         return self.dict[ImportItem.INPUT]
     def getValue(self):
-        return self.dict[ImportItem.VALUE]
+        # return self.dict[ImportItem.VALUE]
+        return self.child.getValue()
     # def getChildValue(self):
         # dlgItem = self.child
         # is_vector = type(dlgItem) is VectorDlgItem
@@ -180,7 +182,12 @@ class ImportModel(DictModel):
                 # classModel.layoutChanged.emit()
         else:
             values = item.getValues()
-            classModel.addRowFromValues(name,values)
+            # Raster value = keep values mode
+            if item.getValue():
+                for v in values:
+                    classModel.addRow(name,v,v)
+            else:
+                classModel.addRowFromValues(name,values)
         # self.pluginModel.frictionModel.updateFromImports()
             
     # def updateItem(self,item,dlgItem):
@@ -455,9 +462,13 @@ class ImportConnector(TableToDialogConnector):
         self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
         # Diff
         diffInput = item.getInput() != dlgItem.getLayerPath()
+        self.feedback.pushDebugInfo("diffInput = {}".format(diffInput))
         isVector = item.isVector()
         # diffMode = item.getMode() != dlgItem.getMode()
         diffValue = item.getValue() != dlgItem.getValue()
+        self.feedback.pushDebugInfo("diffValue = {}".format(diffValue))
+        self.feedback.pushDebugInfo("value1 = {}".format(item.getValue()))
+        self.feedback.pushDebugInfo("value2 = {}".format(dlgItem.getValue()))
         if diffInput or diffValue:
             # DELETE then create NEW
             self.model.removeFromName(item.getName())

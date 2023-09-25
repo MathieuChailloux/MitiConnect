@@ -101,6 +101,9 @@
    </item>
    <item row="2" column="0">
     <widget class="QFrame" name="frame_3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
@@ -126,7 +129,7 @@
       <item>
        <widget class="QCheckBox" name="keepValues">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="layoutDirection">
          <enum>Qt::RightToLeft</enum>

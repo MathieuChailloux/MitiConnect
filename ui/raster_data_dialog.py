@@ -76,10 +76,13 @@ class RasterDlgItem(abstract_model.DictItem):
 
     NAME = 'NAME'
     INPUT = 'INPUT'
+    KEEP_VALUES = 'KEEP_VALUES'
     # RECLASS = 'RECLASS'
     FIELDS = [ INPUT ]
 
     def __init__(self, dict, feedback=None):
+        if self.KEEP_VALUES not in dict:
+            dict[self.KEEP_VALUES] = False
         super().__init__(dict,feedback=feedback)
         self.values = []
     def getName(self):
@@ -92,7 +95,7 @@ class RasterDlgItem(abstract_model.DictItem):
         return self.values
         
     def getValue(self):
-        return None
+        return self.dict[self.KEEP_VALUES]
         
     @staticmethod
     def getItemClass(childTag):
@@ -117,8 +120,9 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         # self.class_model = class_model
         self.setupUi(self)
         self.initGui()
-        self.updateUi()
         self.connectComponents()
+        self.updateUi()
+        # self.connectComponents()
         
     def initGui(self):
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
@@ -153,6 +157,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer = self.data_item.getLayerPath()
             utils.checkFileExists(layer)
             self.layerComboDlg.setLayerPath(layer)
+            self.keepValues.setChecked(self.data_item.getValue())
             # model = self.data_item.child
             # if model:
                 # self.rasterDataDialogView.setModel(model)
@@ -176,6 +181,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
                 feedbacks.paramError("Could not load layer " + str(layer_path),parent=self)
                 continue
             dict[RasterDlgItem.INPUT] = layer_path
+            dict[RasterDlgItem.KEEP_VALUES] = self.keepValues.isChecked()
             # dict[RasterDlgItem.RECLASS] = self.reclass_model
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)
             # self.data_item.setChild(self.rasterDataDialogView.model())

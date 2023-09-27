@@ -161,16 +161,11 @@ class MitiConnectModel(abstract_model.MainModel):
                 self.feedback.pushDebugInfo("No data item named '"
                     + str(name) + "'")
         
-    def loadProject(self, filename,retFlag=False):
+    def loadProject(self, filename):
+        if not utils.fileExists(filename):
+            msg = self.tr("Graphab project does not exist, could not find file ")
+            self.feedback.user_error(msg + str(filename))
         self.graphabPlugin.loadProject(filename)
-        if retFlag:
-            assert(False)
-            project = self.graphabPlugin.getProject(filename)
-            print("retFlag True")
-            print("filename " + str(filename))
-            print("project = " + str(project))
-            print("projects = " + str(self.graphabPlugin.projects))
-            return project
             
             
         

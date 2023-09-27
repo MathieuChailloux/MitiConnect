@@ -147,72 +147,6 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="scExtentFlag">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>151</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>1660000</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Layer represents project extent</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QRadioButton" name="scShort">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>151</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>1660000</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Create shortcut scenario</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QRadioButton" name="scPerValue">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>151</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>166000</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Create 1 scenario per field value</string>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="0">
        <widget class="QGroupBox" name="valueGroupBox_2">
         <property name="enabled">
@@ -289,6 +223,72 @@
           <widget class="QSpinBox" name="scBurnVal"/>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="scExtentFlag">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>151</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>1660000</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Layer represents project extent</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="scShort">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>151</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>1660000</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Create shortcut scenario</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="scPerValue">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>151</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>166000</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Create 1 scenario per field value</string>
+        </property>
        </widget>
       </item>
      </layout>

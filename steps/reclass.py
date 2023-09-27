@@ -63,7 +63,11 @@ class ClassItem(DictItem):
         self.dict[self.NEW_VAL] = newVal
         
     def equals(self,other):
-        return ((self.getOrigin() == other.getOrigin()) and (self.getInitVal() == other.getInitVal()))
+        # self.feedback.pushDebugInfo("equals")
+        res = ((self.getOrigin() == other.getOrigin()) and (self.getInitVal() == other.getInitVal()))
+        if res:
+            self.feedback.pushDebugInfo("equals {} -- {} = {}".format(self.dict,other.dict,res))
+        return res
 
 
 class ClassModel(DictModel):
@@ -104,13 +108,13 @@ class ClassModel(DictModel):
         elif nbItems == 1:
             return items[0]
         else:
-            self.internal_error("Multiple matching items for origin {} in {}".format(origin,items))
+            self.feedback.internal_error("Multiple matching items for origin {} in {}".format(origin,items))
     def getItemFromOriginAndVal(self,origin,initVal):
         for i in self.items:
             if i.getOrigin() == origin and i.getInitVal() == initVal:
                 return i
         self.feedback.internal_error("No class item found matching origin {} and value {}".format(
-            origin,initVal))
+            origin,initVal))         
             
     def getItemReclassVal(self,item):
         try:
@@ -120,7 +124,9 @@ class ClassModel(DictModel):
         return newVal
     
     def removeItemsWithOrigin(self,origin):
+        self.feedback.pushDebugInfo("removeItemsWithOrigin1 {}".format(len(self.items)))
         self.items = [ i for i in self.items if i.dict[ClassItem.ORIGIN] != origin ]
+        self.feedback.pushDebugInfo("removeItemsWithOrigin2 {}".format(len(self.items)))
         self.layoutChanged.emit()
         
     # Build table parameter for alg reclassifyByTable [min1, max1, val1, min2, ...]
@@ -150,39 +156,20 @@ class ClassModel(DictModel):
                 item.dict[self.IMPORT] = newName
         self.layoutChanged.emit()
         
-    def updateFromScenario(self,scName,initVals,codes):
-        self.feedback.pushDebugInfo("updateFromScenario " + str(scName))
-        self.feedback.pushDebugInfo("updateFromScenario " + str(initVals))
-        self.feedback.pushDebugInfo("updateFromScenario " + str(codes))
-        assert(len(initVals) == len(codes))
-        # Remove reclass item with matching name
-        self.items = [i for i in self.items if i.getOrigin() != scName]
-        valuesToAdd = []
-        for initVal, code in zip(initVals,codes):
-            self.addRow(scName,initVal,code)
-        self.layoutChanged.emit()
-        self.pluginModel.frictionModel.updateFromImports()
-    def updateFromScenario2(self,scItem):
+    def updateFromScenario(self,scItem):
         scName = scItem.getName()
+        self.feedback.pushDebugInfo("updateFromScenario1 " + str(scName))
+        self.feedback.pushDebugInfo("updateFromScenario4 " + str(len(self.items)))
         if scItem.isInitialState():
             pass
         elif scItem.isLanduseMode():
             pass
         elif scItem.isFixedMode():
             burnVal = scItem.getBurnVal()
-            classItem = self.getItemFromOrigin(scName)
-            if classItem:
-                classItem.setNewVal(scItem.getBurnVal())
-            else:
-                freeVal = self.getFreeVal()
-                self.addRow(scName,"",freeVal)
+            self.addRow(scName,"",burnVal)
         elif scItem.isFieldMode():
             if not scItem.values:
                 self.feedback.internal_error("No field value for {}".format(scItem))
-            items = self.getItemsFromOrigin(scName)
-            classInitVals = [i.getInitVal() for i in items]
-            if classInitVals != scItem.values:
-                self.items = [i for i in self.items if i.getOrigin() != scName]
             for val in scItem.values:
                 try:
                     newVal = int(val)
@@ -192,6 +179,7 @@ class ClassModel(DictModel):
         else:
             assert(False)
         self.layoutChanged.emit()
+        self.feedback.pushDebugInfo("updateFromScenario5 " + str(len(self.items)))
         self.pluginModel.frictionModel.updateFromImports()
         
     def flags(self, index):

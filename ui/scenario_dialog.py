@@ -130,6 +130,7 @@ class ScenarioItem(abstract_model.DictItem):
     
     def __init__(self,dict,feedback=None):
         super().__init__(dict,feedback=feedback)
+        self.shortMode = False
         # reclassModel = ScenarioReclassModel(feedback=feedback)
         # self.setReclassModel(reclassModel)
         # self.reclassModel = se lf.child
@@ -192,6 +193,15 @@ class ScenarioItem(abstract_model.DictItem):
         return self.getBase() == None
     def useExtent(self):
         return self.getExtentFlag()
+        
+    def sameBurn(self,other):
+        mode1, mode2 = self.getMode(), other.getMode()
+        if mode1 != mode2:
+            return False
+        if mode1:
+            return self.getBurnVal() == other.getBurnVal()
+        else:
+            return self.getBurnField() == other.getBurnField()
         
     # def getReclassTable(self):
         # return self.reclassModel.getReclassTable()
@@ -388,6 +398,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                     # continue
             # self.feedback.pushDebugInfo("reclassModel = " + str(dlgItem.reclassModel))
             dlgItem.values = self.values
+            dlgItem.shortMode = shortMode
             return dlgItem
         return None
 
@@ -425,15 +436,13 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             else:
                 # burnVal = str(dlgItem.dict[ScenarioItem.BURN_VAL])
                 classItem = self.classModel.getItemFromOrigin(scName)
-                if classItem:
-                    try:
-                        burnVal =  int(classItem.getNewVal())
-                    except TypeError:
-                        burnVal = self.frictionModel.getFreeVal()
-                    self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
-                    self.scBurnVal.setValue(burnVal)
-                else:
-                    self.feedback.internal_error("No class item found for {}".format(scName))
+                burnVal = classItem.getNewVal() if classItem else dlgItem.getBurnVal()
+                try:
+                    burnVal =  int(burnVal)
+                except TypeError:
+                    burnVal = self.frictionModel.getFreeVal()
+                self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
+                self.scBurnVal.setValue(burnVal)
                 # self.scBurnVal.setText(burnVal)
                 # self.frictionModel.initComboCodes(self.scBurnVal,burnVal)
         else:

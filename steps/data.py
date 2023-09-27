@@ -210,6 +210,7 @@ class ImportModel(DictModel):
         
     def applyItemWithContext(self,item,context,feedback):
         name = item.getName()
+        self.feedback.pushDebugInfo("apply Import {} ".format(name))
         self.pluginModel.paramsModel.checkInit()
         input_rel_path = item.getInput()
         input_path = self.pluginModel.getOrigPath(input_rel_path)
@@ -275,6 +276,8 @@ class ImportModel(DictModel):
                         self.feedback.pushDebugInfo("reclassDict type = "
                             + str(list(reclassDict)[0].__class__.__name__))
                     tmpVal = f[outField]
+                    if initVal not in reclassDict:
+                        self.internal_error("No matching found for {} in {}".format(initval,self.pluginModel.classModel.items))
                     outVal = reclassDict[initVal]
                     row = [tmpVal,tmpVal,outVal]
                     reclassTable += row

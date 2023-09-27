@@ -158,6 +158,17 @@ class ScenarioModel(DictModel):
         super().addItem(item)
         for i in self.items:
             self.feedback.pushDebugInfo("i2 = " + str(i.getName()))
+        if i.shortMode:
+            self.addShortItem(i)
+            
+    def addShortItem(self,item):
+        self.feedback.pushDebugInfo("SHORT MODE")
+        shortName = item.getName() + "Short"
+        shortItem = item.__deepcopy__()
+        shortItem.setName(shortName)
+        shortItem.shortMode = False
+        self.addItem(shortItem)
+            
     def addScenarioFromLayer(self,name,layer):
         self.feedback.pushDebugInfo("addScenarioFromLayer")
         item = ScenarioItem.fromValues(name,base=layer,
@@ -310,12 +321,19 @@ class ScenarioConnector(TableToDialogConnector):
     
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()
+        diffBurn = not (item.sameBurn(dlgItem))
+        self.feedback.pushDebugInfo("updateFromDlgItem {} {}".format(newName,diffBurn))
+        if diffBurn:
+            self.model.pluginModel.classModel.removeItemsWithOrigin(initName)
         item.updateFromDlgItem(dlgItem)
         if initName != newName:
             for scItem in self.model.items:
                 if scItem.getBase() == initName:
                     scItem.setBase(newName)
             self.model.pluginModel.renameClassImports(initName,newName)
+        if dlgItem.shortMode:
+            self.model.addShortItem(dlgItem)
+        self.updateFrictionFromDlg(dlgItem)
             
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)
@@ -324,24 +342,9 @@ class ScenarioConnector(TableToDialogConnector):
     def updateFrictionFromDlg(self,item):
         self.feedback.pushDebugInfo("updateFrictionFromDlg")
         if item:
-            if item.isLanduseMode():
-                pass
-            elif item.isFixedMode():
-                # burnVal = str(item.getBurnVal())
-                # self.model.pluginModel.frictionModel.updateFromScenario(item.getName(),[""],[burnVal])
-                # self.model.pluginModel.classModel.updateFromScenario(item.getName(),,burnVal)
-                self.model.pluginModel.classModel.updateFromScenario2(item)
-            elif item.isFieldMode():
-                # newValStr = friction.NEW_VAL_STR
-                # values, classes = item.reclassModel.getValuesAndClasses()
-                # classes2 = [c.split(" - ")[0] for c in classes]
-                # nbNew = classes2.count(newValStr)
-                # freeVals = self.model.pluginModel.frictionModel.getFreeVals(nbNew)
-                # classes3 = [int(freeVals.pop(0)) if c == newValStr else int(c) for c in classes2]
-                # self.model.pluginModel.classModel.updateFromScenario(item.getName(),values,classes3)
-                # self.model.pluginModel.classModel.updateFromScenario(item.getName(),item.getValues())
-                self.model.pluginModel.classModel.updateFromScenario2(item)
-            self.model.pluginModel.frictionModel.layoutChanged.emit()
+            if item.isFixedMode() or item.isFieldMode():
+                self.model.pluginModel.classModel.updateFromScenario(item)
+                self.model.pluginModel.frictionModel.layoutChanged.emit()
         else:
             self.feedback.pushDebugInfo("Empty item")
         

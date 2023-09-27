@@ -366,6 +366,10 @@ class LaunchModel(DictModel):
                 itemsAdded.append(launchItem)
                 if not scItem.isInitialState():
                     isScItem = scModel.getInitialState()
+                    # Backward compatibility for old project files
+                    if isScItem is None:
+                        scModel.addInitialState()
+                        isScItem = scModel.getInitialState()
                     isScName = isScItem.getName()
                     isItem = LaunchItem.fromValues(isScName,spName,extName,
                     pluginModel=self.pluginModel,fields=self.fields,

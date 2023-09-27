@@ -1712,38 +1712,6 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QToolButton" name="scenarioAddLanduse">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>25</width>
-                         <height>25</height>
-                        </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>Add scenario from layer</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>:/plugins/MitiConnect/icons/symbologyAdd.svg</normaloff>:/plugins/MitiConnect/icons/symbologyAdd.svg</iconset>
-                       </property>
-                       <property name="autoRaise">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
                       <widget class="QToolButton" name="scenarioAdd">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1765,7 +1733,7 @@
                        </property>
                        <property name="icon">
                         <iconset>
-                         <normaloff>:/plugins/MitiConnect/icons/mAlgorithmMergeLayers.svg</normaloff>:/plugins/MitiConnect/icons/mAlgorithmMergeLayers.svg</iconset>
+                         <normaloff>../icons/mActionAdd.svg</normaloff>../icons/mActionAdd.svg</iconset>
                        </property>
                        <property name="autoRaise">
                         <bool>true</bool>

@@ -386,8 +386,11 @@ class LaunchModel(DictModel):
         linksetName = self.getItemLinksetName(item)
         layer = qgsUtils.getLoadedLayerByName(linksetName)
         if layer is None:
-            self.feedback.user_error("Could not find layer for linkset %s needed in regression of item %s"%(
-                linksetName,item))
+            msg = self.tr("Could not find layer for linkset ")
+            msg += str(linksetName)
+            msg += self.tr(", please ensure graph has been created for item ")
+            msg += str(item)
+            self.feedback.user_error(msg)
         scItem, spItem, extItem = self.getItems(item)
         res = getRegression(layer)
         return res

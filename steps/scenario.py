@@ -203,7 +203,7 @@ class ScenarioModel(DictModel):
             qgsTreatments.applyRasterization(absLayerPath,rasterPath,
                 maxExtent,resolution,field=item.getBurnField(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
-            reclassTable = self.pluginModel.getReclassTable(name)
+            reclassTable = self.pluginModel.classModel.getReclassTable(name)
             qgsTreatments.applyReclassifyByTable(rasterPath,
                 reclassTable,toNormPath,
                 boundaries_mode=2,feedback=feedback)

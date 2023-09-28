@@ -673,7 +673,7 @@ class LaunchModel(DictModel):
                     self.clearStep(item,4)
                     # gProj.removeLinkset(linksetName)
                 else:
-                    linksetGroup = gProj.getLinksetGraph()
+                    linksetGroup = gProj.getLinksetGroup()
                     for layer in linksetGroup.children():
                         if layer.name() == linksetName:
                             layer.setItemVisibilityChecked(True)

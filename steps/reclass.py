@@ -142,8 +142,8 @@ class ClassModel(DictModel):
     def getReclassDict(self,name):
         table = {}
         for i in self.items:
-            if i.getOrigin() == name:
-                table[i.getInitVal()] = i.getNewVal()
+            # if i.getOrigin() == name:
+                # table[i.getInitVal()] = i.getNewVal()
             if i.getOrigin() == name:
                 inVal = i.getInitVal()
                 newVal = self.getItemReclassVal(i)

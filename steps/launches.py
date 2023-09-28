@@ -606,7 +606,7 @@ class LaunchModel(DictModel):
         qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
             out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
             feedback=feedback)
-        loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
+        loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True,groupName="Friction")
         styles.setRendererPalettedGnYlRd(loaded_layer)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
@@ -981,7 +981,7 @@ class LaunchConnector(TableToDialogConnector):
                 qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 return out_path
         self.model.applyItemLanduse(item,feedback=feedback)
-        qgsUtils.loadRasterLayer(out_path,loadProject=True)
+        qgsUtils.loadRasterLayer(out_path,loadProject=True,groupName="Landuse")
     def landuseRun(self):
         self.feedback.beginSection("Computing land use layer(s)")
         # self.iterateRunExtent(self.model.applyItemLanduse)

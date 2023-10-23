@@ -304,7 +304,7 @@
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1447"/>
         <source>Apply only to selected lines</source>
-        <translation>Appliquer à la sélection</translation>
+        <translation>Appliquer aux lignes sélectionnées</translation>
     </message>
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1443"/>
@@ -584,12 +584,12 @@
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1431"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome in MitiConnect !&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://github.com/MathieuChailloux/MitiConnect&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/MitiConnect&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Video tutorials : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Configuration should be frequently saved (buttons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; in top left corner).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&amp;lt;html&amp;gt;&amp;lt;head/&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Bienvenue dans MitiConnect !&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;Page d&apos;accueil: &amp;lt;a href=&amp;quot;https://github.com/MathieuChailloux/MitiConnect&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; text-decoration: underline; color:#0000ff;&amp;quot;&amp;gt;https://github.com/MathieuChailloux/MitiConnect&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;br/&amp;gt;Tutoriels vidéo : &amp;lt;a href=&amp;quot;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; text-decoration: underline; color:#0000ff;&amp;quot;&amp;gt;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span style=&amp;quot; font-weight:600;&amp;quot;&amp;gt;Pensez à sauvergarder régulièrement la configuration (boutons &amp;lt;/span&amp;gt;&amp;lt;img src=&amp;quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&amp;quot;/&amp;gt;&amp;lt;span style=&amp;quot; font-weight:600;&amp;quot;&amp;gt;, &amp;lt;/span&amp;gt;&amp;lt;img src=&amp;quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&amp;quot;/&amp;gt;&amp;lt;span style=&amp;quot; font-weight:600;&amp;quot;&amp;gt; en haut à gauche).&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bienvenue dans MitiConnect !&lt;/p&gt;&lt;p&gt;Page d&apos;accueil: &lt;a href=&quot;https://github.com/MathieuChailloux/MitiConnect&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/MitiConnect&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Tutoriels vidéo : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Pensez à sauvergarder régulièrement la configuration (boutons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; en haut à gauche).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1444"/>
         <source>Create landuse layers</source>
-        <translation>Créer nouvelle occupation du sol</translation>
+        <translation>Créer des couches d&apos;occupation du sol</translation>
     </message>
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1448"/>

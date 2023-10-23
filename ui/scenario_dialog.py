@@ -313,7 +313,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
     def switchBurnMode(self,fieldMode):
         self.scFixedMode.setChecked(not fieldMode)
         self.scFieldMode.setChecked(fieldMode)
-        self.scPerValue.setEnabled(fieldMode)
+        #self.scPerValue.setEnabled(fieldMode)
         self.scField.setEnabled(fieldMode)
         # self.scDialogView.setEnabled(fieldMode)
         self.scBurnVal.setEnabled(not fieldMode)

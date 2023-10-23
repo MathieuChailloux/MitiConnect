@@ -804,17 +804,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/landuse_dialog_ui.py" line="67"/>
         <source>Create new land use layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Create new land use layer</translation>
     </message>
     <message>
         <location filename="../ui/landuse_dialog_ui.py" line="72"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../ui/landuse_dialog_ui.py" line="68"/>
         <source>Land use name</source>
-        <translation type="unfinished"></translation>
+        <translation>Land use name</translation>
     </message>
 </context>
 <context>
@@ -1526,7 +1526,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/scenario_dialog_ui.py" line="163"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../ui/scenario_dialog_ui.py" line="164"/>

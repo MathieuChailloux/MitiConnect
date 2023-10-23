@@ -282,7 +282,9 @@ class ScenarioConnector(TableToDialogConnector):
             scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
                 msg = self.tr("No scenario in model : please create base scenario from landuse")
-                self.feedback.user_error(msg)
+                # self.feedback.user_error(msg)
+                self.feedback.pushWarning(msg)
+                self.model.addInitialState()
             item_copy = item.__deepcopy__() if item else None
             scenarioDlg = ScenarioDialog(self.dlg,item_copy,
                 model=self.model.pluginModel,feedback=self.feedback)

@@ -92,9 +92,9 @@ class FrictionModel(ExtensiveTableModel):
         
     def getMatchingItem(self,item):
         for i in self.items:
-            if self.getItemValue(i) == self.getItemValue(item):
-                return i
-            elif (self.getItemImport(i) == self.getItemImport(item)) and (self.getItemImportVal(i) == self.getItemImportVal(item)):
+            importEquals = self.getItemImport(i) == self.getItemImport(item)
+            importValEquals = self.getItemImportVal(i) == self.getItemImportVal(item)
+            if importEquals and importValEquals:
                 return i
         return None
         
@@ -354,7 +354,7 @@ class FrictionConnector(AbstractConnector):
     # Updates model with items loaded from file 'fname'
     def loadCSV(self,fname):
         utils.checkFileExists(fname)
-        self.model.fromCSVUpdate(fname)
+        self.model.fromCSVUpdateExisting(fname)
         self.feedback.pushInfo("Friction loaded from '" + str(fname))
         
     # Opens file dialog and loads model from selected CSV file.

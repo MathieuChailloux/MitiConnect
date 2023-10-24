@@ -190,6 +190,10 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def setField(self,fieldname):
         layer = self.vectorLayerCombo.currentLayer()
+        values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        nb_values = len(values)
+        if nb_values > 40:
+            feedbacks.paramError("Field {} contains {} unique values, is it ok or too much ?".format(fieldname,nb_values))
         # self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
         
     def setFixedMode(self,checked):

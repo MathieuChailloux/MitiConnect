@@ -326,8 +326,12 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scField.setLayer(layer)
         # self.layer = layer
     def changeField(self,fieldname):
-        self.values = qgsUtils.getLayerFieldUniqueValues(self.scLayerCombo.currentLayer(),fieldname)
+        layer = self.scLayerCombo.currentLayer()
+        self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
         self.feedback.pushDebugInfo("field values = " + str(self.values))
+        nb_values = len(self.values)
+        if nb_values > 5:
+            feedbacks.paramError("Field {} contains {} unique values, is it ok or too much ?".format(fieldname,nb_values))
         # self.feedback.pushDebugInfo("reload flag = " + str(self.reloadFlag))
         # if self.reloadFlag:
             # nbVals = len(values)

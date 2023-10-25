@@ -92,8 +92,8 @@ class FrictionModel(ExtensiveTableModel):
         
     def getMatchingItem(self,item):
         for i in self.items:
-            importEquals = self.getItemImport(i) == self.getItemImport(item)
-            importValEquals = self.getItemImportVal(i) == self.getItemImportVal(item)
+            importEquals = str(self.getItemImport(i)) == str(self.getItemImport(item))
+            importValEquals = str(self.getItemImportVal(i)) == str(self.getItemImportVal(item))
             if importEquals and importValEquals:
                 return i
         return None

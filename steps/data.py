@@ -465,25 +465,29 @@ class ImportConnector(TableToDialogConnector):
             self.feedback.pushDebugInfo("No dlgItem given")
         
     def updateFromDlgItem(self,item,dlgItem):
-        diffName = item.getName() != dlgItem.getName()
+        # Check name
+        oldName, newName = item.getName(), dlgItem.getName()
+        diffName = oldName != newName
+        self.feedback.pushDebugInfo("diffName {} {} = {}".format(oldName,newName,diffName))
+        # Check value
+        oldValue, newValue = item.getValue(), dlgItem.getValue()
+        diffValue = oldValue != newValue
+        self.feedback.pushDebugInfo("diffValue {} {} = {}".format(oldValue,newValue,diffValue))
+        # Check input
         self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
-        # Diff
-        diffInput = item.getInput() != dlgItem.getLayerPath()
-        self.feedback.pushDebugInfo("diffInput = {}".format(diffInput))
+        oldInput, newInput = item.getInput(), dlgItem.getLayerPath()
+        diffInput = oldInput != newInput
+        self.feedback.pushDebugInfo("diffInput {} {} = {}".format(oldInput,newInput,diffInput))
         isVector = item.isVector()
         # diffMode = item.getMode() != dlgItem.getMode()
-        diffValue = item.getValue() != dlgItem.getValue()
-        self.feedback.pushDebugInfo("diffValue = {}".format(diffValue))
-        self.feedback.pushDebugInfo("value1 = {}".format(item.getValue()))
-        self.feedback.pushDebugInfo("value2 = {}".format(dlgItem.getValue()))
         if diffInput or diffValue:
             # DELETE then create NEW
-            self.model.removeFromName(item.getName())
+            self.model.removeFromName(oldName)
             self.addDlgItem(dlgItem,isVector)
         elif diffName:
             # Update name 
             item.updateFromDlgItem(dlgItem)
-            self.model.pluginModel.renameImport(item.getName(),dlgItem.getName())
+            self.model.pluginModel.renameImport(oldName,newName)
         
 
 class LanduseItem(DictItem):

@@ -151,10 +151,7 @@ class ClassModel(DictModel):
         return table
         
     def renameOrigin(self,oldName,newName):
-        for item in self.items:
-            if item.dict[self.ORIGIN] == oldName:
-                item.dict[self.IMPORT] = newName
-        self.layoutChanged.emit()
+        self.renameFieldValue(ClassItem.ORIGIN,oldName,newName)
         
     def updateFromScenario(self,scItem):
         scName = scItem.getName()

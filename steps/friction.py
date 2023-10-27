@@ -210,11 +210,9 @@ class FrictionModel(ExtensiveTableModel):
             # rowItem = self.createRowFromDict(d)
             # self.addRowItem(rowItem)
         # self.layoutChanged.emit()
-    def renameImport(self,oldName,newName):
-        for item in self.items:
-            if item.dict[self.IMPORT] == oldName:
-                item.dict[self.IMPORT] = newName
-        self.layoutChanged.emit()
+        
+    def renameOrigin(self,oldName,newName):
+        self.renameFieldValue(self.IMPORT,oldName,newName)
         
     # def getReclassTable(self,importName):
         # table = []

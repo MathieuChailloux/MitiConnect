@@ -120,6 +120,7 @@ class MitiConnectModel(abstract_model.MainModel):
         self.classModel.renameOrigin(oldName,newName)
         self.frictionModel.renameOrigin(oldName,newName)
     def renameData(self,oldName,newName):
+        self.feedback.pushDebugInfo("renameData {} {}".format(oldName,newName))
         for item in self.speciesModel.items:
             if item.getLanduse() == oldName:
                 item.setLanduse(newName)

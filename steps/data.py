@@ -33,7 +33,7 @@ from ..qgis_lib_mc import qgsUtils, qgsTreatments, utils, feedbacks
 from ..qgis_lib_mc.utils import CustomException
 from ..ui.vector_data_dialog import VectorDlgItem, VectorDataDialog
 from ..ui.raster_data_dialog import RasterDlgItem, RasterDataDialog
-from ..ui.landuse_dialog import LanduseDialog
+from ..ui.landuse_dialog import LanduseItem, LanduseDialog
 from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
     AbstractConnector, TableToDialogConnector,
     DictItemWithChild, DictItemWithChildren)
@@ -489,33 +489,6 @@ class ImportConnector(TableToDialogConnector):
             item.updateFromDlgItem(dlgItem)
             self.model.pluginModel.renameImport(oldName,newName)
         
-
-class LanduseItem(DictItem):
-
-    NAME = 'NAME'
-    IMPORTS = 'IMPORTS'
-    FIELDS = [ NAME, IMPORTS ]
-    
-    @classmethod
-    def fromValues(cls,name=None, imports=None,feedback=None):
-        dict = { cls.NAME : name, cls.IMPORTS : imports }
-        return cls(dict,feedback=feedback)
-        
-    def getName(self):
-        return self.dict[self.NAME]
-    def getImports(self):
-        return self.dict[self.IMPORTS]
-    def getImportsAsList(self):
-        return self.getImports().split(",")
-    def setName(self,name):
-        self.dict[self.NAME] = name
-    def renameImport(self,oldName,newName):
-        imports = self.getImportsAsList()
-        imports = [newName if i == oldName else i for i in imports]
-        self.dict[self.IMPORTS]= ",".join(imports)
-    def setImports(self,imports):
-        self.dict[self.IMPORTS] = imports
-
         
 class LanduseModel(DictModel):
 
@@ -533,7 +506,7 @@ class LanduseModel(DictModel):
         out_dir = self.pluginModel.getImportsDir()
         return utils.joinPath(out_dir,out_bname)
         
-    def getNames(self,item):  
+    def getNames(self,item):
         return [i.getName() for i in self.items]
                                     
     def applyItemWithContext(self,item,context,feedback,indexes=None):
@@ -565,68 +538,86 @@ class LanduseModel(DictModel):
             self.tr('Imports')]
         return h[col]
 
-class LanduseConnector(AbstractConnector):
+class LanduseConnector(TableToDialogConnector):
 
     def __init__(self,dlg,landuseModel):
         self.dlg = dlg
         self.feedback = landuseModel.feedback
         super().__init__(landuseModel,self.dlg.mergeView,
-                        addButton=None,
+                        addButton=self.dlg.mergeNew,
                         removeButton=self.dlg.mergeRemove,#,
                         runButton=self.dlg.mergeRun)
                         #selectionCheckbox=self.dlg.landuseSelection)
     
-    def connectComponents(self):
-        super().connectComponents()
-        self.dlg.mergeView.doubleClicked.connect(self.openLanduse)
-        self.dlg.mergeNew.clicked.connect(self.openLanduseNew)
+    # def connectComponents(self):
+        # super().connectComponents()
+        # self.dlg.mergeView.doubleClicked.connect(self.openLanduse)
+        # self.dlg.mergeNew.clicked.connect(self.openLanduseNew)
         
     def applyItems(self):
         self.feedback.beginSection("Computing merge")
         super().applyItems()
         self.feedback.endSection()
-    
-    def openLanduseNew(self,checked):
-        self.feedback.pushDebugInfo("checked = " + str(checked))
-        import_names = self.model.pluginModel.importModel.getImportNames()
-        self.feedback.pushDebugInfo("import names = " + str(import_names))
-        landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
-            string_list=import_names)
-        res = landuse_dlg.showDialog()
-        if not res:
-            return
-        (name, imports) = res
-        imports2 = ",".join(imports)
-        if name:
-            item = LanduseItem.fromValues(name=name,imports=imports2,feedback=self.feedback)
-            self.model.addItem(item)
-            self.model.layoutChanged.emit()
-        else:
-            self.feedback.user_error("No name given to landuse layers ranking")
         
-    def openLanduse(self,index):
-        row = index.row()
-        item = self.model.getNItem(row)
-        self.feedback.pushDebugInfo("openLanduse item = " +str(item))
-        landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
-            name=item.getName(),string_list=item.getImportsAsList())
-        res = landuse_dlg.showDialog()
-        if not res:
-            return
-        (name, imports) = res
-        self.feedback.pushDebugInfo("name = " +str(name))
-        self.feedback.pushDebugInfo("imports = " +str(imports))
-        imports2 = ",".join(imports)
-        self.feedback.pushDebugInfo("imports2 = " +str(imports2))
-        if name:
-            item.setName(name)
-            item.setImports(imports2)
-            self.model.layoutChanged.emit()
+    def openDialog(self,item):
+        self.feedback.pushDebugInfo("openDialog item = " +str(item))
+        if item:
+            imports_str = item.getImportsAsList()
+            landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
+                name=item.getName(),string_list=imports_str)
         else:
-            self.feedback.user_error("No name given to landuse layers ranking")
+            import_names = self.model.pluginModel.importModel.getImportNames()
+            self.feedback.pushDebugInfo("import names = " + str(import_names))
+            landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
+                string_list=import_names)
+        return landuse_dlg
+        
+    def postDlgNew(self,item):
+        self.model.addItem(item)
+        self.model.layoutChanged.emit()
+    
+    # def openLanduseNew(self,checked):
+        # self.feedback.pushDebugInfo("checked = " + str(checked))
+        # import_names = self.model.pluginModel.importModel.getImportNames()
+        # self.feedback.pushDebugInfo("import names = " + str(import_names))
+        # landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
+            # string_list=import_names)
+        # res = landuse_dlg.showDialog()
+        # if not res:
+            # return
+        # (name, imports) = res
+        # imports2 = ",".join(imports)
+        # if name:
+            # item = LanduseItem.fromValues(name=name,imports=imports2,feedback=self.feedback)
+            # self.model.addItem(item)
+            # self.model.layoutChanged.emit()
+        # else:
+            # self.feedback.user_error("No name given to landuse layers ranking")
+        
+    # def openLanduse(self,index):
+        # row = index.row()
+        # item = self.model.getNItem(row)
+        # self.feedback.pushDebugInfo("openLanduse item = " +str(item))
+        # landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
+            # name=item.getName(),string_list=item.getImportsAsList())
+        # res = landuse_dlg.showDialog()
+        # if not res:
+            # return
+        # (name, imports) = res
+        # self.feedback.pushDebugInfo("name = " +str(name))
+        # self.feedback.pushDebugInfo("imports = " +str(imports))
+        # imports2 = ",".join(imports)
+        # self.feedback.pushDebugInfo("imports2 = " +str(imports2))
+        # if name:
+            # item.setName(name)
+            # item.setImports(imports2)
+            # self.model.layoutChanged.emit()
+        # else:
+            # self.feedback.user_error("No name given to landuse layers ranking")
             
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()
+        self.feedback.pushDebugInfo("updateFromDlgItem {} {}".format(initName,newName))
         item.updateFromDlgItem(dlgItem)
         if initName != newName:
             self.model.pluginModel.renameData(initName,newName)

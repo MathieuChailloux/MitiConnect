@@ -265,7 +265,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Create shortcut scenario</string>
+         <string>Create short-term scenario</string>
         </property>
        </widget>
       </item>

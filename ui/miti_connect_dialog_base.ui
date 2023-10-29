@@ -1726,7 +1726,7 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Add scenario from scenario</string>
+                        <string>Add scenario</string>
                        </property>
                        <property name="text">
                         <string/>

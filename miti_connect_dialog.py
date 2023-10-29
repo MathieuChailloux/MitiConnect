@@ -117,13 +117,16 @@ class MitiConnectModel(abstract_model.MainModel):
                 # item.setName(newName)
         # model.layoutChanged.emit()
     def renameClassImports(self,oldName,newName):
-        self.frictionModel.renameImport(oldName,newName)
+        self.classModel.renameOrigin(oldName,newName)
+        self.frictionModel.renameOrigin(oldName,newName)
     def renameData(self,oldName,newName):
+        self.feedback.pushDebugInfo("renameData {} {}".format(oldName,newName))
         for item in self.speciesModel.items:
             if item.getLanduse() == oldName:
                 item.setLanduse(newName)
         self.speciesModel.layoutChanged.emit()
     def renameImport(self,oldName,newName):
+        self.feedback.pushDebugInfo("renameImport {} to {}".format(oldName,newName))
         self.renameData(oldName,newName)
         self.renameClassImports(oldName,newName)
         for li in self.landuseModel.items:

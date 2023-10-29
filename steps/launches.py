@@ -350,8 +350,7 @@ class LaunchModel(DictModel):
     def reload(self,eraseFlag=False):
         scModel = self.pluginModel.scenarioModel
         if eraseFlag:
-            self.items = []
-            self.fields = list(LaunchItem.BASE_FIELDS)
+            self.clearModel()
         itemsAdded = []
         for scItem in scModel.items:
             scName = scItem.getName()
@@ -825,6 +824,10 @@ class LaunchModel(DictModel):
         names = [self.items[ind.row()].getName() for ind in indexes]
         super().removeItems(indexes)
         self.pluginModel.removeImports(names)
+        
+    def clearModel(self):
+        self.items = []
+        self.fields = list(LaunchItem.BASE_FIELDS)
 
     # BASE_FIELDS = [ SCENARIO, SPECIE, EXTENT, MAX_DISP ]
     def getHeaderString(self,col):

@@ -93,6 +93,31 @@ class LanduseDialogConnector(abstract_model.AbstractConnector):
         self.dlg.landuseDialogDown.clicked.connect(self.downgradeItem)
         self.dlg.landuseDialogName.textChanged.connect(self.model.setName)
 
+class LanduseItem(abstract_model.DictItem):
+
+    NAME = 'NAME'
+    IMPORTS = 'IMPORTS'
+    FIELDS = [ NAME, IMPORTS ]
+    
+    @classmethod
+    def fromValues(cls,name=None, imports=None,feedback=None):
+        dict = { cls.NAME : name, cls.IMPORTS : imports }
+        return cls(dict,feedback=feedback)
+        
+    def getName(self):
+        return self.dict[self.NAME]
+    def getImports(self):
+        return self.dict[self.IMPORTS]
+    def getImportsAsList(self):
+        return self.getImports().split(",")
+    def setName(self,name):
+        self.dict[self.NAME] = name
+    def renameImport(self,oldName,newName):
+        imports = self.getImportsAsList()
+        imports = [newName if i == oldName else i for i in imports]
+        self.dict[self.IMPORTS]= ",".join(imports)
+    def setImports(self,imports):
+        self.dict[self.IMPORTS] = imports
 
 class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractConnector):
     def __init__(self, parent, pluginModel, name = "", string_list = []):
@@ -119,7 +144,9 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
                 feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
                 continue
             imports = [ i.getName() for i in self.model.items ]
-            return (name, imports)
+            imports_str = ",".join(imports)
+            item = LanduseItem.fromValues(name=name,imports=imports_str,feedback=self.feedback)
+            return item
         return None
             
             

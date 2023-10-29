@@ -204,6 +204,8 @@ class ScenarioModel(DictModel):
                 maxExtent,resolution,field=item.getBurnField(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
             reclassTable = self.pluginModel.classModel.getReclassTable(name)
+            if not reclassTable:
+                self.feedback.internal_error("No reclass rule for scenario {}".format(name))
             qgsTreatments.applyReclassifyByTable(rasterPath,
                 reclassTable,toNormPath,
                 boundaries_mode=2,feedback=feedback)

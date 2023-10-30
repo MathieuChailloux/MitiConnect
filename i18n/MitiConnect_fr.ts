@@ -9,12 +9,12 @@
         <translation>Valeur incorrencte pour le paramètre</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/feedbacks.py" line="73"/>
+        <location filename="../qgis_lib_mc/feedbacks.py" line="77"/>
         <source>Name &apos;</source>
         <translation>Le nom &apos;</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/feedbacks.py" line="75"/>
+        <location filename="../qgis_lib_mc/feedbacks.py" line="79"/>
         <source>&apos; is not alphanumeric</source>
         <translation>&apos; n&apos;est pas alphanumérique</translation>
     </message>
@@ -22,22 +22,22 @@
 <context>
     <name>ClassModel</name>
     <message>
-        <location filename="../steps/reclass.py" line="194"/>
+        <location filename="../steps/reclass.py" line="191"/>
         <source>Origin</source>
         <translation>Origine</translation>
     </message>
     <message>
-        <location filename="../steps/reclass.py" line="195"/>
+        <location filename="../steps/reclass.py" line="192"/>
         <source>Initial value</source>
         <translation>Valeur initiale</translation>
     </message>
     <message>
-        <location filename="../steps/reclass.py" line="196"/>
+        <location filename="../steps/reclass.py" line="193"/>
         <source>New value</source>
         <translation>Nouvelle valeur</translation>
     </message>
     <message>
-        <location filename="../steps/reclass.py" line="197"/>
+        <location filename="../steps/reclass.py" line="194"/>
         <source>Description</source>
         <translation>Description</translation>
     </message>
@@ -45,12 +45,12 @@
 <context>
     <name>CreateProjectDialog</name>
     <message>
-        <location filename="../miti_connect_dialog.py" line="185"/>
+        <location filename="../miti_connect_dialog.py" line="188"/>
         <source>Wrong value</source>
         <translation>Valeur incorrecte</translation>
     </message>
     <message>
-        <location filename="../miti_connect_dialog.py" line="185"/>
+        <location filename="../miti_connect_dialog.py" line="188"/>
         <source>Project name &apos;</source>
         <translation>Le nom du projet &apos;</translation>
     </message>
@@ -61,9 +61,17 @@
     </message>
 </context>
 <context>
+    <name>ExtensiveTableModel</name>
+    <message>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1506"/>
+        <source>Ignoring row without matching item: {}</source>
+        <translation>La ligne suivante n&apos;a pas trouvé de correspondance et est ignorée :{}</translation>
+    </message>
+</context>
+<context>
     <name>FrictionConnector</name>
     <message>
-        <location filename="../steps/friction.py" line="363"/>
+        <location filename="../steps/friction.py" line="361"/>
         <source>Open CSV file</source>
         <translation>Ouvrir le fichier CSV</translation>
     </message>
@@ -71,22 +79,22 @@
 <context>
     <name>FrictionModel</name>
     <message>
-        <location filename="../steps/friction.py" line="274"/>
+        <location filename="../steps/friction.py" line="272"/>
         <source>New value</source>
         <translation>Code</translation>
     </message>
     <message>
-        <location filename="../steps/friction.py" line="275"/>
+        <location filename="../steps/friction.py" line="273"/>
         <source>Origin</source>
         <translation>Origine</translation>
     </message>
     <message>
-        <location filename="../steps/friction.py" line="276"/>
+        <location filename="../steps/friction.py" line="274"/>
         <source>Init value</source>
         <translation>Valeur initiale</translation>
     </message>
     <message>
-        <location filename="../steps/friction.py" line="277"/>
+        <location filename="../steps/friction.py" line="275"/>
         <source>Description</source>
         <translation></translation>
     </message>
@@ -94,17 +102,17 @@
 <context>
     <name>ImportModel</name>
     <message>
-        <location filename="../steps/data.py" line="347"/>
+        <location filename="../steps/data.py" line="349"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../steps/data.py" line="348"/>
+        <location filename="../steps/data.py" line="350"/>
         <source>Input layer</source>
         <translation>Couche d&apos;entrée</translation>
     </message>
     <message>
-        <location filename="../steps/data.py" line="349"/>
+        <location filename="../steps/data.py" line="351"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
@@ -112,12 +120,12 @@
 <context>
     <name>LanduseModel</name>
     <message>
-        <location filename="../steps/data.py" line="555"/>
+        <location filename="../steps/data.py" line="536"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../steps/data.py" line="556"/>
+        <location filename="../steps/data.py" line="537"/>
         <source>Imports</source>
         <translation></translation>
     </message>
@@ -125,12 +133,12 @@
 <context>
     <name>LaunchConnector</name>
     <message>
-        <location filename="../steps/launches.py" line="997"/>
+        <location filename="../steps/launches.py" line="1000"/>
         <source>Command </source>
         <translation>La commande </translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="999"/>
+        <location filename="../steps/launches.py" line="1002"/>
         <source> does not exist, please install Java first</source>
         <translation> n&apos;existe pas, veuillez installer Java</translation>
     </message>
@@ -138,37 +146,37 @@
 <context>
     <name>LaunchModel</name>
     <message>
-        <location filename="../steps/launches.py" line="604"/>
+        <location filename="../steps/launches.py" line="603"/>
         <source>No friction value assigned to classes </source>
         <translation>Pas de valeurs de friction associées aux classes </translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="832"/>
+        <location filename="../steps/launches.py" line="835"/>
         <source>Scenario</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="833"/>
+        <location filename="../steps/launches.py" line="836"/>
         <source>Specie</source>
         <translation>Espèce</translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="834"/>
+        <location filename="../steps/launches.py" line="837"/>
         <source>Extent</source>
         <translation>Emprise</translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="835"/>
+        <location filename="../steps/launches.py" line="838"/>
         <source>Dispersal capacity</source>
         <translation>Capacité de dispersion</translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="389"/>
+        <location filename="../steps/launches.py" line="388"/>
         <source>Could not find layer for linkset </source>
         <translation>La couche n&apos;existe pas pour le jeue de lien </translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="391"/>
+        <location filename="../steps/launches.py" line="390"/>
         <source>, please ensure graph has been created for item </source>
         <translation>, assurez-vous que le graphe correspondant a bien été créé pour l&apos;élément </translation>
     </message>
@@ -176,24 +184,29 @@
 <context>
     <name>MainDialog</name>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1593"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1639"/>
         <source>Ignoring custom exception : </source>
         <translation>Exception ignorée : </translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1681"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1735"/>
         <source>Model saved into file &apos;</source>
         <translation>Modèle enregistré dans le fichier &apos;</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1684"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1738"/>
         <source>Save project as</source>
         <translation>Enregistrer le projet sous</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1708"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1762"/>
         <source>Open project</source>
         <translation>Ouvrir le projet</translation>
+    </message>
+    <message>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1675"/>
+        <source>Are you sure you want to exit ? Please ensure your project is saved</source>
+        <translation>Etes vous sûr de vouloir quitter MitiConnect ? Pensez à vérfier que votre projet est bien sauvegardé</translation>
     </message>
 </context>
 <context>
@@ -399,7 +412,7 @@
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1461"/>
         <source>Add scenario from scenario</source>
-        <translation>Ajouter un scenario</translation>
+        <translation type="obsolete">Ajouter un scenario</translation>
     </message>
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1462"/>
@@ -597,6 +610,11 @@
         <translation>Créer</translation>
     </message>
     <message>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1461"/>
+        <source>Add scenario</source>
+        <translation>Ajouter un scenario</translation>
+    </message>
+    <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1503"/>
         <source>&amp;lt;!DOCTYPE HTML PUBLIC &amp;quot;-//W3C//DTD HTML 4.0//EN&amp;quot; &amp;quot;http://www.w3.org/TR/REC-html40/strict.dtd&amp;quot;&amp;gt;
 &amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;meta name=&amp;quot;qrichtext&amp;quot; content=&amp;quot;1&amp;quot; /&amp;gt;&amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
@@ -619,7 +637,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MitiConnectModel</name>
     <message>
-        <location filename="../miti_connect_dialog.py" line="166"/>
+        <location filename="../miti_connect_dialog.py" line="169"/>
         <source>Graphab project does not exist, could not find file </source>
         <translation>Le project Graphab n&apos;existe pas, fichier introuvable </translation>
     </message>
@@ -627,27 +645,27 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>NormalizingParamsModel</name>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="856"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="862"/>
         <source>Workspace parameter not initialized</source>
         <translation>Le dossier de travail n&apos;est pas initialisé</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="862"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="868"/>
         <source>Extent parameter not initialized</source>
         <translation>Le paramètre d&apos;emprise n&apos;est pas initialisé</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="866"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="872"/>
         <source>Resolution parameter not initialized</source>
         <translation>Le paramètre de résolution n&apos;est pas intialisé</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="870"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="876"/>
         <source>CRS parameter not initialized</source>
         <translation>Le paramètre CRS (système de projection) n&apos;est pas initialisé</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="872"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="878"/>
         <source>Invalid CRS</source>
         <translation>Le système de projection est invalide</translation>
     </message>
@@ -761,7 +779,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ScenarioConnector</name>
     <message>
-        <location filename="../steps/scenario.py" line="284"/>
+        <location filename="../steps/scenario.py" line="286"/>
         <source>No scenario in model : please create base scenario from landuse</source>
         <translation>Il n&apos;y a pas de scenario dans le modèle : vérifier que le scenario d&apos;état initial existe bien</translation>
     </message>
@@ -769,32 +787,32 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ScenarioDialog</name>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="343"/>
+        <location filename="../ui/scenario_dialog.py" line="347"/>
         <source>Wrong parameter value</source>
         <translation>Valeur incorrencte pour le paramètre</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="353"/>
+        <location filename="../ui/scenario_dialog.py" line="357"/>
         <source>Scenario already exists : </source>
         <translation>Le scenario existe déjà : </translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="356"/>
+        <location filename="../ui/scenario_dialog.py" line="360"/>
         <source>Import already exists : </source>
         <translation>L&apos;import existe déjà : </translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="363"/>
+        <location filename="../ui/scenario_dialog.py" line="367"/>
         <source>Empty base scenario</source>
         <translation>Scenario de base non renseigné</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="368"/>
+        <location filename="../ui/scenario_dialog.py" line="372"/>
         <source>Empty layer</source>
         <translation>Pas de couche renseignée</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="387"/>
+        <location filename="../ui/scenario_dialog.py" line="391"/>
         <source>Empty field</source>
         <translation>Pas de valeur de champ</translation>
     </message>
@@ -802,12 +820,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ScenarioLanduseDialog</name>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="504"/>
+        <location filename="../ui/scenario_dialog.py" line="508"/>
         <source>Wrong parameter value</source>
         <translation>Valeur incorrencte pour le paramètre</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="514"/>
+        <location filename="../ui/scenario_dialog.py" line="518"/>
         <source>Empty landuse</source>
         <translation>Pas d&apos;occupation du sol renseignée</translation>
     </message>
@@ -820,17 +838,17 @@ p, li { white-space: pre-wrap; }
         <translation>Etat initial</translation>
     </message>
     <message>
-        <location filename="../steps/scenario.py" line="224"/>
+        <location filename="../steps/scenario.py" line="226"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../steps/scenario.py" line="225"/>
+        <location filename="../steps/scenario.py" line="227"/>
         <source>Description</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../steps/scenario.py" line="226"/>
+        <location filename="../steps/scenario.py" line="228"/>
         <source>Base scenario</source>
         <translation>Scenario de base</translation>
     </message>
@@ -884,77 +902,72 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>osraster</name>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="173"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="172"/>
         <source>True</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="173"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="172"/>
         <source>False</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="219"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="218"/>
         <source>
 -&gt;NEW RASTER
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="239"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="238"/>
         <source>
 -&gt;NEW VECTOR
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="261"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="260"/>
         <source>ERROR - File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="261"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="260"/>
         <source>This file is already loaded :
 %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="547"/>
-        <source>Calculate from Layer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="768"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="678"/>
         <source>ERROR - Incorrect code value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="697"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="607"/>
         <source>A code value can&apos;t be negative.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="703"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="613"/>
         <source>A code value can&apos;t be greater than 65 535.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="718"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="628"/>
         <source>ERROR - Nodata value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="718"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="628"/>
         <source>Fixed vector value can&apos;t be a nodata value.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="768"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="678"/>
         <source>Encoding code have to be an integer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="791"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="702"/>
         <source>
 
 -&gt;VECTOR : %s
@@ -962,183 +975,183 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="795"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="715"/>
         <source>
 -&gt;REPROJECTION VECTOR
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="800"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="720"/>
         <source>
 -&gt;BUFFERIZATION
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="823"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="743"/>
         <source>
 -&gt;ADDING NEW ENCODING FROM STRING FIELD
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="847"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="767"/>
         <source>
 -&gt;COMMITTING CHANGES
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="883"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="798"/>
         <source>
 -&gt;RASTERIZATION
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="900"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="815"/>
         <source>
 -&gt;SUBTRACTING CODE RASTER
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="932"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="849"/>
         <source>
 -&gt;SEARCHING CODE TO REPLACE ON RASTER
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="960"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="877"/>
         <source>
 -&gt;REPLACING CODE RASTER : %s
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="991"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="909"/>
         <source>Save parameters File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1026"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="943"/>
         <source>Open parameters File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1129"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1084"/>
         <source>
 -&gt;STARTING SPLITTING RASTER BY GROUP OF CODE
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1194"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1149"/>
         <source>ERROR - merge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1194"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1149"/>
         <source>The merge tab isn&apos;t initialized.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1266"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1218"/>
         <source>ERROR - output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1202"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1157"/>
         <source>The output tab isn&apos;t initialized.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1211"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1166"/>
         <source>ERROR - resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1211"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1166"/>
         <source>Enter a correct resolution value.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1233"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1185"/>
         <source>ERROR - extent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1224"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1176"/>
         <source>Enter a correct extent values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1233"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1185"/>
         <source>The output can&apos;t have a size of 0 pixels.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1242"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1194"/>
         <source>There is no CRS selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1252"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1204"/>
         <source>The nodata value is incorrect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1259"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1211"/>
         <source>The nodata value can&apos;t be negative.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1266"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1218"/>
         <source>The nodata value can&apos;t be greater than 65 535.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1276"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1228"/>
         <source>-&gt;BEGINNING OF THE PROCESS
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1282"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1234"/>
         <source>
 -&gt;SEARCHING FOR REPROJECTION ON RASTER
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1297"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1249"/>
         <source>
 -&gt;REPROJECTION RASTER
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1335"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1289"/>
         <source>
 -&gt;MERGE
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1353"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1307"/>
         <source>Error: %s - %s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1421"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1382"/>
         <source>Reset window ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1421"/>
+        <location filename="../graphab4qgis/OsRaster/OsRaster.py" line="1382"/>
         <source>Do you want to clear all the window ?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1146,62 +1159,62 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>osraster_raster</name>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="166"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="179"/>
         <source>ERROR : Raster encoding value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="166"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="179"/>
         <source>A code value set isn&apos;t valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="144"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="157"/>
         <source>A code value can&apos;t be negative.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="151"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="164"/>
         <source>A code value can&apos;t be greater than 65 535.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="180"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="193"/>
         <source>ERROR : Raster encoding size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="180"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="193"/>
         <source>A raster can&apos;t have 0 values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="199"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="220"/>
         <source>ERROR : Raster file value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="199"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="220"/>
         <source>There is no file is set.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="240"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="273"/>
         <source>ERROR : Raster file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="240"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="273"/>
         <source>The file isn&apos;t valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="285"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="321"/>
         <source>ERROR : Raster unique codes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="285"/>
+        <location filename="../graphab4qgis/OsRaster/raster_dialog.py" line="321"/>
         <source>This raster has been ignored because there is too much unique code values. (MAX=%d)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1209,102 +1222,97 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>osraster_vector</name>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="127"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="136"/>
         <source>ERROR : Vector field value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="127"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="136"/>
         <source>The field value set isn&apos;t valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="168"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="177"/>
         <source>ERROR : Vector unique codes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="141"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="150"/>
         <source>Encoding can&apos;t use float value if they can&apos;t represent an integer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="152"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="161"/>
         <source>A code value can&apos;t be negative.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="160"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="169"/>
         <source>ERROR : Vector encoding value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="160"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="169"/>
         <source>A code value can&apos;t be greater than 65 535.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="168"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="177"/>
         <source>There is too much unique code values. (MAX=%d)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="200"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="209"/>
         <source>ERROR : Vector burn-in value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="184"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="193"/>
         <source>The burn-in value set isn&apos;t valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="192"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="201"/>
         <source>The burn-in value can&apos;t be negative.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="200"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="209"/>
         <source>The burn-in value can&apos;t be greater than 65 535.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="219"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="228"/>
         <source>ERROR : Vector buffer value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="219"/>
-        <source>A buffer value have to be a numeric greater than 0.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="232"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="240"/>
         <source>ERROR : Vector encoding size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="232"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="240"/>
         <source>A vector can&apos;t have 0 values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="254"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="270"/>
         <source>ERROR : Vector file value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="254"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="270"/>
         <source>There is no file is set.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="312"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="347"/>
         <source>ERROR : Vector file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="312"/>
+        <location filename="../graphab4qgis/OsRaster/vector_dialog.py" line="347"/>
         <source>The file isn&apos;t valid.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1640,23 +1648,28 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/scenario_dialog_ui.py" line="164"/>
         <source>Create shortcut scenario</source>
+        <translation type="obsolete">Créer un scenario court terme</translation>
+    </message>
+    <message>
+        <location filename="../ui/scenario_dialog_ui.py" line="164"/>
+        <source>Create short-term scenario</source>
         <translation>Créer un scenario court terme</translation>
     </message>
 </context>
 <context>
     <name>speciesDialog</name>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="200"/>
+        <location filename="../ui/species_dialog_ui.py" line="201"/>
         <source>Define new species</source>
         <translation>Définir une nouvelle espèce</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="205"/>
+        <location filename="../ui/species_dialog_ui.py" line="206"/>
         <source>ha</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="206"/>
+        <location filename="../ui/species_dialog_ui.py" line="207"/>
         <source>Species identifier</source>
         <translation>Identifiant</translation>
     </message>
@@ -1666,32 +1679,32 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Codes d&apos;habitat</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="203"/>
+        <location filename="../ui/species_dialog_ui.py" line="204"/>
         <source>maximal distance</source>
         <translation>distance maximale</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="204"/>
+        <location filename="../ui/species_dialog_ui.py" line="205"/>
         <source>mean distance</source>
         <translation>distance moyenne</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="210"/>
+        <location filename="../ui/species_dialog_ui.py" line="211"/>
         <source>Land use layer</source>
         <translation>Couche d&apos;occupation du sol</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="208"/>
+        <location filename="../ui/species_dialog_ui.py" line="209"/>
         <source>Dispersal distance</source>
         <translation>Distance de dispersion</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="201"/>
+        <location filename="../ui/species_dialog_ui.py" line="202"/>
         <source>meters</source>
         <translation>mètres</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="202"/>
+        <location filename="../ui/species_dialog_ui.py" line="203"/>
         <source>cost unit</source>
         <translation>coût</translation>
     </message>
@@ -1701,47 +1714,47 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Groupe d&apos;espèce</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="207"/>
+        <location filename="../ui/species_dialog_ui.py" line="208"/>
         <source>Species complete name</source>
         <translation>Nom complet</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="209"/>
+        <location filename="../ui/species_dialog_ui.py" line="210"/>
         <source>Minimal patch area</source>
         <translation>Taille minimale de patch</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="211"/>
+        <location filename="../ui/species_dialog_ui.py" line="212"/>
         <source>Extent</source>
         <translation>Emprise</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="212"/>
+        <location filename="../ui/species_dialog_ui.py" line="213"/>
         <source>Buffer</source>
         <translation>Zone tampon</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="213"/>
+        <location filename="../ui/species_dialog_ui.py" line="214"/>
         <source>Layer</source>
         <translation>Couche</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="214"/>
+        <location filename="../ui/species_dialog_ui.py" line="215"/>
         <source>* max capacity</source>
         <translation>* capacité max</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="215"/>
+        <location filename="../ui/species_dialog_ui.py" line="216"/>
         <source>Habitat</source>
         <translation>Habitat</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="216"/>
+        <location filename="../ui/species_dialog_ui.py" line="217"/>
         <source>Landuse codes</source>
         <translation>Codes d&apos;habitat</translation>
     </message>
     <message>
-        <location filename="../ui/species_dialog_ui.py" line="217"/>
+        <location filename="../ui/species_dialog_ui.py" line="218"/>
         <source>From layer</source>
         <translation>Depuis une couche</translation>
     </message>

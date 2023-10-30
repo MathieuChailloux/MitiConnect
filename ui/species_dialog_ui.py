@@ -167,6 +167,7 @@ class Ui_speciesDialog(object):
         self.habitatCodesMode.setObjectName("habitatCodesMode")
         self.gridLayout_4.addWidget(self.habitatCodesMode, 0, 0, 1, 1)
         self.habitatLayerMode = QtWidgets.QRadioButton(self.groupBox_2)
+        self.habitatLayerMode.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

@@ -1458,7 +1458,7 @@ class Ui_MitiConnectDialogBase(object):
         self.frictionSave.setToolTip(_translate("MitiConnectDialogBase", "Save friction as CSV file"))
         self.mTabWidget.setTabText(self.mTabWidget.indexOf(self.frictionTab), _translate("MitiConnectDialogBase", "4 - Friction"))
         self.label_31.setText(_translate("MitiConnectDialogBase", "Scenarios"))
-        self.scenarioAdd.setToolTip(_translate("MitiConnectDialogBase", "Add scenario from scenario"))
+        self.scenarioAdd.setToolTip(_translate("MitiConnectDialogBase", "Add scenario"))
         self.scenarioRemove.setToolTip(_translate("MitiConnectDialogBase", "Delete selected scenario"))
         self.scenarioUp.setToolTip(_translate("MitiConnectDialogBase", "Upgrade scenario"))
         self.scenarioDown.setToolTip(_translate("MitiConnectDialogBase", "Downgrade scenario"))

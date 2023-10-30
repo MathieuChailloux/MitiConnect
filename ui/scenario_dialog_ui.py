@@ -161,7 +161,7 @@ class Ui_scenarioDialog(object):
         self.scFieldMode.setText(_translate("scenarioDialog", "By field values"))
         self.scFixedMode.setText(_translate("scenarioDialog", "Fixed value"))
         self.scExtentFlag.setText(_translate("scenarioDialog", "Layer represents project extent"))
-        self.scShort.setText(_translate("scenarioDialog", "Create shortcut scenario"))
+        self.scShort.setText(_translate("scenarioDialog", "Create short-term scenario"))
         self.scPerValue.setText(_translate("scenarioDialog", "Create 1 scenario per field value"))
         self.label_2.setText(_translate("scenarioDialog", "Name"))
         self.label.setText(_translate("scenarioDialog", "Description"))

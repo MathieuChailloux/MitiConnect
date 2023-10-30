@@ -62,6 +62,11 @@ class SpeciesModel(DictModel):
     def addItem(self,item):
         super().addItem(item)
         self.pluginModel.addSpecie(item)
+    def removeItems(self,indices):
+        names = [self.items[ind.row()].getName() for ind in indices]
+        super().removeItems(indices)
+        for n in names:
+            self.pluginModel.frictionModel.removeColFromName(n)
                         
     # Returns absolute path of 'item' output layer
     def getItemOutPath(self,item):
@@ -143,11 +148,11 @@ class SpeciesConnector(TableToDialogConnector):
     
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()
+        diffName = initName != newName
+        self.feedback.pushDebugInfo("updateFromDlgItem {} {} = {}".format(initName,newName,diffName))
+        if diffName:
+            self.model.pluginModel.frictionModel.renameField(initName,newName)
         item.updateFromDlgItem(dlgItem)
-        if initName != newName:
-            pluginModel = self.model.pluginModel
-            pluginModel.frictionModel.renameField(initName,newName)
-            # pluginModel
         self.model.layoutChanged.emit()
             
     def mkItemFromDlgItem(self,dlgItem): 

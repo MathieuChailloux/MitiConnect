@@ -6,9 +6,9 @@
 name=MitiConnect
 qgisMinimumVersion=3.0
 description=MitiConnect integrates ecological connecitivy in mitigation hierarchy based on landscape graphs.
-version=0.2
+version=0.3
 author=INRAE
-email=mathieu.chailloux@inrae.fr
+email=mathieu@chailloux.org
 
 about=MitiConnect integrates ecological connecitivy in mitigation hierarchy based on landscape graphs. Using Graphab tool and its dedicated QGIS plugin graphab4qgis, MitiConnect eases the definition of mitigation scenarios through its user-friendly interface. User can prepare data, define target species ecological parameters such as dispersal capacities, creates new scenarios by stacking landuse modifications, and manages all treatments from MitiConnect interface.
 

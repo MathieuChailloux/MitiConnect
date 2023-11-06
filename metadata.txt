@@ -27,7 +27,7 @@ tags=ecologocial, continuities, connectivity, landscape, mitigation, hierarchy, 
 
 homepage=
 category=Plugins
-icon=icon.png
+icon=icons/icon.png
 # experimental flag
 experimental=True
 

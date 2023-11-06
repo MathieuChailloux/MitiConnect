@@ -185,8 +185,9 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
     def showDialog(self):
         while self.exec_():
             name = self.speciesID.text()
-            if not name.isalnum():
-                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+            if not utils.isValidTag(name):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Name '{}' contains invalid characters".format(name)))
                 continue
             full_name = self.speciesFullName.text()
             max_disp = self.speciesMaxDisp.value()

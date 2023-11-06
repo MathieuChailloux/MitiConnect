@@ -208,8 +208,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         while self.exec_():
             dict = {}
             name = self.nameValue.text()
-            if not name.isalnum():
-                feedbacks.paramNameError(name)
+            if not utils.isValidTag(name):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Name '{}' contains invalid characters".format(name)))
                 continue
             dict[VectorDlgItem.NAME] = name
             layer = self.vectorLayerCombo.currentLayer()

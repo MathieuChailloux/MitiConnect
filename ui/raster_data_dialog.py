@@ -169,8 +169,9 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict = {}
             name = self.nameValue.text()
             dict[RasterDlgItem.NAME] = name
-            if not name.isalnum():
-                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+            if not utils.isValidTag(name):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Name '{}' contains invalid characters".format(name)))
                 continue
             layer = self.rasterDataLayerCombo.currentLayer()
             if not layer:

@@ -33,7 +33,7 @@ from qgis.core import Qgis, QgsProcessingContext, QgsProcessingException
 import traceback
 from io import StringIO
 
-from .qgis_lib_mc import feedbacks, log, utils, qgsUtils, abstract_model, qgsTreatments
+from .qgis_lib_mc import utils, feedbacks, log, qgsUtils, abstract_model, qgsTreatments
 from .steps import (params, data, reclass, species, friction, scenario, launches)#, species, friction, scenarios)
 from .ui import (vector_data_dialog, raster_data_dialog, landuse_dialog, scenario_dialog)
 from . import tabs
@@ -184,9 +184,9 @@ class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
         while self.exec_():
             d = self.workspaceDir.filePath()
             n = self.projectName.text()
-            if not n.isalnum():
+            if not utils.isValidTag(n):
                 feedbacks.launchDialog(self,self.tr("Wrong value"),
-                    self.tr("Project name '") + str(n) + str("' must be an alphanumeric string"))
+                    self.tr("Project name '{}' contains invalid characters".format(n)))
                 continue
             # joined = utils.joinPath(d,n)
             # joined += ".xml"

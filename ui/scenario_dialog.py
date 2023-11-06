@@ -39,72 +39,6 @@ SC_LANDUSE_DIALOG, _ = uic.loadUiType(os.path.join(
 SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_initialState_dialog.ui'))
 
-# class ScenarioReclassItem(abstract_model.DictItem):
-
-    # VAL = 'VAL'
-    # CLASS = 'CLASS'
-    # FIELDS = [ VAL, CLASS ]
-    
-    # @classmethod
-    # def fromValues(cls, val, reclass=None,feedback=None):
-        # dict = { cls.VAL : val, cls.CLASS : reclass }
-        # return cls(dict,feedback=feedback)
-    # def getValue(self):
-        # return self.dict[self.VAL]
-    # def getClass(self):
-        # return self.dict[self.CLASS]
-        
-    # def __deepcopy__(self):
-        # return ScenarioReclassItem(copy.deepcopy(self.dict),feedback=self.feedback)
-        
-# class ScenarioReclassModel(abstract_model.DictModel):
-
-    # def __init__(self,feedback=None):
-        # itemClass = ScenarioReclassItem
-        # super().__init__(itemClass=itemClass,fields=ScenarioReclassItem.FIELDS,feedback=feedback)
-
-    # @classmethod
-    # def fromValues(cls,values=[],codes=[],feedback=None):
-        # utils.debug("values = " +str(values))
-        # assert(feedback is not None)
-        # feedback.pushInfo("values = " +str(values))
-        # res = cls(feedback=feedback)
-        # res.loadValues(values,codes=codes)
-        # return res
-            
-    # def loadValues(self,values,codes=[]):
-        # self.items=[]
-        # if codes:
-            # assert(len(codes) == len(values))
-            # for v, c in zip(values,codes):
-                # i = ScenarioReclassItem.fromValues(v,reclass=c,
-                    # feedback=self.feedback)
-                # self.addItem(i)
-        # else:
-            # assert(False)
-        # self.layoutChanged.emit()
-        
-    # def getValuesAndClasses(self):
-        # values = [i.getValue() for i in self.items]
-        # classes = [i.getClass() for i in self.items]
-        # return values, classes
-        
-    # def getReclassTable(self):
-        # res = []
-        # for i in self.items:
-            # init = i.getValue()
-            # res += [ init, init, i.getClass() ]
-        # return res
-        
-    # def __deepcopy__(self):
-        # model = ScenarioReclassModel(feedback=self.feedback)
-        # for i in self.items:
-            # model.addItem(i.__deepcopy__())
-        # return model
-        
-
-# class ScenarioItem(abstract_model.DictItemWithChildren):
-# class ScenarioItem(abstract_model.DictItemWithChild):
 class ScenarioItem(abstract_model.DictItem):
     
     NAME = 'NAME'
@@ -131,10 +65,6 @@ class ScenarioItem(abstract_model.DictItem):
     def __init__(self,dict,feedback=None):
         super().__init__(dict,feedback=feedback)
         self.shortMode = False
-        # reclassModel = ScenarioReclassModel(feedback=feedback)
-        # self.setReclassModel(reclassModel)
-        # self.reclassModel = se lf.child
-        # self.setReclassModel(ScenarioReclassModel(feedback=self.feedback))
     
     @classmethod
     def fromValues(cls, name, descr="", layer=None, base=None,
@@ -150,9 +80,6 @@ class ScenarioItem(abstract_model.DictItem):
         
     def __deepcopy__(self):
         item = ScenarioItem(copy.deepcopy(self.dict),feedback=self.feedback)
-        # self.feedback.pushDebugInfo("deepcpy1 " + str(self.reclassModel))
-        # item.setReclassModel(self.reclassModel.__deepcopy__())
-        # self.feedback.pushDebugInfo("deepcpy2 " + str(item.reclassModel))
         return item
         
     def getName(self):
@@ -203,36 +130,11 @@ class ScenarioItem(abstract_model.DictItem):
         else:
             return self.getBurnField() == other.getBurnField()
         
-    # def getReclassTable(self):
-        # return self.reclassModel.getReclassTable()
-        
-    # def setReclassModel(self,model):
-        # super().setChild(model)
-        # self.reclassModel = model
-        # self.children = [model]
-        
     # def updateFromOther(self,other):
         # for k in other.dict:
             # self.dict[k] = other.dict[k]
     def updateFromDlgItem(self,dlgItem):
         self.updateFromOther(dlgItem)
-        # self.setReclassModel(dlgItem.reclassModel)
-    # def childToDict(self,child):
-        # return child.dict
-            
-    # @staticmethod
-    # def childToDict(dlgItem):
-        # is_vector = type(dlgItem) is VectorDlgItem
-        # if is_vector:
-            # if dlgItem.getBurnMode():
-                # val = dlgItem.getBurnField()
-            # else:
-                # val = dlgItem.getBurnVal()
-        # else:
-            # val = None
-        # dict = { ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
-            # ImportItem.MODE : is_vector,
-            # ImportItem.VALUE : val }
                 
     # Mandatory to redefine it for import links reasons
     @classmethod
@@ -241,23 +143,6 @@ class ScenarioItem(abstract_model.DictItem):
         if cls.DESCR not in root.attrib:
             root.attrib[cls.DESCR] = ""
         o = cls.fromDict(root.attrib,feedback=feedback)
-        # for child in root:
-            # childObj = ScenarioReclassModel(feedback=feedback)
-            # childTag = child.tag
-            # utils.debug("childTag str = " + str(childTag))
-            # classObj = getattr(sys.modules[__name__], childTag)
-            # classObj = ScenarioReclassModel
-            # childObj = classObj.fromXML(child,feedback=feedback)
-            # childTag = child.tag
-            # classObj = getattr(sys.modules[__name__], childTag)
-            # childObj = classObj.fromXML(child,feedback=feedback)
-            # utils.debug("child str = " + str(child))
-            # o.child = (childObj)
-            # o.setReclassModel(childObj)
-            # utils.debug("child str = " + str(child))
-            # utils.debug("reclassModel = " + str(o.reclassModel))
-            # utils.debug("reclassModel type = " + str(o.reclassModel.__class__.__name__))
-            # o.reclassModel = childObj
         return o
     
     
@@ -272,32 +157,21 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.newFlag = dlgItem is None
-        # self.reclassModel = ScenarioReclassModel(feedback=feedback) if self.newFlag else dlgItem.reclassModel.__deepcopy__()
         self.reloadFlag = False
-        # self.reclassModel = ScenarioReclassModel(feedback=feedback)
         self.feedback = feedback
-        # self.reclassModel.feedback = feedback
-        # self.feedback.pushDebugInfo("TESTES")
-        # self.reclassModel.feedback.pushDebugInfo("TESTTTT")
         if model is None:
             assert(False)
         self.scModel = model.scenarioModel
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
-        # self.scModel = scenarioModel
-        # self.scenarioList = scenarioList
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.scLayerCombo,self.scLayerButton)
         self.layerComboDlg.setVectorMode()
         self.connectComponents()
         self.updateUi(dlgItem)
-        # self.name = dlgItem.getName()
         self.reloadFlag = True
         self.values = []
-        # self.updateUi(dlgItem)
-        # self.feedback.pushDebugInfo("TESTES")
-        # self.reclassModel.feedback.pushDebugInfo("TESTTTT")
         
     def connectComponents(self):
         self.scLayerCombo.layerChanged.connect(self.changeLayer)
@@ -306,8 +180,6 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scField.setFilters(QgsFieldProxyModel.Numeric)
         self.scField.fieldChanged.connect(self.changeField)
         self.scBase.setModel(self.scModel)
-        # self.scDialogView.setModel(self.reclassModel)
-        # self.scDialogView.setItemDelegate(friction.CodesItemDelegate(self.frictionModel))
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
@@ -315,7 +187,6 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scFieldMode.setChecked(fieldMode)
         #self.scPerValue.setEnabled(fieldMode)
         self.scField.setEnabled(fieldMode)
-        # self.scDialogView.setEnabled(fieldMode)
         self.scBurnVal.setEnabled(not fieldMode)
     def switchFieldMode(self):
         self.switchBurnMode(True)
@@ -332,16 +203,6 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         nb_values = len(self.values)
         if nb_values > 5:
             feedbacks.paramError("Field {} contains {} unique values, is it ok or too much ?".format(fieldname,nb_values))
-        # self.feedback.pushDebugInfo("reload flag = " + str(self.reloadFlag))
-        # if self.reloadFlag:
-            # nbVals = len(values)
-            # freeCodes = self.frictionModel.getFreeVals(nbVals)
-            # freeCodes = [friction.NEW_VAL_STR] * nbVals
-            # self.reclassModel.loadValues(values,freeCodes)
-            # self.reclassModel.layoutChanged.emit()
-            
-    # def setValues(self):
-        # dict = self.frictionModel.getReclassDict(self.name)
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
@@ -350,8 +211,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         while self.exec_():
             # Name
             name = self.scName.text()
-            if not name.isalnum():
-                self.feedback.user_error("Name '" + str(name) + "' is not alphanumeric")
+            if not utils.isValidTag(name):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Name '{}' contains invalid characters".format(name)))
                 continue
             if self.newFlag and self.scModel.scExists(name):
                 self.errorDialog(self.tr("Scenario already exists : " + name))
@@ -472,8 +334,9 @@ class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
     def showDialog(self):
         while self.exec_():
             name = self.scName.text()
-            if not name.isalnum():
-                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+            if not utils.isValidTag(name):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Name '{}' contains invalid characters".format(name)))
                 continue
             descr = self.scDescr.text()
             dlgItem = ScenarioItem.fromValues(name=name,descr=descr,
@@ -510,8 +373,9 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
     def showDialog(self):
         while self.exec_():
             name = self.scName.text()
-            if not name.isalnum():
-                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+            if not utils.isValidTag(name):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    self.tr("Name '{}' contains invalid characters".format(name)))
                 continue
             base = self.scLanduseCombo.currentText()
             if not base:

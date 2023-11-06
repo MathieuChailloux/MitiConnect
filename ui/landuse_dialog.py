@@ -140,8 +140,9 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
         self.feedback.pushDebugInfo("showDialog")
         while self.exec_():
             name = self.landuseDialogName.text()
-            if not name.isalnum():
-                feedbacks.paramError("Name '" + str(name) + "' is not alphanumeric",parent=self)
+            if not utils.isValidTag(name):
+                feedbacks.launchDialog(self,self.tr("Wrong value"),
+                    "Name '{}' is not alphanumeric".format(name))
                 continue
             imports = [ i.getName() for i in self.model.items ]
             imports_str = ",".join(imports)

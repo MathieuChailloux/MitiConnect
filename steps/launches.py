@@ -318,9 +318,9 @@ class LaunchModel(DictModel):
             extent = qgsTreatments.applyBufferFromExpr(extPath,
                 bufferVal,out_path,feedback=feedback)
         elif spItem.isCustomLayerMode():
-            self.internal_error("Custom extent layer mode not implemented yet")
+            self.feedback.internal_error("Custom extent layer mode not implemented yet")
         else:
-            self.internal_error("Unexpected specie mode " + str(spItem))
+            self.feedback.internal_error("Unexpected specie mode " + str(spItem))
         return out_path
         
     # Item getters for each step
@@ -627,7 +627,7 @@ class LaunchModel(DictModel):
         if spItem.isHabitatCodesMode():
             codes = spItem.getCodesVal()
         else:
-            self.internal_error("Not yet implemented : habitat from layer")
+            self.feedback.internal_error("Not yet implemented : habitat from layer")
         self.feedback.pushDebugInfo("codes = " + str(codes))
         if not codes:
             self.feedback.user_error("No habitat code specified for specie "
@@ -1063,7 +1063,7 @@ class LaunchConnector(TableToDialogConnector):
                     elif initVal == -1:
                         assert(False)
                     elif initVal == 0:
-                        self.internal_error("Empty value for global metric of initial state")
+                        self.feedback.internal_error("Empty value for global metric of initial state")
                     else:
                         if cmpInit:
                             if percentFlag:

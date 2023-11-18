@@ -110,7 +110,7 @@ class ScenarioModel(DictModel):
             childName = item.getBase()
             childItem = self.getItemFromName(childName)
             if childName in acc:
-                self.internal_error("Scenario auto reference " + str(childName))
+                self.feedback.internal_error("Scenario auto reference " + str(childName))
             acc += childName
             return self.getItemExtentSc(childItem,acc=acc)
     def getItemExtentScLayer(self,item):
@@ -146,7 +146,7 @@ class ScenarioModel(DictModel):
             item = self.mkInitialState()
             self.addItem(item)
         else:
-            self.pushInfo("Ignoring addInitialState as it already exists")
+            self.feedback.pushInfo("Ignoring addInitialState as it already exists")
             
     def addItem(self,item):
         for i in self.items:

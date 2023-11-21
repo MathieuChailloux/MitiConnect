@@ -152,6 +152,9 @@ class ClassModel(DictModel):
         
     def renameOrigin(self,oldName,newName):
         self.renameFieldValue(ClassItem.ORIGIN,oldName,newName)
+    def removeFromOrigin(self,origin):
+        self.items = [i for i in self.items if i.getOrigin() != origin]
+        self.layoutChanged.emit()
         
     def updateFromScenario(self,scItem):
         scName = scItem.getName()

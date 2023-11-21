@@ -84,6 +84,8 @@ class MitiConnectModel(abstract_model.MainModel):
         # self.frictionModel.addImport(import_item)
     def removeImports(self,importNames):
         self.frictionModel.removeImports(importNames)
+        for n in importNames:
+            self.classModel.removeFromOrigin(n)
     def removeSpecies(self,speciesName):
         #TODO ; friction
         # self.scenarioModel.speciesSelection.removeItem(idx)

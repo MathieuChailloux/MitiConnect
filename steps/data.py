@@ -235,7 +235,7 @@ class ImportModel(DictModel):
                     context=context,feedback=feedback)
                 selected_layer = qgsUtils.loadVectorLayer(selected)
                 if selected_layer.featureCount() == 0:
-                    self.feedback.user_error("Empty selection, please verify expression")
+                    self.feedback.user_error("Empty selection for import {}, please verify expression".format(name))
             else:
                 selected = inputLayer
             # Bufferization
@@ -402,6 +402,7 @@ class ImportConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("postDlg %s"%(str(dlg_item)))
         if isinstance(dlg_item,ImportItem):
             dlg_item = dlg_item.child
+            self.feedback.pushDebugInfo("postDlg2 %s"%(str(dlg_item)))
         self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
       
     def openDialog(self,item):

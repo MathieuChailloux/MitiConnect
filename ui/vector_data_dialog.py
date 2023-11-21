@@ -188,13 +188,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def setFieldMode(self,checked):
         self.setBurnMode(checked)
         
+    # Useless function now : to delete (with calls)
     def setField(self,fieldname):
-        layer = self.vectorLayerCombo.currentLayer()
-        values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
-        nb_values = len(values)
-        if nb_values > 40:
-            feedbacks.paramError("Field {} contains {} unique values, is it ok or too much ?".format(fieldname,nb_values))
-        # self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        pass
         
     def setFixedMode(self,checked):
         self.setBurnMode(not checked)
@@ -222,36 +218,39 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
                 feedbacks.paramError("Could not load layer " + str(layer_path))
                 continue
             dict[VectorDlgItem.INPUT] = layer_path
-            dict[VectorDlgItem.EXPRESSION] = self.vectorSelectionExpression.currentText()
+            # Expression
+            expression = self.vectorSelectionExpression.currentText()
+            self.feedback.pushDebugInfo("showDialog expression = {}".format(expression))
+            dict[VectorDlgItem.EXPRESSION] = expression
+            # Burn
             burn_field_mode = self.vectorFieldMode.isChecked()
             dict[VectorDlgItem.BURN_MODE] = burn_field_mode
             fieldname = self.vectorFieldCombo.currentField()
             dict[VectorDlgItem.BURN_FIELD] = fieldname
             if burn_field_mode:
+                # Field mode
                 if not fieldname:
                     feedbacks.paramError("No field selected")
                     continue
+                # Check values count
+                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+                nb_values = len(values)
+                if nb_values > 40:
+                    title = "High values count"
+                    msg = "Field {} contains {} unique values, is it ok ?".format(fieldname,nb_values)
+                    reply = feedbacks.launchQuestionDialog(self,title,msg)
+                    self.feedback.pushDebugInfo("reply {}".format(reply))
+                    if reply == reply == QtWidgets.QMessageBox.No:
+                        continue
                 dict[VectorDlgItem.BURN_VAL] = ""
-            if not burn_field_mode:
+            else:
+                # Fixed mode
                 dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
-                # dict[VectorDlgItem.BURN_VAL] = self.frictionModel.getCodeFromCombo(self.vectorFixedCombo)
-                #if burnVal <= 0:
-                #    feedbacks.paramError("Burn value must be strictly positive")
-                #    continue
-            # dict[VectorDlgItem.BURN_VAL] = self.vectorFixedValue.value()
-            # dict[VectorDlgItem.BURN_VAL] = getCodeFromCombo(self.frictionModel,self.vectorFixedCombo)
             dict[VectorDlgItem.ALL_TOUCH] = self.vectorAllTouch.isChecked()
+            # Buffer
             dict[VectorDlgItem.BUFFER_MODE] = self.vectorBufferMode.isChecked()
             dict[VectorDlgItem.BUFFER_EXPR] = self.vectorBufferValue.value()
             self.data_item = VectorDlgItem(dict)
-            # if burn_field_mode:
-                # layer = self.vectorLayerCombo.currentLayer()
-                # values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
-            # else:
-                # values = [self.vectorFixedValue.value()]
-            # self.feedback.pushDebugInfo("values sd = " + str(values))
-            # self.data_item.values = values
-            # self.data_item.isScenario = self.isScenario.isChecked()
             self.feedback.pushDebugInfo("dict = " + str(dict))
             return self.data_item
         return None

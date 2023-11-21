@@ -240,7 +240,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
                     msg = "Field {} contains {} unique values, is it ok ?".format(fieldname,nb_values)
                     reply = feedbacks.launchQuestionDialog(self,title,msg)
                     self.feedback.pushDebugInfo("reply {}".format(reply))
-                    if reply == reply == QtWidgets.QMessageBox.No:
+                    if reply == QtWidgets.QMessageBox.No:
                         continue
                 dict[VectorDlgItem.BURN_VAL] = ""
             else:

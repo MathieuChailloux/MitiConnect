@@ -176,6 +176,12 @@ class ScenarioModel(DictModel):
         self.addItem(item)
         self.layoutChanged.emit()
         
+    def removeItems(self,indexes):
+        self.feedback.pushDebugInfo("removeItems {}".format(indexes))
+        names = [self.items[ind.row()].getName() for ind in indexes]
+        super().removeItems(indexes)
+        self.pluginModel.removeImports(names)
+        
     def rasterizeLayer(self,item,feedback=None):
         if feedback is None:
             feedback = self.feedback

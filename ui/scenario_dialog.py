@@ -254,15 +254,19 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                     continue
                 if not self.values:
                     self.values = qgsUtils.getLayerFieldUniqueValues(self.scLayerCombo.currentLayer(),reclassField)
+                    # Check values count
+                    nb_values = len(self.values)
+                    if nb_values > 40:
+                        title = "High values count"
+                        msg = "Field {} contains {} unique values, is it ok ?".format(reclassField,nb_values)
+                        reply = feedbacks.launchQuestionDialog(self,title,msg)
+                        self.feedback.pushDebugInfo("reply {}".format(reply))
+                        if reply == QtWidgets.QMessageBox.No:
+                            continue
                 dlgItem = ScenarioItem.fromValues(name,descr=descr,
                     layer=layerPath,base=base,
                     mode=2,reclassField=reclassField,extentFlag=extentFlag,
                     feedback=self.feedback)
-                # dlgItem.setReclassModel(self.reclassModel)
-                # if not self.model.items:
-                    # self.errorDialog(self.tr("Empty model"))
-                    # continue
-            # self.feedback.pushDebugInfo("reclassModel = " + str(dlgItem.reclassModel))
             dlgItem.values = self.values
             dlgItem.shortMode = shortMode
             return dlgItem

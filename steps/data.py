@@ -209,6 +209,7 @@ class ImportModel(DictModel):
         
         
     def applyItemWithContext(self,item,context,feedback):
+        # Retrieve parameters
         name = item.getName()
         self.feedback.pushDebugInfo("apply Import {} ".format(name))
         self.pluginModel.paramsModel.checkInit()
@@ -219,25 +220,29 @@ class ImportModel(DictModel):
         reclassified = qgsUtils.mkTmpPath('reclassified.tif')
         to_norm_path = None
         out_path = self.getItemOutPath(item)
-        # out_path = self.pluginModel.getOrigPath(out_rel_path)
         qgsUtils.removeLayerFromPath(out_path)
         qgsUtils.removeRaster(out_path)
         crs, extent, resolution = self.pluginModel.getRasterParams()
         min_type, nodata_val = self.pluginModel.baseType, self.pluginModel.nodataVal
+        # Main
+        reclassified = qgsUtils.mkTmpPath('reclassified.tif')
         if item.isVector():
             childItem = item.getChild()
-            all_touch = childItem.getAllTouch()
-            expr = childItem.getExpression()
+            # Reprojection
+            reprojected = qgsUtils.mkTmpPath('reprojected.gpkg')
+            qgsTreatments.applyReprojectLayer(inputLayer,crs,reprojected,
+                context=context,feedback=feedback)
             # Feature selection
+            expr = childItem.getExpression()
             if expr:
                 selected = qgsUtils.mkTmpPath(name + '_selection.gpkg')
-                qgsTreatments.extractByExpression(inputLayer,expr,selected,
+                qgsTreatments.extractByExpression(reprojected,expr,selected,
                     context=context,feedback=feedback)
                 selected_layer = qgsUtils.loadVectorLayer(selected)
                 if selected_layer.featureCount() == 0:
                     self.feedback.user_error("Empty selection for import {}, please verify expression".format(name))
             else:
-                selected = inputLayer
+                selected = reprojected
             # Bufferization
             if childItem.isBufferMode():
                 buffered = qgsUtils.mkTmpPath(name + '_buffered.gpkg')
@@ -246,9 +251,11 @@ class ImportModel(DictModel):
                     buffered,context=context,feedback=feedback)
             else:
                 buffered = selected
-            # Burn by field mode
+            # Rasterization
+            all_touch = childItem.getAllTouch()
             raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
             if childItem.isBurnFieldMode():
+                # Burn by field mode
                 burnField = childItem.getBurnField()
                 name = item.getName()
                 unique_path = qgsUtils.mkTmpPath(name + '_unique.gpkg')
@@ -257,7 +264,6 @@ class ImportModel(DictModel):
                 qgsTreatments.addUniqueValue(buffered,burnField,outField,
                     unique_path,assoc_path,context=context,feedback=feedback)
                 # Rasterize
-                #raster_path = qgsUtils.mkTmpPath(name + '_raster.tif')
                 qgsTreatments.applyRasterization(unique_path,raster_path,
                     extent,resolution,field=outField,out_type=min_type,
                     nodata_val=nodata_val,all_touch=all_touch,

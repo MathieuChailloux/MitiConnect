@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 # from qgis.gui import QgsCheckableItemModel
 
-from ..qgis_lib_mc import abstract_model, feedbacks
+from ..qgis_lib_mc import utils, abstract_model, feedbacks
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(

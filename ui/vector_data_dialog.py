@@ -26,9 +26,10 @@ import os
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.core import QgsFieldProxyModel
 # from qgis.core import QgsMapLayerProxyModel
 
-from ..qgis_lib_mc import utils, qgsUtils, abstract_model, feedbacks
+from ..qgis_lib_mc import utils, qgsUtils, abstract_model, feedbacks, qgsTreatments
 from ..ui.raster_data_dialog import ReclassItem, ReclassModel
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -42,11 +43,12 @@ class VectorDlgItem(abstract_model.DictItem):
     EXPRESSION = 'EXPRESSION'
     BURN_MODE = 'BURN_MODE'
     BURN_FIELD = 'BURN_FIELD'
+    KEEP_VAL = 'KEEP_VALUES'
     BURN_VAL = 'BURN_VAL'
     ALL_TOUCH = 'ALL_TOUCH'
     BUFFER_MODE = 'BUFFER_MODE'
     BUFFER_EXPR = 'BUFFER_EXPR'
-    FIELDS = [ NAME, INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, BURN_VAL,
+    FIELDS = [ NAME, INPUT, EXPRESSION, BURN_MODE, BURN_FIELD, KEEP_VAL, BURN_VAL,
             ALL_TOUCH, BUFFER_MODE, BUFFER_EXPR ]
 
     def __init__(self, dict, feedback=None):
@@ -64,6 +66,11 @@ class VectorDlgItem(abstract_model.DictItem):
         return self.getBurnMode()
     def getBurnField(self):
         return self.dict[self.BURN_FIELD]
+    def keepValues(self):
+        if self.KEEP_VAL in self.dict:
+            return self.dict[self.KEEP_VAL]
+        else:
+            return False
     def getBurnVal(self):
         return self.dict[self.BURN_VAL]
     def getAllTouch(self):
@@ -142,6 +149,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.setDefaultSetting)
         self.vectorFieldMode.clicked.connect(self.setFieldMode)
         self.vectorFieldCombo.fieldChanged.connect(self.setField)
+        self.keepValues.clicked.connect(self.setKeepValMode)
         self.vectorFixedMode.clicked.connect(self.setFixedMode)
         self.vectorBufferMode.clicked.connect(self.setBufferMode)
         
@@ -156,6 +164,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             burnMode = self.data_item.getBurnMode()
             self.setBurnMode(burnMode)
             self.vectorFieldCombo.setField(self.data_item.getBurnField())
+            self.keepValues.setChecked(self.data_item.keepValues())
             burnVal = self.frictionModel.getFreeVal() if burnMode else self.data_item.getBurnVal() 
             self.vectorFixedValue.setValue(burnVal)
             # self.frictionModel.initComboCodes(self.vectorFixedCombo,burnVal)
@@ -181,12 +190,19 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def setBurnMode(self,is_field_mode):
         self.vectorFieldMode.setChecked(is_field_mode)
         self.vectorFieldCombo.setEnabled(is_field_mode)
+        self.keepValues.setEnabled(is_field_mode)
         self.vectorFixedMode.setChecked(not is_field_mode)
         self.vectorFixedValue.setEnabled(not is_field_mode)
         # self.vectorFixedCombo.setEnabled(not is_field_mode)
         
     def setFieldMode(self,checked):
         self.setBurnMode(checked)
+        
+    def setKeepValMode(self,checked):
+        if checked:
+            self.vectorFieldCombo.setFilters(QgsFieldProxyModel.Numeric)
+        else:
+            self.vectorFieldCombo.setFilters(QgsFieldProxyModel.AllTypes)
         
     # Useless function now : to delete (with calls)
     def setField(self,fieldname):
@@ -227,13 +243,14 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             dict[VectorDlgItem.BURN_MODE] = burn_field_mode
             fieldname = self.vectorFieldCombo.currentField()
             dict[VectorDlgItem.BURN_FIELD] = fieldname
+            dict[VectorDlgItem.KEEP_VAL] = self.keepValues.isChecked()
             if burn_field_mode:
                 # Field mode
                 if not fieldname:
                     feedbacks.paramError("No field selected")
                     continue
                 # Check values count
-                values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+                values = qgsTreatments.getVectorUniqueVals(layer,fieldname,feedback=self.feedback)
                 nb_values = len(values)
                 if nb_values > 40:
                     title = "High values count"

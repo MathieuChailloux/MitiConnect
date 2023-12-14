@@ -94,7 +94,7 @@ class RasterDlgItem(abstract_model.DictItem):
     def getValues(self):
         return self.values
         
-    def getValue(self):
+    def keepValues(self):
         return self.dict[self.KEEP_VALUES]
         
     @staticmethod

@@ -71,8 +71,9 @@ class ImportItem(DictItemWithChild):
     def getInput(self):
         return self.dict[ImportItem.INPUT]
     def getValue(self):
-        # return self.dict[ImportItem.VALUE]
-        return self.child.getValue()
+        return self.dict[ImportItem.VALUE]
+    def keepValues(self):
+        return self.child.keepValues()
     # def getChildValue(self):
         # dlgItem = self.child
         # is_vector = type(dlgItem) is VectorDlgItem
@@ -175,7 +176,11 @@ class ImportModel(DictModel):
                 fieldname = item.child.getBurnField()
                 values = qgsTreatments.getVectorUniqueVals(layer,fieldname,
                     feedback=self.feedback)
-                classModel.addRowFromValues(name,values)
+                if item.keepValues():
+                    for v in values:
+                        classModel.addRow(name,v,v)
+                else:
+                    classModel.addRowFromValues(name,values)
             else:
                 newVal = item.child.getBurnVal()
                 classModel.addRow(name,"",newVal)
@@ -183,7 +188,7 @@ class ImportModel(DictModel):
         else:
             values = item.getValues()
             # Raster value = keep values mode
-            if item.getValue():
+            if item.keepValues():
                 for v in values:
                     classModel.addRow(name,v,v)
             else:
@@ -258,39 +263,46 @@ class ImportModel(DictModel):
                 # Burn by field mode
                 burnField = childItem.getBurnField()
                 name = item.getName()
-                unique_path = qgsUtils.mkTmpPath(name + '_unique.gpkg')
-                assoc_path = qgsUtils.mkTmpPath(name + '_assoc.gpkg')
-                outField = 'NUM_FIELD'
-                qgsTreatments.addUniqueValue(buffered,burnField,outField,
-                    unique_path,assoc_path,context=context,feedback=feedback)
-                # Rasterize
-                qgsTreatments.applyRasterization(unique_path,raster_path,
-                    extent,resolution,field=outField,out_type=min_type,
-                    nodata_val=nodata_val,all_touch=all_touch,
-                    context=context,feedback=feedback)
-                # Reclassify
-                assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
-                # reclassTable = self.pluginModel.classModel.getReclassTable(name)
-                reclassDict = self.pluginModel.classModel.getReclassDict(name)
-                self.feedback.pushDebugInfo("reclassDict = " + str(reclassDict))
-                reclassTable = []
-                for f in assoc_layer.getFeatures():
-                    initVal = str(f[burnField])
-                    self.feedback.pushDebugInfo("initVal = " + str(initVal))
-                    self.feedback.pushDebugInfo("initVal type = " + str(initVal.__class__.__name__))
-                    if len(reclassDict) > 0:
-                        self.feedback.pushDebugInfo("reclassDict type = "
-                            + str(list(reclassDict)[0].__class__.__name__))
-                    tmpVal = f[outField]
-                    if initVal not in reclassDict:
-                        self.feedback.internal_error("No matching found for {} in {}".format(initval,self.pluginModel.classModel.items))
-                    outVal = reclassDict[initVal]
-                    row = [tmpVal,tmpVal,outVal]
-                    reclassTable += row
-                qgsTreatments.applyReclassifyByTable(raster_path,reclassTable,
-                    reclassified,out_type=min_type,nodata_val=nodata_val,
-                    boundaries_mode=2,context=context,feedback=feedback)
-                to_norm_path = reclassified
+                if childItem.keepValues():
+                    self.feedback.pushDebugInfo("min_type = {}".format(min_type))
+                    qgsTreatments.applyRasterization(buffered,raster_path,
+                        extent,resolution,field=burnField,out_type=min_type,
+                        nodata_val=nodata_val,all_touch=all_touch,
+                        context=context,feedback=feedback)
+                    to_norm_path = raster_path
+                else:
+                    # Rasterize
+                    unique_path = qgsUtils.mkTmpPath(name + '_unique.gpkg')
+                    assoc_path = qgsUtils.mkTmpPath(name + '_assoc.gpkg')
+                    outField = 'NUM_FIELD'
+                    qgsTreatments.addUniqueValue(buffered,burnField,outField,
+                        unique_path,assoc_path,context=context,feedback=feedback)
+                    qgsTreatments.applyRasterization(unique_path,raster_path,
+                        extent,resolution,field=outField,out_type=min_type,
+                        nodata_val=nodata_val,all_touch=all_touch,
+                        context=context,feedback=feedback)                    
+                    # Reclassify
+                    assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
+                    reclassDict = self.pluginModel.classModel.getReclassDict(name)
+                    self.feedback.pushDebugInfo("reclassDict = " + str(reclassDict))
+                    reclassTable = []
+                    for f in assoc_layer.getFeatures():
+                        initVal = str(f[burnField])
+                        self.feedback.pushDebugInfo("initVal = " + str(initVal))
+                        self.feedback.pushDebugInfo("initVal type = " + str(initVal.__class__.__name__))
+                        if len(reclassDict) > 0:
+                            self.feedback.pushDebugInfo("reclassDict type = "
+                                + str(list(reclassDict)[0].__class__.__name__))
+                        tmpVal = f[outField]
+                        if initVal not in reclassDict:
+                            self.feedback.internal_error("No matching found for {} in {}".format(initval,self.pluginModel.classModel.items))
+                        outVal = reclassDict[initVal]
+                        row = [tmpVal,tmpVal,outVal]
+                        reclassTable += row
+                    qgsTreatments.applyReclassifyByTable(raster_path,reclassTable,
+                        reclassified,out_type=min_type,nodata_val=nodata_val,
+                        boundaries_mode=2,context=context,feedback=feedback)
+                    to_norm_path = reclassified
             else:
                 # Burn by fixed value mode
                 classItem = self.pluginModel.classModel.getItemFromOrigin(name)
@@ -480,6 +492,10 @@ class ImportConnector(TableToDialogConnector):
         oldValue, newValue = item.getValue(), dlgItem.getValue()
         diffValue = oldValue != newValue
         self.feedback.pushDebugInfo("diffValue {} {} = {}".format(oldValue,newValue,diffValue))
+        # Keep values
+        oldKeepValues, newKeepValues = item.keepValues(), dlgItem.keepValues()
+        diffKeepValues = oldKeepValues != newKeepValues
+        self.feedback.pushDebugInfo("diffKeepValues {} {} = {}".format(oldKeepValues,newKeepValues,diffKeepValues))
         # Check input
         self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
         oldInput, newInput = item.getInput(), dlgItem.getLayerPath()

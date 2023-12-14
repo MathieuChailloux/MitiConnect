@@ -72,7 +72,7 @@ PROVIDER = 'mitiConnect'
 # TODO : grapha wrappers in erc_tvb_algs_provider ?
 def createGraphabProject(landuse,codes,out_dir,project_name,
         nodata=None,patch_size=0,feedback=None):
-    code_str = ",".join(codes)
+    code_str = ",".join([str(c) for c in codes])
     params = {
         'DIRPATH' : out_dir,
         'INPUT' : landuse,

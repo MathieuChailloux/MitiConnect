@@ -36,26 +36,23 @@ class TestItemDelegate(QtWidgets.QItemDelegate):
 
     def __init__(self):
         super().__init__()
-        # QtGui.QItemDelegate.__init__(self)
         
     def createEditor(self, parent, option, index):
-        # if index.column()==0:
         lineedit=QtWidgets.QLineEdit(parent)
         return lineedit
         
-class CodesItemDelegate(QtWidgets.QItemDelegate):
+# class CodesItemDelegate(QtWidgets.QItemDelegate):
 
-    def __init__(self,frictionModel):
-        super().__init__()
-        self.frictionModel = frictionModel
+    # def __init__(self,frictionModel):
+        # super().__init__()
+        # self.frictionModel = frictionModel
         
-    def createEditor(self, parent, option, index):
-        # if index.column()==0:
-        combo=QtWidgets.QComboBox(parent)
-        elements = self.frictionModel.getCodesStrComplete()
-        combo.insertItems(0,elements)
-        combo.insertItem(0,NEW_VAL_STR)
-        return combo
+    # def createEditor(self, parent, option, index):
+        # combo=QtWidgets.QComboBox(parent)
+        # elements = self.frictionModel.getCodesStrComplete()
+        # combo.insertItems(0,elements)
+        # combo.insertItem(0,NEW_VAL_STR)
+        # return combo
         
     # def setModelData(self, editor, model, index):
         # editorIndex=editor.currentIndex()
@@ -122,20 +119,19 @@ class FrictionModel(ExtensiveTableModel):
             codes = [ self.getItemValue(i) for i in self.items ]
         return codes
     def getItemStr(self,item):
-        s = str(item.dict[self.idField])
-        s += " - "
-        s += str(item.dict[self.IMPORT])
-        s += " - "
-        s += str(item.dict[self.IMPORT_VAL])
-        s += " - "
-        s += str(item.dict[self.ROW_DESCR])
+        s = "{} - {} - {} - {}".format(
+            item.dict[self.idField],
+            item.dict[self.ROW_DESCR],
+            item.dict[self.IMPORT],
+            item.dict[self.IMPORT_VAL])
         return s
-    def getCodesStrComplete(self,withNewVal=False,origin=None):
+    def getCodesStr(self,withNewVal=False,origin=None,codes=[]):
         l = [NEW_VAL_STR] if withNewVal else []
         for i in self.items:
             if origin is None or origin == self.getItemImport(i):
-                s = self.getItemStr(i)
-                l.append(s)
+                if codes == [] or i.dict[self.ROW_CODE] in codes:
+                    s = self.getItemStr(i)
+                    l.append(s)
         return l
         
     def addRowFromClassItem(self,item):
@@ -285,24 +281,24 @@ class FrictionModel(ExtensiveTableModel):
         
         
     # used to init combo box in dialogs: find a best location for these functions ?
-    def initComboCodes(self,combo,val=None):
-        itemsStr = self.getCodesStrComplete(withNewVal=True)
-        combo.insertItems(0,itemsStr)
-        if val is None or val == "":
-            combo.setCurrentIndex(0)
-        else:
-            codes = self.getCodes()
-            idx = codes.index(val)
-            combo.setCurrentIndex(idx+1)
+    # def initComboCodes(self,combo,val=None):
+        # itemsStr = self.getCodesStrComplete(withNewVal=True)
+        # combo.insertItems(0,itemsStr)
+        # if val is None or val == "":
+            # combo.setCurrentIndex(0)
+        # else:
+            # codes = self.getCodes()
+            # idx = codes.index(val)
+            # combo.setCurrentIndex(idx+1)
             
-    def getCodeFromCombo(self,combo):
-        idx = combo.currentIndex()
-        if idx == 0:
-            code = self.getFreeVals(1)[0]
-        else:
-            codes = self.getCodes()
-            code = codes[idx-1]
-        return code
+    # def getCodeFromCombo(self,combo):
+        # idx = combo.currentIndex()
+        # if idx == 0:
+            # code = self.getFreeVals(1)[0]
+        # else:
+            # codes = self.getCodes()
+            # code = codes[idx-1]
+        # return code
         
         
           

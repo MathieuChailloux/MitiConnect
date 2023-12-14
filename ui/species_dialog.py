@@ -112,8 +112,8 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.HABITAT_MODE]
     def getHabitatVal(self):
         return self.dict[self.HABITAT_VAL]
-    def getCodesFull(self):
-        return ast.literal_eval(self.dict[self.HABITAT_VAL])
+    # def getCodesFull(self):
+        # return ast.literal_eval(self.dict[self.HABITAT_VAL])
     def getExtentMode(self):
         return self.dict[self.EXTENT_MODE]
     def getExtentVal(self):
@@ -129,11 +129,18 @@ class SpeciesItem(abstract_model.DictItem):
     def isCustomLayerMode(self):
         return False
     def getCodesVal(self):
-        descrList = self.getCodesFull()
-        codesList = [s.split(" - ")[0] for s in descrList]
-        return codesList
+        # descrList = self.getCodesFull()
+        # codesList = [s.split(" - ")[0] for s in descrList]
+        # return codesList
         # return ast.literal_eval(codes)
-    
+        codesStr = self.dict[self.HABITAT_VAL]
+        codes = ast.literal_eval(codesStr)
+        # Backward compatibility
+        if "-" in codesStr:
+            newCodes = [int(s.split(" - ")[0]) for s in codes]
+            self.dict[self.HABITAT_VAL] = str(newCodes)
+            codes = newCodes
+        return codes
                 
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
@@ -198,7 +205,9 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             landuse = self.speciesLanduse.currentText()
             habitat_mode = self.habitatCodesMode.isChecked()
             if habitat_mode:
-                habitat_val = str(self.habitatCodes.checkedItems())
+                checkedItems = self.habitatCodes.checkedItems()
+                codes = [int(s.split(" - ")[0]) for s in checkedItems]
+                habitat_val = codes               
             else:
                 habitat_val = self.habitatLayer.filePath()
             # group = self.speciesGroup.currentIndex()
@@ -215,7 +224,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         return None
         
     def updateUi(self,dlg_item):
-        l = self.pluginModel.frictionModel.getCodesStrComplete()
+        l = self.pluginModel.frictionModel.getCodesStr()
         self.feedback.pushDebugInfo("l = " + str(l))
         self.habitatCodes.insertItems(0,l)
         dataNames =  self.pluginModel.getDataNames()
@@ -231,7 +240,9 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             habitat_mode = dlg_item.getHabitatMode()
             self.switchHabitatMode(habitat_mode)
             if habitat_mode:
-                self.habitatCodes.setCheckedItems(dlg_item.getCodesFull())
+                codes = dlg_item.getCodesVal()
+                checkedItems = self.pluginModel.frictionModel.getCodesStr(codes=codes)
+                self.habitatCodes.setCheckedItems(checkedItems)
             else:
                 self.habitatLayer.setFilePath(dlg_item.getHabitatVal())
             # self.habitatCodes.setCheckedItems(dlg_item.dict[SpeciesItem.CODES])

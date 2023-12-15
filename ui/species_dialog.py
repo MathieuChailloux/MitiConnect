@@ -134,13 +134,16 @@ class SpeciesItem(abstract_model.DictItem):
         # return codesList
         # return ast.literal_eval(codes)
         codesStr = self.dict[self.HABITAT_VAL]
-        codes = ast.literal_eval(codesStr)
-        # Backward compatibility
-        if "-" in codesStr:
-            newCodes = [int(s.split(" - ")[0]) for s in codes]
-            self.dict[self.HABITAT_VAL] = str(newCodes)
-            codes = newCodes
-        return codes
+        if codesStr:
+            codes = ast.literal_eval(codesStr)
+            # Backward compatibility
+            if "-" in codesStr:
+                newCodes = [int(s.split(" - ")[0]) for s in codes]
+                self.dict[self.HABITAT_VAL] = str(newCodes)
+                codes = newCodes
+            return codes
+        else:
+            return []
                 
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
@@ -241,8 +244,9 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.switchHabitatMode(habitat_mode)
             if habitat_mode:
                 codes = dlg_item.getCodesVal()
-                checkedItems = self.pluginModel.frictionModel.getCodesStr(codes=codes)
-                self.habitatCodes.setCheckedItems(checkedItems)
+                if codes:
+                    checkedItems = self.pluginModel.frictionModel.getCodesStr(codes=codes)
+                    self.habitatCodes.setCheckedItems(checkedItems)
             else:
                 self.habitatLayer.setFilePath(dlg_item.getHabitatVal())
             # self.habitatCodes.setCheckedItems(dlg_item.dict[SpeciesItem.CODES])

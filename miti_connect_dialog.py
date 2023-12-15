@@ -29,7 +29,7 @@ import xml.etree.ElementTree as ET
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.gui import QgsFileWidget
-from qgis.core import Qgis, QgsProcessingContext, QgsProcessingException
+from qgis.core import Qgis, QgsProcessingContext, QgsProcessingException, QgsCoordinateReferenceSystem
 import traceback
 from io import StringIO
 
@@ -147,6 +147,10 @@ class MitiConnectModel(abstract_model.MainModel):
         crs = self.paramsModel.crs
         extent = self.paramsModel.getExtentString()
         resolution = self.paramsModel.getResolution()
+        # Check CRS
+        crsObj = QgsCoordinateReferenceSystem(crs)
+        if crsObj.isGeographic():
+            self.feedback.user_error("CRS is geographic, please chose a metric system")
         return (crs, extent, resolution)
 
     def getImportNames(self):

@@ -70,6 +70,8 @@ class SpeciesItem(abstract_model.DictItem):
     LANDUSE = 'LANDUSE'
     HABITAT_MODE = 'HABITAT_MODE'
     HABITAT_VAL = 'CODES'
+    FRICTION_MODE = 'FRICTION_MODE'
+    FRICTION_LAYER = 'FRICTION_LAYER'
     EXTENT_MODE = 'EXTENT_MODE'
     EXTENT_VAL = 'EXTENT_VAL'
     FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
@@ -81,9 +83,9 @@ class SpeciesItem(abstract_model.DictItem):
         super().__init__(dict,feedback=feedback)
     
     @classmethod
-    def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,
-                 patch_unit,landuse,habitatMode,habitatVal,extent_mode,extent_val,
-                 feedback=None):
+    def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,patch_unit,
+                   landuse,habitatMode,habitatVal,frictionMode,frictionLayer,
+                   extent_mode,extent_val,feedback=None):
         dict = { cls.ID : name,
                  cls.FULL_NAME : full_name,
                  cls.MAX_DISP : max_disp,
@@ -91,6 +93,8 @@ class SpeciesItem(abstract_model.DictItem):
                  cls.LANDUSE : landuse,
                  cls.HABITAT_MODE : habitatMode,
                  cls.HABITAT_VAL : habitatVal,
+                 cls.FRICTION_MODE : frictionMode,
+                 cls.FRICTION_LAYER : frictionLayer,
                  cls.EXTENT_MODE : extent_mode,
                  cls.EXTENT_VAL : extent_val }
         return cls(dict,feedback=feedback)
@@ -114,6 +118,10 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.HABITAT_VAL]
     # def getCodesFull(self):
         # return ast.literal_eval(self.dict[self.HABITAT_VAL])
+    def getFrictionMode(self):
+        return self.FRICTION_MODE not in self.dict or self.dict[self.FRICTION_MODE]
+    def getFrictionLayer(self):
+        return self.dict[self.FRICTION_LAYER]
     def getExtentMode(self):
         return self.dict[self.EXTENT_MODE]
     def getExtentVal(self):
@@ -135,7 +143,12 @@ class SpeciesItem(abstract_model.DictItem):
         # return ast.literal_eval(codes)
         codesStr = self.dict[self.HABITAT_VAL]
         if codesStr:
-            codes = ast.literal_eval(codesStr)
+            if isinstance(codesStr,str):
+                codes = ast.literal_eval(codesStr)
+            elif isinstance(codesStr,list):
+                codes = codesStr
+            else:
+                self.feedback.internal_error("Unexpected type {} for {}".format(type(codesStr),codesStr))
             # Backward compatibility
             if "-" in codesStr:
                 newCodes = [int(s.split(" - ")[0]) for s in codes]
@@ -158,6 +171,8 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def connectComponents(self):
         # super().connectComponents()
+        self.frictionTabOpt.clicked.connect(self.switchFrictionTabMode)
+        self.frictionLayerOpt.clicked.connect(self.switchFrictionLayerMode)
         self.habitatCodesMode.clicked.connect(self.switchHabitatCodesMode)
         self.habitatLayerMode.clicked.connect(self.switchHabitatLayerMode)
         self.speciesBufferMode.clicked.connect(self.switchExtentBufferMode)
@@ -192,6 +207,16 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
     def switchHabitatLayerMode(self):
         self.switchHabitatMode(False)
         
+    # Switch Friction mode
+    def switchFrictionMode(self,mode):
+        self.frictionTabOpt.setChecked(mode)
+        self.frictionLayerOpt.setChecked(not mode)
+        self.frictionLayer.setEnabled(not mode)
+    def switchFrictionTabMode(self):
+        self.switchFrictionMode(True)
+    def switchFrictionLayerMode(self):
+        self.switchFrictionMode(False)
+        
     def showDialog(self):
         while self.exec_():
             name = self.speciesID.text()
@@ -206,6 +231,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             patch_unit = self.speciesPatchUnit.currentIndex()
             # landuse = self.speciesLanduse.currentLayer()
             landuse = self.speciesLanduse.currentText()
+            # Habitat
             habitat_mode = self.habitatCodesMode.isChecked()
             if habitat_mode:
                 checkedItems = self.habitatCodes.checkedItems()
@@ -213,16 +239,21 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                 habitat_val = codes               
             else:
                 habitat_val = self.habitatLayer.filePath()
-            # group = self.speciesGroup.currentIndex()
+            # Friction
+            friction_mode = self.frictionTabOpt.isChecked()
+            friction_layer = self.frictionLayer.filePath()
+            # Extent
             buffer_mode = self.speciesBufferMode.isChecked()
             layer_mode = self.speciesLayerMode.isChecked()
             extent_mode = buffer_mode
             buffer_val = self.speciesExtentBuffer.value()
             buffer_layer = self.speciesExtentLayer.filePath()
             extent_val = buffer_val if buffer_mode else buffer_layer
+            # Build item
             item = SpeciesItem.fromValues(name,full_name,max_disp,disp_unit,
-                min_patch,patch_unit,landuse,habitat_mode,habitat_val,extent_mode,extent_val,
-                feedback=self.feedback)
+                min_patch,patch_unit,landuse,
+                habitat_mode,habitat_val,friction_mode,friction_layer,
+                extent_mode,extent_val,feedback=self.feedback)
             return item
         return None
         
@@ -240,6 +271,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.speciesMinPatch.setValue(dlg_item.getMinArea())
             self.speciesDispUnit.setCurrentIndex(0)
             self.speciesLanduse.setCurrentText(dlg_item.dict[SpeciesItem.LANDUSE])
+            # Habitat
             habitat_mode = dlg_item.getHabitatMode()
             self.switchHabitatMode(habitat_mode)
             if habitat_mode:
@@ -248,9 +280,21 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                     checkedItems = self.pluginModel.frictionModel.getCodesStr(codes=codes)
                     self.habitatCodes.setCheckedItems(checkedItems)
             else:
-                self.habitatLayer.setFilePath(dlg_item.getHabitatVal())
-            # self.habitatCodes.setCheckedItems(dlg_item.dict[SpeciesItem.CODES])
-            # self.speciesGroup.setcurrenntIndex(dlg_item.dict[SpeciesItem.GROUP])
+                habitatLayer = dlg_item.getHabitatVal()
+                if utils.fileExists(habitatLayer):
+                    self.habitatLayer.setFilePath(dlg_item.getHabitatVal())
+                else:
+                    self.feedback.pushWarning("No habitat layer {}".format(habitatLayer))
+            # Friction
+            friction_mode = dlg_item.getFrictionMode()
+            self.switchFrictionMode(friction_mode)
+            if not friction_mode:
+                friction_layer = dlg_item.getFrictionLayer()
+                if utils.fileExists(friction_layer):
+                    self.frictionLayer.setFilePath(friction_layer)
+                else:
+                    self.feedback.pushWarning("No friction layer {}".format(habitatLayer))
+            # Extent
             extent_mode = dlg_item.dict[SpeciesItem.EXTENT_MODE]
             extent_val = dlg_item.dict[SpeciesItem.EXTENT_VAL]
             self.switchExtentMode(extent_mode)

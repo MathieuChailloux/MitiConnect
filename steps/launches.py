@@ -228,7 +228,7 @@ class LaunchModel(DictModel):
         spItem = self.getSpItemFromName(spName)
         extItem = self.getScItemFromName(extName)
         return (scItem, spItem, extItem)
-    def getItemFromNames(self,scName,spName,extName):
+    def getItemFromNames(self,scName,spName,extName=None):
         for i in self.items:
             iScName, iSpName, iExtName = i.getNames()
             if iScName == scName and iSpName == spName:
@@ -452,6 +452,7 @@ class LaunchModel(DictModel):
         
         
     def clearFile(self,filename):
+        self.feedback.pushDebugInfo("clearFile " + str(filename))
         if utils.fileExists(filename):
             qgsUtils.removeLayerFromPath(filename)
             qgsUtils.removeRaster(filename)
@@ -564,6 +565,22 @@ class LaunchModel(DictModel):
         return out_path
         # qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
+    def getMatrixFromPath(self,spName,path):
+        #spName = item.getSpName()
+        frictionModel = self.pluginModel.frictionModel
+        matrixes = frictionModel.getReclassifyMatrixes([spName])
+        self.feedback.pushDebugInfo("matrixes = " + str(matrixes))
+        matrix = matrixes[spName]
+        self.feedback.pushDebugInfo("matrix = " + str(matrix))
+        # Get non assigned values
+        inVals = qgsUtils.getRasterValsFromPath(path)
+        mInVals, mOutVals = matrix[::3], matrix[2::3]
+        self.feedback.pushDebugInfo("mInVals = " + str(mInVals))
+        self.feedback.pushDebugInfo("mOutVals = " + str(mOutVals))
+        naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
+        self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
+        return matrix
+        
     def applyItemFriction(self,item,feedback=None,  eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
@@ -587,24 +604,43 @@ class LaunchModel(DictModel):
                 loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
                 styles.setRendererPalettedGnYlRd(loaded_layer)
                 return
-        # Prepare matrix
-        baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
-        frictionModel = self.pluginModel.frictionModel
-        matrixes = frictionModel.getReclassifyMatrixes([spName])
-        feedback.pushDebugInfo("matrixes = " + str(matrixes))
-        matrix = matrixes[spName]
-        feedback.pushDebugInfo("matrix = " + str(matrix))
-        # Get non assigned values
-        inVals = qgsUtils.getRasterValsFromPath(in_path)
-        mInVals, mOutVals = matrix[::3], matrix[2::3]
-        feedback.pushDebugInfo("mInVals = " + str(mInVals))
-        feedback.pushDebugInfo("mOutVals = " + str(mOutVals))
-        naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
-        self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
-        # Call reclassify
-        qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
-            out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
-            feedback=feedback)
+        # Apply friction reclassification
+        if scItem.isInitialState():
+            # Friction from tab
+            if spItem.getFrictionMode():
+                # Prepare matrix
+                matrix = self.getMatrixFromPath(spName,in_path)
+                # Call reclassify
+                baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
+                qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
+                    out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
+                    feedback=feedback)
+            else:
+                # Friction from layer
+                frictionLayer = spItem.getFrictionLayer()
+                self.pluginModel.paramsModel.normalizeRaster(frictionLayer,out_path=out_path,feedback=feedback)
+        else:
+            # Stacked mode
+            # Retrieve base scenario friction
+            baseScName = scItem.getBase()
+            baseScItem = self.pluginModel.scenarioModel.getItemFromName(baseScName)
+            baseLaunchItem = self.getItemFromNames(scName,spName)
+            baseFriction = self.getItemFriction(baseLaunchItem)
+            if not utils.fileExists(baseFriction):
+                self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(baseFriction,spName,baseScName))
+            # Build scenario modification friction layer
+            scModifRaster = self.pluginModel.scenarioModel.rasterizeLayer(scItem,feedback=feedback)
+            # Apply reclassification
+            matrix = self.getMatrixFromPath(scModifRaster)
+            scModifFriction = qgsUtils.mkTmpPath("{}ModifFriction.tif".format(scName))
+            qgsTreatments.applyReclassifyByTable(scModifRaster,matrix,scModifFriction,
+                out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
+                feedback=feedback)
+            # Merge modif friction and base friction
+            frictionLayers = [baseFriction,scModifFriction]
+            qgsTreatments.applyMergeRaster(frictionLayers,out_path,
+                out_type=baseType,nodata_val=nodataVal,feedback=feedback)
+        # Load layer in QGIS
         loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True,groupName="Friction")
         styles.setRendererPalettedGnYlRd(loaded_layer)
             

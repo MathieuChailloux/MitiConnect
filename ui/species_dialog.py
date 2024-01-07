@@ -70,6 +70,7 @@ class SpeciesItem(abstract_model.DictItem):
     LANDUSE = 'LANDUSE'
     HABITAT_MODE = 'HABITAT_MODE'
     HABITAT_VAL = 'CODES'
+    PATCH_CONNEXITY = 'PATCH_CONNEXITY'
     FRICTION_MODE = 'FRICTION_MODE'
     FRICTION_LAYER = 'FRICTION_LAYER'
     EXTENT_MODE = 'EXTENT_MODE'
@@ -84,8 +85,8 @@ class SpeciesItem(abstract_model.DictItem):
     
     @classmethod
     def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,patch_unit,
-                   landuse,habitatMode,habitatVal,frictionMode,frictionLayer,
-                   extent_mode,extent_val,feedback=None):
+                   landuse,habitatMode,habitatVal,patchConnexity,frictionMode,
+                   frictionLayer,extent_mode,extent_val,feedback=None):
         dict = { cls.ID : name,
                  cls.FULL_NAME : full_name,
                  cls.MAX_DISP : max_disp,
@@ -93,6 +94,7 @@ class SpeciesItem(abstract_model.DictItem):
                  cls.LANDUSE : landuse,
                  cls.HABITAT_MODE : habitatMode,
                  cls.HABITAT_VAL : habitatVal,
+                 cls.PATCH_CONNEXITY : patchConnexity,
                  cls.FRICTION_MODE : frictionMode,
                  cls.FRICTION_LAYER : frictionLayer,
                  cls.EXTENT_MODE : extent_mode,
@@ -118,6 +120,8 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.HABITAT_VAL]
     # def getCodesFull(self):
         # return ast.literal_eval(self.dict[self.HABITAT_VAL])
+    def getPatchConnexity(self):
+        return self.PATCH_CONNEXITY not in self.dict or self.dict[self.PATCH_CONNEXITY]
     def getFrictionMode(self):
         return self.FRICTION_MODE not in self.dict or self.dict[self.FRICTION_MODE]
     def getFrictionLayer(self):
@@ -207,6 +211,16 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
     def switchHabitatLayerMode(self):
         self.switchHabitatMode(False)
         
+    # Switch connexity mode
+    def switchConnexityMode(self,mode):
+        self.connexity4.setChecked(mode)
+        self.connexity8.setChecked(not mode)
+    def switchConnexity4Mode(self):
+        self.switchConnexityMode(True)
+    def switchConnexity8Mode(self):
+        self.switchConnexityMode(False)
+    
+        
     # Switch Friction mode
     def switchFrictionMode(self,mode):
         self.frictionTabOpt.setChecked(mode)
@@ -239,6 +253,8 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                 habitat_val = codes               
             else:
                 habitat_val = self.habitatLayer.filePath()
+            # Connexity
+            patch_connexity = self.connexity4.isChecked()
             # Friction
             friction_mode = self.frictionTabOpt.isChecked()
             friction_layer = self.frictionLayer.filePath()
@@ -252,7 +268,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             # Build item
             item = SpeciesItem.fromValues(name,full_name,max_disp,disp_unit,
                 min_patch,patch_unit,landuse,
-                habitat_mode,habitat_val,friction_mode,friction_layer,
+                habitat_mode,habitat_val,patch_connexity,friction_mode,friction_layer,
                 extent_mode,extent_val,feedback=self.feedback)
             return item
         return None
@@ -285,6 +301,8 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.habitatLayer.setFilePath(dlg_item.getHabitatVal())
                 else:
                     self.feedback.pushWarning("No habitat layer {}".format(habitatLayer))
+            # Connexity
+            self.switchConnexityMode(dlg_item.getPatchConnexity())
             # Friction
             friction_mode = dlg_item.getFrictionMode()
             self.switchFrictionMode(friction_mode)

@@ -71,7 +71,7 @@ def getGraph(gProj,graphName):
 PROVIDER = 'mitiConnect'
 # TODO : grapha wrappers in erc_tvb_algs_provider ?
 def createGraphabProject(landuse,codes,out_dir,project_name,
-        nodata=None,patch_size=0,feedback=None):
+        con8=False,nodata=None,patch_size=0,feedback=None):
     code_str = ",".join([str(c) for c in codes])
     params = {
         'DIRPATH' : out_dir,
@@ -79,7 +79,8 @@ def createGraphabProject(landuse,codes,out_dir,project_name,
         'LANDCODE' : code_str,
         'NAMEPROJECT' : project_name,
         'NODATA' : nodata,
-        'SIZEPATCHES' : patch_size }
+        'SIZEPATCHES' : patch_size,
+        'CON8' : con8 }
     return applyProcessingAlg(PROVIDER,'create_project',params,feedback=feedback)
 def createGraphabLinkset(project,name,frictionPath,type=1,feedback=None):
     params = { 'CODE' : '',
@@ -669,6 +670,8 @@ class LaunchModel(DictModel):
             self.feedback.user_error("No habitat code specified for specie "
                 + str(spName))
         minArea = spItem.getMinArea()
+        patchConnexity = spItem.getPatchConnexity()
+        con8 = not patchConnexity
         # Get outputs
         outDir = self.getItemBaseDir(item)
         projectFolder = os.path.dirname(project)
@@ -685,7 +688,8 @@ class LaunchModel(DictModel):
                 self.pluginModel.loadProject(project)
                 return
         createGraphabProject(landuse,codes,outDir,projName,
-            nodata=-self.pluginModel.nodataVal,patch_size=minArea,feedback=feedback)
+            nodata=-self.pluginModel.nodataVal,patch_size=minArea,
+            con8=con8,feedback=feedback)
 
 
     def applyItemGraphabLinkset(self,item,eraseFlag=False,feedback=None):
@@ -860,6 +864,10 @@ class LaunchModel(DictModel):
         names = [self.items[ind.row()].getName() for ind in indexes]
         super().removeItems(indexes)
         self.pluginModel.removeImports(names)
+        
+    def updateFromXML(self,root,feedback=None):
+        self.items = []
+        super().updateFromXML(root,feedback=feedback)
         
     def clearModel(self):
         self.items = []

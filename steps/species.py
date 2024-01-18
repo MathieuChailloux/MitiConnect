@@ -139,17 +139,28 @@ class SpeciesConnector(TableToDialogConnector):
         if item:
             if not item.isHabitatCodesMode():
                 self.pathFieldToAbs(item,SpeciesItem.HABITAT_VAL)
+            if not item.getFrictionMode():
+                self.pathFieldToAbs(item,SpeciesItem.FRICTION_LAYER)
+            if not item.getExtentMode():
+                self.pathFieldToAbs(item,SpeciesItem.EXTENT_VAL)
             
     def postDlg(self,dlg_item):
         if dlg_item:
             if not dlg_item.isHabitatCodesMode():
                 self.pathFieldToRel(dlg_item,SpeciesItem.HABITAT_VAL)
+            if not dlg_item.getFrictionMode():
+                self.pathFieldToRel(dlg_item,SpeciesItem.FRICTION_LAYER)
+            if not dlg_item.getExtentMode():
+                self.feedback.pushDebugInfo("Setting rel")
+                self.pathFieldToRel(dlg_item,SpeciesItem.EXTENT_VAL)
+            self.feedback.pushDebugInfo("dlg_item = {}".format(dlg_item))
         
     
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()
         diffName = initName != newName
         self.feedback.pushDebugInfo("updateFromDlgItem {} {} = {}".format(initName,newName,diffName))
+        self.feedback.pushDebugInfo("updateFromDlgItem2 {}".format(dlgItem))
         if diffName:
             self.model.pluginModel.frictionModel.renameField(initName,newName)
         item.updateFromDlgItem(dlgItem)

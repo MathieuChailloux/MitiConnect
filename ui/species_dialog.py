@@ -311,7 +311,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                 if utils.fileExists(friction_layer):
                     self.frictionLayer.setFilePath(friction_layer)
                 else:
-                    self.feedback.pushWarning("No friction layer {}".format(habitatLayer))
+                    self.feedback.pushWarning("No friction layer {}".format(friction_layer))
             # Extent
             extent_mode = dlg_item.dict[SpeciesItem.EXTENT_MODE]
             extent_val = dlg_item.dict[SpeciesItem.EXTENT_VAL]

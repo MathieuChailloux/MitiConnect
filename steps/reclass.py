@@ -108,6 +108,7 @@ class ClassModel(DictModel):
         elif nbItems == 1:
             return items[0]
         else:
+            self.feedback.pushDebugInfo("items = {}".format([i.getInitVal() for i in items]))
             self.feedback.internal_error("Multiple matching items for origin {} in {}".format(origin,items))
     def getItemFromOriginAndVal(self,origin,initVal):
         for i in self.items:
@@ -167,7 +168,7 @@ class ClassModel(DictModel):
         elif scItem.isFixedMode():
             burnVal = scItem.getBurnVal()
             self.addRow(scName,"",burnVal)
-        elif scItem.isFieldMode():
+        elif scItem.isValueMode():
             if not scItem.values:
                 self.feedback.internal_error("No field value for {}".format(scItem))
             for val in scItem.values:
@@ -177,7 +178,7 @@ class ClassModel(DictModel):
                     newVal = self.pluginModel.frictionModel.getFreeVal()
                 self.addRow(scName,val,newVal)
         else:
-            assert(False)
+            self.feedback.pushDebugInfo("Unexpected mode for scenario {}".format(scItem))
         self.layoutChanged.emit()
         self.feedback.pushDebugInfo("updateFromScenario5 " + str(len(self.items)))
         self.pluginModel.frictionModel.updateFromImports()

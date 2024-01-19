@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsFieldProxyModel 
 
-from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks
+from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks, qgsTreatments
 from ..steps import friction
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -56,6 +56,11 @@ class ScenarioItem(abstract_model.DictItem):
     # DISPLAY_FIELDS = ['NAME','BASE']
     
     LANDUSE_MODE = 0
+    VECTOR_FIXED_MODE = 1
+    VECTOR_FIELD_MODE = 2
+    INITIAL_STATE_MODE = 3
+    RASTER_VALUES_MODE = 4
+    RASTER_FIXED_MODE = 5
     
     BASE_FIELDS = [ NAME, DESCR, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
@@ -65,6 +70,7 @@ class ScenarioItem(abstract_model.DictItem):
     def __init__(self,dict,feedback=None):
         super().__init__(dict,feedback=feedback)
         self.shortMode = False
+        self.values = []
     
     @classmethod
     def fromValues(cls, name, descr="", layer=None, base=None,
@@ -106,20 +112,37 @@ class ScenarioItem(abstract_model.DictItem):
         return self.dict[self.BURN_VAL]
     def getBurnField(self):
         return self.dict[self.RECLASS_FIELD]
+    # Mode checkers
     def isInitialState(self):
-        return self.getMode() == 3
+        return self.getMode() == self.INITIAL_STATE_MODE
     def isLanduseMode(self):
-        return self.getMode() == 0
+        return self.getMode() == self.LANDUSE_MODE
+    def isVectorFixedMode(self):
+        return self.getMode() == self.VECTOR_FIXED_MODE
+    def isVectorFieldMode(self):
+        return self.getMode() == self.VECTOR_FIELD_MODE
+    def isRasterValuesMode(self):
+        return self.getMode() == self.RASTER_VALUES_MODE
+    def isRasterFixedMode(self):
+        return self.getMode() == self.RASTER_FIXED_MODE
     def isFixedMode(self):
-        return self.getMode() == 1
-    def isFieldMode(self):
-        return self.getMode() == 2
+        return self.getMode() in [self.VECTOR_FIXED_MODE, self.RASTER_FIXED_MODE]
+    def isValueMode(self):
+        return self.getMode() in [self.VECTOR_FIELD_MODE, self.RASTER_VALUES_MODE]
     def isStackedMode(self):
-        return self.isFixedMode() or self.isFieldMode()
+        return self.getMode() not in [self.LANDUSE_MODE, self.INITIAL_STATE_MODE]
     def isLeaf(self):
         return self.getBase() == None
     def useExtent(self):
         return self.getExtentFlag()
+        
+    def isVector(self):
+        layerPath = self.getLayer()
+        layer = qgsUtils.loadLayer(layerPath)
+        if layer:
+            return qgsUtils.isVectorLayer(layer)
+        else:
+            self.feedback.internal_error("Empty layer for scenario {}".format(self))
         
     def sameBurn(self,other):
         mode1, mode2 = self.getMode(), other.getMode()
@@ -145,6 +168,21 @@ class ScenarioItem(abstract_model.DictItem):
         o = cls.fromDict(root.attrib,feedback=feedback)
         return o
     
+    def computeValues(self,layer=None):
+        if not layer:
+            layerPath = self.getLayer()
+            layer = qgsUtils.loadLayer(layerPath)
+        if self.isFixedMode():
+            self.values = [self.getBurnVal]
+        elif self.isVectorFieldMode():
+            fieldname = self.getBurnField()
+            self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+        elif self.isRasterValuesMode():
+            self.feedback.setProgressText("Fetching unique values")
+            self.values = qgsTreatments.getRasterUniqueVals(layer,self.feedback)
+            self.feedback.setProgress(100)
+        
+            
     
 
 class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
@@ -167,11 +205,12 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.setupUi(self)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.scLayerCombo,self.scLayerButton)
-        self.layerComboDlg.setVectorMode()
+        #self.layerComboDlg.setVectorMode()
         self.connectComponents()
         self.updateUi(dlgItem)
         self.reloadFlag = True
         self.values = []
+        self.layer = None
         
     def connectComponents(self):
         self.scLayerCombo.layerChanged.connect(self.changeLayer)
@@ -198,11 +237,14 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # self.layer = layer
     def changeField(self,fieldname):
         layer = self.scLayerCombo.currentLayer()
-        self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
-        self.feedback.pushDebugInfo("field values = " + str(self.values))
-        nb_values = len(self.values)
-        if nb_values > 5:
-            feedbacks.paramError("Field {} contains {} unique values, is it ok or too much ?".format(fieldname,nb_values))
+        if fieldname:
+            self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
+            self.feedback.pushDebugInfo("field values = " + str(self.values))
+            nb_values = len(self.values)
+            if nb_values > 5:
+                feedbacks.paramError("Field {} contains {} unique values, is it ok or too much ?".format(fieldname,nb_values))
+        else:
+            self.values = []
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
@@ -233,6 +275,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
                 continue
+            isVectorMode = qgsUtils.isVectorLayer(layer)
             layerPath = qgsUtils.pathOfLayer(layer)
             extentFlag = self.scExtentFlag.isChecked()
             shortMode = self.scShort.isChecked()
@@ -241,33 +284,60 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             # reclassField = self.scField.currentField()
             self.feedback.pushDebugInfo("fixedMode = " + str(fixedMode))
             if fixedMode:
+                mode = ScenarioItem.VECTOR_FIXED_MODE if isVectorMode else ScenarioItem.RASTER_FIXED_MODE
                 burnVal = self.scBurnVal.text()
                 # burnVal = self.frictionModel.getCodeFromCombo(self.scBurnVal)
                 dlgItem = ScenarioItem.fromValues(name,descr=descr,
                     layer=layerPath,base=base,
-                    mode=1,burnVal=burnVal,extentFlag=extentFlag,
+                    mode=mode,burnVal=burnVal,extentFlag=extentFlag,
                     feedback=self.feedback)
+                # self.values = [burnVal]
             else:
-                reclassField = self.scField.currentField()
-                if not reclassField:
-                    self.errorDialog(self.tr("Empty field"))
-                    continue
-                if not self.values:
-                    self.values = qgsUtils.getLayerFieldUniqueValues(self.scLayerCombo.currentLayer(),reclassField)
-                    # Check values count
-                    nb_values = len(self.values)
-                    if nb_values > 40:
-                        title = "High values count"
-                        msg = "Field {} contains {} unique values, is it ok ?".format(reclassField,nb_values)
-                        reply = feedbacks.launchQuestionDialog(self,title,msg)
-                        self.feedback.pushDebugInfo("reply {}".format(reply))
-                        if reply == QtWidgets.QMessageBox.No:
-                            continue
+                reclassField = ""
+                if isVectorMode:
+                    mode = ScenarioItem.VECTOR_FIELD_MODE
+                    reclassField = self.scField.currentField()
+                    if not reclassField:
+                        self.errorDialog(self.tr("Empty field"))
+                        continue
+                    # if not self.values:
+                        # self.values = qgsUtils.getLayerFieldUniqueValues(layer,reclassField)
+                else:
+                    mode = ScenarioItem.RASTER_VALUES_MODE
+                    # self.feedback.setProgressText(self.tr("Fetching unique values"))
+                    # self.values = qgsTreatments.getRasterUniqueVals(layer,self.feedback)
+                    # self.feedback.setProgress(100)
+                # Check values count
+                # nb_values = len(self.values)
+                # if nb_values == 0:
+                    # self.errorDialog(self.tr("No values found, please check that layer is not empty"))
+                    # continue
+                # elif nb_values > 40:
+                    # title = "High values count"
+                    # msg = "Field {} contains {} unique values, is it ok ?".format(reclassField,nb_values)
+                    # reply = feedbacks.launchQuestionDialog(self,title,msg)
+                    # self.feedback.pushDebugInfo("reply {}".format(reply))
+                    # if reply == QtWidgets.QMessageBox.No:
+                        # continue
                 dlgItem = ScenarioItem.fromValues(name,descr=descr,
                     layer=layerPath,base=base,
-                    mode=2,reclassField=reclassField,extentFlag=extentFlag,
+                    mode=mode,reclassField=reclassField,extentFlag=extentFlag,
                     feedback=self.feedback)
-            dlgItem.values = self.values
+            dlgItem.computeValues(layer=layer)
+            # Check values count
+            nb_values = len(dlgItem.values)
+            if nb_values == 0:
+                self.errorDialog(self.tr("No values found, please check that layer is not empty"))
+                continue
+            elif nb_values > 40:
+                title = "High values count"
+                msg = "Scenario contains {} unique values to reclass, is it ok ?".format(nb_values)
+                reply = feedbacks.launchQuestionDialog(self,title,msg)
+                self.feedback.pushDebugInfo("reply {}".format(reply))
+                if reply == QtWidgets.QMessageBox.No:
+                    continue
+            self.values = dlgItem.values
+            # dlgItem.values = self.values
             dlgItem.shortMode = shortMode
             return dlgItem
         return None
@@ -285,9 +355,10 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if layer and os.path.isfile(layer):
                 self.layerComboDlg.setLayerPath(layer)
             self.scExtentFlag.setChecked(dlgItem.getExtentFlag())
-            fieldMode = dlgItem.dict[ScenarioItem.MODE] == 2
-            self.switchBurnMode(fieldMode)
-            if fieldMode:
+            # fieldMode = dlgItem.dict[ScenarioItem.MODE] == ScenarioItem.VECTOR_FIELD_MODE
+            # fieldMode = dlgItem.isFieldMode()
+            if dlgItem.isValueMode():
+                self.switchBurnMode(True)
                 # self.feedback.pushDebugInfo("updateUI child 2" + str(dlgItem.reclassModel))
                 # copyModel = dlgItem.reclassModel.__copy__()
                 # self.reclassModel = dlgItem.reclassModel.__copy__()
@@ -303,7 +374,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 # self.scDialogView.setModel(self.reclassModel)
                 # self.reclassModel.layoutChanged.emit()
                 burnVal = None
-            else:
+            elif dlgItem.isFixedMode():
+                self.switchBurnMode(False)
                 # burnVal = str(dlgItem.dict[ScenarioItem.BURN_VAL])
                 classItem = self.classModel.getItemFromOrigin(scName)
                 burnVal = classItem.getNewVal() if classItem else dlgItem.getBurnVal()

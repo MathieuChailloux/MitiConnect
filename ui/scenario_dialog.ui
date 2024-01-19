@@ -269,7 +269,10 @@
          </size>
         </property>
         <property name="text">
-         <string>Create short-term scenario</string>
+         <string>Create long-term scenario</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

@@ -163,11 +163,12 @@ class ScenarioModel(DictModel):
             
     def addShortItem(self,item):
         self.feedback.pushDebugInfo("SHORT MODE")
-        shortName = item.getName() + "Short"
+        shortName = item.getName() + "LongTerm"
         shortItem = item.__deepcopy__()
         shortItem.setName(shortName)
         shortItem.shortMode = False
         self.addItem(shortItem)
+        return shortItem
             
     def addScenarioFromLayer(self,name,layer):
         self.feedback.pushDebugInfo("addScenarioFromLayer")
@@ -198,12 +199,12 @@ class ScenarioModel(DictModel):
             reprojected = qgsUtils.mkTmpPath(name + "_reprojected.gpkg")
             qgsTreatments.applyReprojectLayer(absLayerPath,crs,reprojected,feedback=feedback)
             absLayerPath = reprojected
-        if item.isFixedMode():
+        if item.isVectorFixedMode():
             # Fixed mode
             qgsTreatments.applyRasterization(absLayerPath,toNormPath,
                 maxExtent,resolution,burn_val=item.getBurnVal(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
-        elif item.isFieldMode():
+        elif item.isVectorFieldMode():
             # Field mode
             rasterPath = qgsUtils.mkTmpPath(name + "_raster.tif")
             qgsTreatments.applyRasterization(absLayerPath,rasterPath,
@@ -214,6 +215,15 @@ class ScenarioModel(DictModel):
                 self.feedback.internal_error("No reclass rule for scenario {}".format(name))
             qgsTreatments.applyReclassifyByTable(rasterPath,
                 reclassTable,toNormPath,
+                boundaries_mode=2,feedback=feedback)
+        elif item.isRasterValuesMode():
+            toNormPath = absLayerPath
+        elif item.isRasterFixedMode():
+            newV = item.getBurnVal()
+            reclassTable = []
+            for v in item.values:
+                reclassTable.extend[v, v, newV]
+            qgsTreatments.applyReclassifyByTable(absLayerPath,reclassTable,toNormPath,
                 boundaries_mode=2,feedback=feedback)
         else:
             feedback.user_error("Unexpected scenario mode : " + str(mode))
@@ -323,7 +333,7 @@ class ScenarioConnector(TableToDialogConnector):
             # self.model.addItem(item)
             self.model.addItem(dlg_item)
             if dlg_item.shortMode:
-                newName = "{}-short".format(dlg_item.getName())
+                newName = "{}-long".format(dlg_item.getName())
                 newItem = dlg_item.deepcopy()
                 newItem.setName(newName)
                 self.model.addItem(newItem)
@@ -341,9 +351,13 @@ class ScenarioConnector(TableToDialogConnector):
                 if scItem.getBase() == initName:
                     scItem.setBase(newName)
             self.model.pluginModel.renameClassImports(initName,newName)
-        if dlgItem.shortMode:
-            self.model.addShortItem(dlgItem)
         self.updateFrictionFromDlg(dlgItem)
+        if dlgItem.shortMode:
+            si = self.model.addShortItem(dlgItem)
+            self.preDlg(si)
+            si.computeValues()
+            self.postDlg(si)
+            self.updateFrictionFromDlg(si)
             
     # def mkItemFromDlgItem(self,dlg_item): 
         # return ScenarioItem(dlg_item,feedback=self.feedback)
@@ -352,7 +366,7 @@ class ScenarioConnector(TableToDialogConnector):
     def updateFrictionFromDlg(self,item):
         self.feedback.pushDebugInfo("updateFrictionFromDlg")
         if item:
-            if item.isFixedMode() or item.isFieldMode():
+            if item.isFixedMode() or item.isValueMode():
                 self.model.pluginModel.classModel.updateFromScenario(item)
                 self.model.pluginModel.frictionModel.layoutChanged.emit()
         else:

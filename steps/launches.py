@@ -546,7 +546,7 @@ class LaunchModel(DictModel):
             scLayers = [isLayer]
             mfeedback = feedbacks.ProgressMultiStepFeedback(nbSc,feedback)
             for sc in reversed(scHierarchy):
-                scLayer = self.pluginModel.scenarioModel.rasterizeLayer(sc,mfeedback)
+                scLayer = self.pluginModel.scenarioModel.normalizeLayer(sc,mfeedback)
                 scLayers.append(scLayer)
             # luPath = qgsUtils.mkTmpPath("%s_%s_%s_reclass.tif"%(scName,spName,extName))
             # Merge       
@@ -588,6 +588,7 @@ class LaunchModel(DictModel):
         feedback.pushDebugInfo("applyItemFriction")
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
+        baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         # Check in path
         in_path = self.getItemLanduse(item)
         feedback.pushDebugInfo("in_path = " + str(in_path))
@@ -612,7 +613,6 @@ class LaunchModel(DictModel):
                 # Prepare matrix
                 matrix = self.getMatrixFromPath(spName,in_path)
                 # Call reclassify
-                baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
                 qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
                     out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
                     feedback=feedback)
@@ -625,14 +625,14 @@ class LaunchModel(DictModel):
             # Retrieve base scenario friction
             baseScName = scItem.getBase()
             baseScItem = self.pluginModel.scenarioModel.getItemFromName(baseScName)
-            baseLaunchItem = self.getItemFromNames(scName,spName)
+            baseLaunchItem = self.getItemFromNames(baseScName,spName)
             baseFriction = self.getItemFriction(baseLaunchItem)
             if not utils.fileExists(baseFriction):
                 self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(baseFriction,spName,baseScName))
             # Build scenario modification friction layer
-            scModifRaster = self.pluginModel.scenarioModel.rasterizeLayer(scItem,feedback=feedback)
+            scModifRaster = self.pluginModel.scenarioModel.normalizeLayer(scItem,feedback=feedback)
             # Apply reclassification
-            matrix = self.getMatrixFromPath(scModifRaster)
+            matrix = self.getMatrixFromPath(spName,scModifRaster)
             scModifFriction = qgsUtils.mkTmpPath("{}ModifFriction.tif".format(scName))
             qgsTreatments.applyReclassifyByTable(scModifRaster,matrix,scModifFriction,
                 out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,

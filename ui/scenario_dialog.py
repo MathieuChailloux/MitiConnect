@@ -131,6 +131,11 @@ class ScenarioItem(abstract_model.DictItem):
         return self.getMode() in [self.VECTOR_FIELD_MODE, self.RASTER_VALUES_MODE]
     def isStackedMode(self):
         return self.getMode() not in [self.LANDUSE_MODE, self.INITIAL_STATE_MODE]
+    # def isVectorMode(self):
+        # return self.getMode() in [self.VECTOR_FIXED_MODE, self.VECTOR_FIELD_MODE]
+    # def isRasterMode(self):
+        # return self.getMode() in [self.RASTER_FIXED_MODE, self.RASTER_VALUES_MODE]
+        
     def isLeaf(self):
         return self.getBase() == None
     def useExtent(self):

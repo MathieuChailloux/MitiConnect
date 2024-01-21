@@ -183,18 +183,22 @@ class ScenarioModel(DictModel):
         super().removeItems(indexes)
         self.pluginModel.removeImports(names)
         
-    def rasterizeLayer(self,item,feedback=None):
+    def normalizeLayer(self,item,feedback=None):
         if feedback is None:
             feedback = self.feedback
+        # Retrieve parameters
+        name = item.getName()
+        self.feedback.pushDebugInfo("normalizeLyaer {}".format(name))
         absLayerPath = self.pluginModel.getOrigPath(item.getLayer())
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
-        name = item.getName()
+        extLayer = self.getItemExtentScLayer(item)
+        extent = qgsUtils.getExtentStrFromPath(extLayer)
         toNormPath = qgsUtils.mkTmpPath(name + "_toNorm.tif")
         outPath = qgsUtils.mkTmpPath(name + ".tif")
         mode = item.getMode()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         # Reproject if needed
-        absLayer = qgsUtils.loadVectorLayer(absLayerPath)
+        absLayer = qgsUtils.loadLayer(absLayerPath)
         if absLayer.crs() != crs:
             reprojected = qgsUtils.mkTmpPath(name + "_reprojected.gpkg")
             qgsTreatments.applyReprojectLayer(absLayerPath,crs,reprojected,feedback=feedback)
@@ -202,13 +206,13 @@ class ScenarioModel(DictModel):
         if item.isVectorFixedMode():
             # Fixed mode
             qgsTreatments.applyRasterization(absLayerPath,toNormPath,
-                maxExtent,resolution,burn_val=item.getBurnVal(),
+                extent,resolution,burn_val=item.getBurnVal(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
         elif item.isVectorFieldMode():
             # Field mode
             rasterPath = qgsUtils.mkTmpPath(name + "_raster.tif")
             qgsTreatments.applyRasterization(absLayerPath,rasterPath,
-                maxExtent,resolution,field=item.getBurnField(),
+                extent,resolution,field=item.getBurnField(),
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
             reclassTable = self.pluginModel.classModel.getReclassTable(name)
             if not reclassTable:
@@ -227,7 +231,8 @@ class ScenarioModel(DictModel):
                 boundaries_mode=2,feedback=feedback)
         else:
             feedback.user_error("Unexpected scenario mode : " + str(mode))
-        self.pluginModel.paramsModel.normalizeRaster(toNormPath,out_path=outPath,feedback=feedback)
+        self.pluginModel.paramsModel.normalizeRaster(toNormPath,
+            extentLayerPath=extLayer,out_path=outPath,feedback=feedback)
         return outPath
                                 
     def updateFromXML(self,root,feedback=None):

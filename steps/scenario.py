@@ -216,17 +216,21 @@ class ScenarioModel(DictModel):
                 nodata_val=nodataVal,out_type=baseType,feedback=feedback)
             reclassTable = self.pluginModel.classModel.getReclassTable(name)
             if not reclassTable:
-                self.feedback.internal_error("No reclass rule for scenario {}".format(name))
+                self.feedback.internal_error("No reclass rule for scenario {} in data tab".format(name))
             qgsTreatments.applyReclassifyByTable(rasterPath,
                 reclassTable,toNormPath,
                 boundaries_mode=2,feedback=feedback)
         elif item.isRasterValuesMode():
-            toNormPath = absLayerPath
+            reclassTable = self.pluginModel.classModel.getReclassTable(name)
+            if not reclassTable:
+                self.feedback.internal_error("No reclass rule for scenario {} in data tab".format(name))
+            qgsTreatments.applyReclassifyByTable(absLayerPath,reclassTable,toNormPath,
+                boundaries_mode=2,feedback=feedback)
+            # toNormPath = absLayerPath
         elif item.isRasterFixedMode():
+            min, max = qgsUtils.getRasterMinMax(absLayer)
             newV = item.getBurnVal()
-            reclassTable = []
-            for v in item.values:
-                reclassTable.extend[v, v, newV]
+            reclassTable = [min,max,newV]
             qgsTreatments.applyReclassifyByTable(absLayerPath,reclassTable,toNormPath,
                 boundaries_mode=2,feedback=feedback)
         else:

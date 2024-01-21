@@ -131,10 +131,10 @@ class ScenarioItem(abstract_model.DictItem):
         return self.getMode() in [self.VECTOR_FIELD_MODE, self.RASTER_VALUES_MODE]
     def isStackedMode(self):
         return self.getMode() not in [self.LANDUSE_MODE, self.INITIAL_STATE_MODE]
-    # def isVectorMode(self):
-        # return self.getMode() in [self.VECTOR_FIXED_MODE, self.VECTOR_FIELD_MODE]
-    # def isRasterMode(self):
-        # return self.getMode() in [self.RASTER_FIXED_MODE, self.RASTER_VALUES_MODE]
+    def isVectorMode(self):
+        return self.getMode() in [self.VECTOR_FIXED_MODE, self.VECTOR_FIELD_MODE]
+    def isRasterMode(self):
+        return self.getMode() in [self.RASTER_FIXED_MODE, self.RASTER_VALUES_MODE]
         
     def isLeaf(self):
         return self.getBase() == None
@@ -178,7 +178,8 @@ class ScenarioItem(abstract_model.DictItem):
             layerPath = self.getLayer()
             layer = qgsUtils.loadLayer(layerPath)
         if self.isFixedMode():
-            self.values = [self.getBurnVal]
+            # self.values = [self.getBurnVal()]
+            self.values = []
         elif self.isVectorFieldMode():
             fieldname = self.getBurnField()
             self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
@@ -186,6 +187,7 @@ class ScenarioItem(abstract_model.DictItem):
             self.feedback.setProgressText("Fetching unique values")
             self.values = qgsTreatments.getRasterUniqueVals(layer,self.feedback)
             self.feedback.setProgress(100)
+        self.feedback.pushDebugInfo("computeValues {} = {}".format(self,self.values))
         
             
     

@@ -6,7 +6,7 @@
 name=MitiConnect
 qgisMinimumVersion=3.0
 description=MitiConnect integrates ecological connecitivy in mitigation hierarchy based on landscape graphs.
-version=0.3
+version=1.0
 author=INRAE
 email=mathieu@chailloux.org
 
@@ -23,13 +23,13 @@ hasProcessingProvider=yes
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=ecologocial, continuities, connectivity, landscape, mitigation, hierarchy, graph
+tags=ecologocial, continuities, connectivity, landscape, mitigation, hierarchy, graph, graphab, connexity
 
 homepage=
 category=Plugins
 icon=icons/icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

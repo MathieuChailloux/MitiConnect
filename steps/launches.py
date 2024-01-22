@@ -279,6 +279,8 @@ class LaunchModel(DictModel):
     def computeItemExtent(self,item,eraseFlag=True,feedback=None):
         if feedback is None:
             feedback = self.feedback
+        mf = feedbacks.ProgressMultiStepFeedback(2,feedback)
+        mf.setCurrentStep(0)
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
         self.feedback.pushDebugInfo("computeItemExtent " + str(extName))
@@ -297,10 +299,13 @@ class LaunchModel(DictModel):
         if not scExtentLayers:
             extPath = maxExtent
         else:
+            mff = feedbacks.ProgressMultiStepFeedback(2,mf)
+            mff.setCurrentStep(0)
             mergedPath = qgsUtils.mkTmpPath("extentsMerged.gpkg")
-            qgsTreatments.mergeVectorLayers(scExtentLayers,crs,mergedPath,feedback=feedback)
+            qgsTreatments.mergeVectorLayers(scExtentLayers,crs,mergedPath,feedback=mff)
             extPath = qgsUtils.mkTmpPath("extentsMergedDissolved.gpkg")
-            qgsTreatments.dissolveLayer(mergedPath,extPath,feedback=feedback)
+            qgsTreatments.dissolveLayer(mergedPath,extPath,feedback=mff)
+        mf.setCurrentStep(1)
         # Apply specie extent mode
         spLanduse = self.getSpBaseLanduse(spItem)
         if spItem.isMaxExtentMode() or extItem.isInitialState():
@@ -317,11 +322,12 @@ class LaunchModel(DictModel):
                 self.feedback.user_error("Empty dispersal distance for specie " + str(spName))
             bufferVal = bufferMulVal * maxDisp
             extent = qgsTreatments.applyBufferFromExpr(extPath,
-                bufferVal,out_path,feedback=feedback)
+                bufferVal,out_path,feedback=mf)
         elif spItem.isCustomLayerMode():
             self.feedback.internal_error("Custom extent layer mode not implemented yet")
         else:
             self.feedback.internal_error("Unexpected specie mode " + str(spItem))
+        mf.setCurrentStep(2)
         return out_path
         
     # Item getters for each step
@@ -513,6 +519,8 @@ class LaunchModel(DictModel):
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
         feedback.pushDebugInfo("applyItemLanduse " + str(scItem) + " " + str(spItem))
+        mf = feedbacks.ProgressMultiStepFeedback(3,feedback)
+        mf.setCurrentStep(0)
         # Check out path
         out_path = self.getItemLanduse(item)
         if utils.fileExists(out_path):
@@ -544,25 +552,30 @@ class LaunchModel(DictModel):
             feedback.pushDebugInfo("scHierarchy = %s"%([s.getName() for s in scHierarchy]))
             nbSc, cpt = len(scHierarchy), 0
             scLayers = [isLayer]
-            mfeedback = feedbacks.ProgressMultiStepFeedback(nbSc,feedback)
-            for sc in reversed(scHierarchy):
-                scLayer = self.pluginModel.scenarioModel.normalizeLayer(sc,mfeedback)
+            mff = feedbacks.ProgressMultiStepFeedback(nbSc,mf)
+            mff.setCurrentStep(0)
+            for cpt, sc in enumerate(reversed(scHierarchy),start=1):
+                scLayer = self.pluginModel.scenarioModel.normalizeLayer(sc,feedback=mff)
                 scLayers.append(scLayer)
+                mff.setCurrentStep(cpt)
             # luPath = qgsUtils.mkTmpPath("%s_%s_%s_reclass.tif"%(scName,spName,extName))
             # Merge       
             luPath = qgsUtils.mkTmpPath(spName + "_landuse.tif")
             # qgsUtils.removeLayerFromPath(luPath)
             # qgsUtils.removeRaster(luPath)
             qgsTreatments.applyMergeRaster(scLayers,luPath,
-                out_type=baseType,nodata_val=nodataVal,feedback=feedback)
+                out_type=baseType,nodata_val=nodataVal,feedback=mf)
         # Extent
+        mf.setCurrentStep(1)
         extentPath = self.getItemExtentPath(item)
-        self.computeItemExtent(item,feedback=feedback)
+        self.computeItemExtent(item,feedback=mf)
+        mf.setCurrentStep(2)
         # Clip
         dst_crs = self.pluginModel.paramsModel.getCrsStr()
         qgsTreatments.clipRasterFromVector(luPath,extentPath,out_path,
             resolution=resolution,nodata=nodataVal,
-            feedback=feedback)
+            feedback=mf)
+        mf.setCurrentStep(3)
         return out_path
         # qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
@@ -999,9 +1012,12 @@ class LaunchConnector(TableToDialogConnector):
         
         # nb steps feedback
         nb_steps = nbSc * len(species)
+        self.feedback.pushDebugInfo("nbSc = {}".format(nbSc))
+        self.feedback.pushDebugInfo("len(species) = {}".format(len(species)))
+        self.feedback.pushDebugInfo("nb_steps = {}".format(nb_steps))
         step_feedback = feedbacks.ProgressMultiStepFeedback(nb_steps,self.feedback)
+        step_feedback.setCurrentStep(0)
         cpt=0
-        step_feedback.setCurrentStep(cpt)
         # Iteration
         for baseSc, scenarios in scMap.items():
             extName = baseSc.getName()
@@ -1015,6 +1031,8 @@ class LaunchConnector(TableToDialogConnector):
                             + extName + " - " + spName + " - " + scName)
                     func(li,eraseFlag=eraseFlag,feedback=step_feedback)
                     cpt+=1
+                    step_feedback.pushDebugInfo("Setting {} / {} step".format(cpt,nb_steps))
+                    # step_feedback.pushDebugInfo("Nb steps = {}".format(step_feedback.mChildSteps))
                     step_feedback.setCurrentStep(cpt)
     
     def landuseItemRun(self,item,feedback=None,eraseFlag=None):

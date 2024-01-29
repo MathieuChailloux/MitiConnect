@@ -69,7 +69,7 @@ class MitiConnectModel(abstract_model.MainModel):
             self.speciesModel, self.frictionModel,
             self.scenarioModel, self.launchModel ]
         self.baseType = Qgis.UInt16
-        self.nodataVal = 65535
+        self.nodataVal = 0
             
     def getLanduseNames(self):
         return self.landuseModel.getNames()
@@ -222,7 +222,7 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
         self.feedback =  feedbacks.ProgressFeedback(self)
         # self.feedback.pushInfo("ERC1 OK")
         utils.print_func = self.feedback.print_func
-        qgsTreatments.nodata_val = 0
+        qgsTreatments.nodata_val = self.nodataVal
         self.context = QgsProcessingContext()
         self.context.setFeedback(self.feedback)
         # self.feedback.switchDebugMode()

@@ -222,12 +222,12 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
         self.feedback =  feedbacks.ProgressFeedback(self)
         # self.feedback.pushInfo("ERC1 OK")
         utils.print_func = self.feedback.print_func
-        qgsTreatments.nodata_val = self.nodataVal
         self.context = QgsProcessingContext()
         self.context.setFeedback(self.feedback)
         # self.feedback.switchDebugMode()
         # self.feedback.pushInfo("hey")
         self.pluginModel = MitiConnectModel(self.graphabPlugin,self.feedback)
+        qgsTreatments.nodata_val = self.pluginModel.nodataVal
         # self.pluginModel.feedback.pushInfo("ERC2 OK")
         self.paramsConnector = params.ParamsConnector(self,self.pluginModel.paramsModel)
         self.importConnector = data.ImportConnector(self,self.pluginModel.importModel)

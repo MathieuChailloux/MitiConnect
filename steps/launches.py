@@ -632,7 +632,10 @@ class LaunchModel(DictModel):
             else:
                 # Friction from layer
                 frictionLayer = spItem.getFrictionLayer()
-                self.pluginModel.paramsModel.normalizeRaster(frictionLayer,out_path=out_path,feedback=feedback)
+                absFrictionLayer = self.pluginModel.paramsModel.getOrigPath(frictionLayer)
+                extentPath = self.getItemExtentPath(item)
+                self.pluginModel.paramsModel.normalizeRaster(absFrictionLayer,
+                    extentLayerPath=extentPath,out_path=out_path,feedback=feedback)
         else:
             # Stacked mode
             # Retrieve base scenario friction

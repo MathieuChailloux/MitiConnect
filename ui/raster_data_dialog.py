@@ -97,6 +97,9 @@ class RasterDlgItem(abstract_model.DictItem):
     def keepValues(self):
         return self.dict[self.KEEP_VALUES]
         
+    def getValue(self):
+        return ""
+        
     @staticmethod
     def getItemClass(childTag):
         return ReclassModel
@@ -157,7 +160,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             layer = self.data_item.getLayerPath()
             utils.checkFileExists(layer)
             self.layerComboDlg.setLayerPath(layer)
-            self.keepValues.setChecked(self.data_item.getValue())
+            self.keepValues.setChecked(self.data_item.keepValues())
             # model = self.data_item.child
             # if model:
                 # self.rasterDataDialogView.setModel(model)

@@ -316,7 +316,7 @@ class ImportModel(DictModel):
                 to_norm_path = raster_path
         else:
             # Raster mode
-            keepValues = False
+            keepValues = childItem.keepValues()
             if keepValues:
                 to_norm_path = input_path
             else:           

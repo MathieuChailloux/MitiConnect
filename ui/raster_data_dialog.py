@@ -78,7 +78,7 @@ class RasterDlgItem(abstract_model.DictItem):
     INPUT = 'INPUT'
     KEEP_VALUES = 'KEEP_VALUES'
     # RECLASS = 'RECLASS'
-    FIELDS = [ INPUT ]
+    FIELDS = [ NAME, INPUT, KEEP_VALUES ]
 
     def __init__(self, dict, feedback=None):
         if self.KEEP_VALUES not in dict:
@@ -190,6 +190,8 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.data_item = RasterDlgItem(dict,feedback=self.feedback)
             # self.data_item.setChild(self.rasterDataDialogView.model())
             self.data_item.values = self.values
+            self.feedback.pushDebugInfo("dict = " + str(dict))
+            self.feedback.pushDebugInfo("data_item = " + str(self.data_item))
             # self.data_item.isScenario = self.isScenario.isChecked()
             # self.data_item.setChild(self.reclass_model)
             return self.data_item

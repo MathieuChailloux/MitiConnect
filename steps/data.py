@@ -64,7 +64,6 @@ class ImportItem(DictItemWithChild):
             ImportItem.MODE : is_vector,
             ImportItem.VALUE : dlgItem.getValue() }
         return dict 
-        return dict 
         
     def getName(self):
         return self.dict[ImportItem.NAME]
@@ -420,12 +419,12 @@ class ImportConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("postDlg %s"%(str(dlg_item)))
         if isinstance(dlg_item,ImportItem):
             dlg_item = dlg_item.child
-            self.feedback.pushDebugInfo("postDlg2 %s"%(str(dlg_item)))
         self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
       
     def openDialog(self,item):
         self.feedback.pushDebugInfo("openDialog " + str(item))
         dlgItem = item.getChild()
+        self.feedback.pushDebugInfo("dlgItem " + str(dlgItem))
         # self.pathFieldToAbs(item,VectorDlgItem.INPUT)
         if item.isVector():
             if not item.child.isBurnFieldMode():
@@ -503,7 +502,7 @@ class ImportConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("diffInput {} {} = {}".format(oldInput,newInput,diffInput))
         isVector = item.isVector()
         # diffMode = item.getMode() != dlgItem.getMode()
-        if diffInput or diffValue:
+        if diffInput or diffValue or diffKeepValues:
             # DELETE then create NEW
             self.model.removeFromName(oldName)
             self.addDlgItem(dlgItem,isVector)

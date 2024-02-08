@@ -73,24 +73,14 @@ class ImportItem(DictItemWithChild):
         return self.dict[ImportItem.VALUE]
     def keepValues(self):
         return self.child.keepValues()
-    # def getChildValue(self):
-        # dlgItem = self.child
-        # is_vector = type(dlgItem) is VectorDlgItem
-        # if is_vector:
-            # if dlgItem.getBurnMode():
-                # val = dlgItem.getBurnField()
-            # else:
-                # val = dlgItem.getBurnVal()
-        # else:
-            # val = None
-        # return val
     def isVector(self):
         return self.dict[self.MODE]
         
-    # def getReclassTable(self):
-        # return self.child.getReclassTable()
     def getValues(self):
         return self.child.getValues()
+        
+    def equals(self,other):
+        return self.getName() == other.getName()
         
     def updateFromOther(self,other):
         for k in other.dict:
@@ -103,15 +93,7 @@ class ImportItem(DictItemWithChild):
             raise utils.CustomException("No layer specified for vector import")
         base = os.path.basename(layer_path)
         res = os.path.splitext(base)[0]
-        # if self.is_vector and self.dlgItem.getBurnMode():
-            # res += "_" + str(self.dlgItem.getBurnField())
         return res
-        
-    # def getName(self):
-        # bn = self.getBaseName()
-        # if self.isVector():
-            # bn += str(self.getValue())
-        # return bn
 
 class ImportModel(DictModel):
 

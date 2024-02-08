@@ -119,6 +119,7 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.feedback=parent.feedback
+        self.values = []
         self.data_item = raster_data_item
         # self.class_model = class_model
         self.setupUi(self)

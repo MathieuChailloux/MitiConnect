@@ -109,24 +109,7 @@ class ImportModel(DictModel):
     @staticmethod
     def getItemClass(childTag):
         return getattr(sys.modules[__name__], childTag)      
-       
-    def getItemValues(self,item):
-        layer_path = self.pluginModel.getOrigPath(item.getInput())
-        if item.isVector():
-            if item.child.isBurnFieldMode():
-                layer = qgsUtils.loadVectorLayer(layer_path)
-                fieldname = item.child.getBurnField()
-                values = qgsTreatments.getVectorUniqueVals(layer,fieldname,
-                    feedback=self.feedback)
-            else:
-                #val = item.child.getBurnVal()
-                val = None
-                values = [val]
-        else:
-            values = item.getValues()
-            self.feedback.pushDebugInfo("Raster values = " + str(values))
-        return values
-                   
+                          
     def getReclassTableFromUniqueAssoc(assoc_path,inField,outField):
         layer = qgsUtils.loadVectorLayer(assoc_path)
         table = []
@@ -153,7 +136,16 @@ class ImportModel(DictModel):
         if item.isVector():
             if item.child.isBurnFieldMode():
                 layer_path = self.pluginModel.getOrigPath(item.getInput())
+                # Apply selection if needed
+                childItem = item.getChild()
+                expr = childItem.getExpression()
+                if expr:
+                    selected = qgsUtils.mkTmpPath(childItem.getName() + '_selection.gpkg')
+                    qgsTreatments.extractByExpression(layer_path,expr,selected,feedback=self.feedback)
+                    self.feedback.setProgress(100)
+                    layer_path = selected
                 layer = qgsUtils.loadVectorLayer(layer_path)
+                # Fetch unique values
                 fieldname = item.child.getBurnField()
                 values = qgsTreatments.getVectorUniqueVals(layer,fieldname,
                     feedback=self.feedback)
@@ -483,8 +475,14 @@ class ImportConnector(TableToDialogConnector):
         diffInput = oldInput != newInput
         self.feedback.pushDebugInfo("diffInput {} {} = {}".format(oldInput,newInput,diffInput))
         isVector = item.isVector()
-        # diffMode = item.getMode() != dlgItem.getMode()
-        if diffInput or diffValue or diffKeepValues:
+        # Check expression
+        if item.isVector():
+            oldExpr, newExpr = item.getChild().getExpression(), dlgItem.getExpression()
+            diffExpr = oldExpr != newExpr
+            self.feedback.pushDebugInfo("diffExpr {} {} = {}".format(oldExpr,newExpr,diffExpr))
+        else:
+            diffExpr = False
+        if diffInput or diffValue or diffKeepValues or diffExpr:
             # DELETE then create NEW
             self.model.removeFromName(oldName)
             self.addDlgItem(dlgItem,isVector)

@@ -641,7 +641,7 @@ class LaunchModel(DictModel):
             # Retrieve base scenario friction
             baseScName = scItem.getBase()
             baseScItem = self.pluginModel.scenarioModel.getItemFromName(baseScName)
-            baseLaunchItem = self.getItemFromNames(baseScName,spName)
+            baseLaunchItem = self.getItemFromNames(baseScName,spName,extName)
             baseFriction = self.getItemFriction(baseLaunchItem)
             if not utils.fileExists(baseFriction):
                 self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(baseFriction,spName,baseScName))

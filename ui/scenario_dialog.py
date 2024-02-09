@@ -332,17 +332,18 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                     feedback=self.feedback)
             dlgItem.computeValues(layer=layer)
             # Check values count
-            nb_values = len(dlgItem.values)
-            if nb_values == 0:
-                self.errorDialog(self.tr("No values found, please check that layer is not empty"))
-                continue
-            elif nb_values > 40:
-                title = "High values count"
-                msg = "Scenario contains {} unique values to reclass, is it ok ?".format(nb_values)
-                reply = feedbacks.launchQuestionDialog(self,title,msg)
-                self.feedback.pushDebugInfo("reply {}".format(reply))
-                if reply == QtWidgets.QMessageBox.No:
+            if dlgItem.isValueMode():
+                nb_values = len(dlgItem.values)
+                if nb_values == 0:
+                    self.errorDialog(self.tr("No values found, please check that layer is not empty"))
                     continue
+                elif nb_values > 40:
+                    title = "High values count"
+                    msg = "Scenario contains {} unique values to reclass, is it ok ?".format(nb_values)
+                    reply = feedbacks.launchQuestionDialog(self,title,msg)
+                    self.feedback.pushDebugInfo("reply {}".format(reply))
+                    if reply == QtWidgets.QMessageBox.No:
+                        continue
             self.values = dlgItem.values
             # dlgItem.values = self.values
             dlgItem.shortMode = shortMode

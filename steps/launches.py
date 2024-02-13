@@ -400,26 +400,6 @@ class LaunchModel(DictModel):
         scItem, spItem, extItem = self.getItems(item)
         res = getRegression(layer)
         return res
-    # def getMaxDispCost(self,item,feedback):
-        # scName, spName, extName = item.getNames()
-        # scItem, spItem, extItem = self.getItems(item)
-        # maxDisp = spItem.getMaxDisp()
-        # if scItem.isInitialState():
-            # isItem = item
-        # else:
-            # isSc = self.pluginModel.scenarioModel.getInitialState()
-            # isName = isSc.getName()
-            # isItem = self.getItemFromNames(isName,spName,extName)
-        # regr = isItem.getRegression()
-        # feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
-        # if regr is None:
-            # self.computeRegression(isItem)
-        # regr = isItem.getRegression()
-        # if regr is None:
-            # feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
-        # isA, isB = regr
-        # maxDispCost = float(isA * maxDisp + isB)
-        # return maxDispCost
     def computeMaxDispCost(self,item,feedback):
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
@@ -487,7 +467,6 @@ class LaunchModel(DictModel):
             self.feedback.pushDebugInfo("SETTING DISP TO NONE " + str(item))
             item.setMaxDisp(None)
             self.layoutChanged.emit()
-            #assert(False)
         if step <= 4:
             if gProj:
                 self.feedback.pushDebugInfo("proj")
@@ -523,14 +502,6 @@ class LaunchModel(DictModel):
         mf.setCurrentStep(0)
         # Check out path
         out_path = self.getItemLanduse(item)
-        if utils.fileExists(out_path):
-            if eraseFlag:
-                self.clearStep(item,1)
-                # qgsUtils.removeLayerFromPath(out_path)
-                # qgsUtils.removeRaster(out_path)
-            # else:
-                # qgsUtils.loadRasterLayer(out_path,loadProject=True)
-                # return
         # Prepare Params
         spLanduse = self.getSpBaseLanduse(spItem)
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
@@ -577,7 +548,6 @@ class LaunchModel(DictModel):
             feedback=mf)
         mf.setCurrentStep(3)
         return out_path
-        # qgsUtils.loadRasterLayer(out_path,loadProject=True)
          
     def getMatrixFromPath(self,spName,path):
         #spName = item.getSpName()
@@ -602,6 +572,7 @@ class LaunchModel(DictModel):
         scName, spName, extName = item.getNames()
         scItem, spItem, extItem = self.getItems(item)
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
+        nodataVal = 65535
         # Check in path
         in_path = self.getItemLanduse(item)
         feedback.pushDebugInfo("in_path = " + str(in_path))
@@ -610,15 +581,6 @@ class LaunchModel(DictModel):
         # Check out path
         out_path = self.getItemFriction(item)
         feedback.pushDebugInfo("out_path = " + str(out_path))
-        if utils.fileExists(out_path):
-            if eraseFlag:
-                self.clearStep(item,2)
-                # qgsUtils.removeLayerFromPath(out_path)
-                # qgsUtils.removeRaster(out_path)
-            else:
-                loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True)
-                styles.setRendererPalettedGnYlRd(loaded_layer)
-                return
         # Apply friction reclassification
         if scItem.isInitialState():
             # Friction from tab
@@ -657,12 +619,9 @@ class LaunchModel(DictModel):
             frictionLayers = [baseFriction,scModifFriction]
             qgsTreatments.applyMergeRaster(frictionLayers,out_path,
                 out_type=baseType,nodata_val=nodataVal,feedback=feedback)
-        # Load layer in QGIS
-        loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=True,groupName="Friction")
-        styles.setRendererPalettedGnYlRd(loaded_layer)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
-    def applyItemGraphabProject(self,item,eraseFlag=False,feedback=None):
+    def applyItemGraphabProject(self,item,feedback=None):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemGraphabProject " + str(item))
@@ -670,18 +629,17 @@ class LaunchModel(DictModel):
         scItem, spItem, extItem = self.getItems(item)
         checkGraphabInstalled(feedback)
         projName = self.getItemGraphabProjectName(item)
-        project = self.getItemGraphabProjectFile(item)
         landuse = self.getItemLanduse(item)
         friction = self.getItemFriction(item)
         if not utils.fileExists(landuse):
-            self.feedback.user_error("No landuse file %s for specie %s in scenario %s"%(landuse,spName,scName))
+            feedback.user_error("No landuse file %s for specie %s in scenario %s"%(landuse,spName,scName))
         if not utils.fileExists(friction):
-            self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
+            feedback.user_error("No friction file %s for specie %s in scenario %s"%(friction,spName,scName))
         if spItem.isHabitatCodesMode():
             codes = spItem.getCodesVal()
         else:
-            self.feedback.internal_error("Not yet implemented : habitat from layer")
-        self.feedback.pushDebugInfo("codes = " + str(codes))
+            feedback.internal_error("Not yet implemented : habitat from layer")
+        feedback.pushDebugInfo("codes = " + str(codes))
         if not codes:
             self.feedback.user_error("No habitat code specified for specie "
                 + str(spName))
@@ -690,23 +648,10 @@ class LaunchModel(DictModel):
         con8 = not patchConnexity
         # Get outputs
         outDir = self.getItemBaseDir(item)
-        projectFolder = os.path.dirname(project)
-        self.feedback.pushDebugInfo("project = " + str(project))
-        self.feedback.pushDebugInfo("projName = " + str(projName))
-        if os.path.isfile(project):
-            if eraseFlag:
-                self.clearStep(item,3)
-                # qgsUtils.removeGroups(projName)
-                # time.sleep(5)
-                # qgsUtils.removeFolder(projectFolder)
-            else:
-                self.feedback.pushInfo("Graphab file " + str(project) + " already exists")
-                self.pluginModel.loadProject(project)
-                return
+        feedback.pushDebugInfo("projName = " + str(projName))
         createGraphabProject(landuse,codes,outDir,projName,
             nodata=-self.pluginModel.nodataVal,patch_size=minArea,
             con8=con8,feedback=feedback)
-
 
     def applyItemGraphabLinkset(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
@@ -737,25 +682,12 @@ class LaunchModel(DictModel):
                             layer.setItemVisibilityChecked(True)
                             return
                     # gProj.reloadLinksetCSV(linksetName)
-        # assert(False)
         classes,array,nodata = qgsUtils.getRasterValsArrayND(friction)
         feedback.pushDebugInfo("classes = " + str(classes))
         feedback.pushDebugInfo("nodata = " + str(nodata))
-        # if not spItem.isInitialState():
-            # isSc = self.pluginModel.scenarioModel.getInitialState()
-            # isName = isSc.getName()
-            # isItem = self.getItemFromNames(isName,spName,isName)
-            # item.paramRegr
         createGraphabLinkset(project,linksetName,friction,feedback=feedback)
         self.computeMaxDispCost(item,feedback)
         feedback.pushDebugInfo("Max disp cost of %s set to %s"%(item.getNames(),item.getMaxDisp()))
-        # if spItem.isInitialState():
-            # item.paramRegr = getRegression(loaded_layer)
-        # else:
-            # isSc = self.pluginModel.scenarioModel.getInitialState()
-            # isName = isSc.getName()
-            # isItem = self.getItemFromNames(isName,spName,isName)
-            # item.paramRegr
             
             
     def applyItemGraphabGraph(self,item,eraseFlag=False,feedback=None):
@@ -1012,7 +944,6 @@ class LaunchConnector(TableToDialogConnector):
         eraseFlag = self.dlg.eraseResults.isChecked()
         # Build scMap
         scMap, nbSc = self.groupByExtent(scenarios)
-        
         # nb steps feedback
         nb_steps = nbSc * len(species)
         self.feedback.pushDebugInfo("nbSc = {}".format(nbSc))
@@ -1040,16 +971,18 @@ class LaunchConnector(TableToDialogConnector):
     
     def landuseItemRun(self,item,feedback=None,eraseFlag=None):
         out_path = self.model.getItemLanduse(item)
-        if utils.fileExists(out_path):
-            if eraseFlag:
-                self.model.clearStep(item,1)
-                # qgsUtils.removeLayerFromPath(out_path)
-                # qgsUtils.removeRaster(out_path)
-            else:
-                qgsUtils.loadRasterLayer(out_path,loadProject=True)
-                return out_path
-        self.model.applyItemLanduse(item,feedback=feedback)
-        qgsUtils.loadRasterLayer(out_path,loadProject=True,groupName="Landuse")
+        loadResults = self.dlg.loadResults.isChecked()
+        fileExists = utils.fileExists(out_path)
+        if fileExists and eraseFlag:
+            # Remove results
+            self.model.clearStep(item,1)
+        if eraseFlag or not fileExists:
+            # Call landuse treatment
+            self.model.applyItemLanduse(item,feedback=feedback)
+        if loadResults:
+            # Load layer in QGIS
+            qgsUtils.loadRasterLayer(out_path,loadProject=loadResults,groupName="Landuse")
+        return out_path
     def landuseRun(self):
         self.feedback.beginSection("Computing land use layer(s)")
         # self.iterateRunExtent(self.model.applyItemLanduse)
@@ -1068,6 +1001,21 @@ class LaunchConnector(TableToDialogConnector):
             msg += " (https://www.java.com/en/download/)"
             raise utils.UserError(msg)
         
+    def frictionItemRun(self,item,eraseFlag=None,feedback=None):
+        out_path = self.model.getItemFriction(item)
+        loadResults = self.dlg.loadResults.isChecked()
+        fileExists = utils.fileExists(out_path)
+        if fileExists and eraseFlag:
+            # Remove results
+            self.model.clearStep(item,2)
+        if eraseFlag or not fileExists:
+            # Call friction treatment
+            self.model.applyItemFriction(item,feedback=feedback)
+        if loadResults:
+            # Load layer in QGIS
+            loaded_layer = qgsUtils.loadRasterLayer(out_path,loadProject=loadResults,groupName="Friction")
+            styles.setRendererPalettedGnYlRd(loaded_layer)
+        return out_path
     def frictionRun(self):
         self.feedback.beginSection("Computing friction layer(s)")
         # params = {'INPUT' : 'D:/IRSTEA/ERC/tests/Simon2/wetransfer_perimetre_toulouse_metro_3km-dbf_2022-09-21_1435/UA_2018_L93.shp',
@@ -1077,12 +1025,27 @@ class LaunchConnector(TableToDialogConnector):
         # alg = QgsApplication.processingRegistry().algorithmById(alg_name)
         # task = QgsProcessingAlgRunnerTask(alg, params, context, self.feedback)
         # QgsApplication.taskManager().addTask(task)
-        self.iterateRunExtent(self.model.applyItemFriction)
+        self.iterateRunExtent(self.frictionItemRun)
         self.feedback.endSection()
+    def graphabItemRun(self,item,eraseFlag=None,feedback=None):
+        # loadResults = self.dlg.loadResults.isChecked()
+        project = self.model.getItemGraphabProjectFile(item)
+        fileExists = utils.fileExists(project)
+        if fileExists and eraseFlag:
+            # Remove results
+            self.model.clearStep(item,3)
+        if eraseFlag or not fileExists:
+            # Call graphab project
+            self.model.applyItemGraphabProject(item,feedback=feedback)
+        else:
+            # Load project in QGIS
+            feedback.pushInfo("Graphab file " + str(project) + " already exists")
+            self.pluginModel.loadProject(project)
+        return project
     def graphabProjectRun(self):
         self.feedback.beginSection("Creating Graphab project(s)")
         self.checkJavaInstalled()
-        self.iterateRunExtent(self.model.applyItemGraphabProject)
+        self.iterateRunExtent(self.graphabItemRun)
         self.feedback.endSection()
     def graphabLinksetRun(self):
         self.feedback.beginSection("Creating linkset(s)")

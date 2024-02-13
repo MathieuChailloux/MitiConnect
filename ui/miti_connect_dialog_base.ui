@@ -2395,6 +2395,9 @@
                          <property name="bottomMargin">
                           <number>0</number>
                          </property>
+                         <property name="verticalSpacing">
+                          <number>0</number>
+                         </property>
                          <item row="0" column="0">
                           <widget class="QCheckBox" name="eraseResults">
                            <property name="sizePolicy">
@@ -2416,6 +2419,18 @@
                            </property>
                            <property name="text">
                             <string>Erase existing results</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QCheckBox" name="loadResults">
+                           <property name="font">
+                            <font>
+                             <pointsize>10</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Load base layers</string>
                            </property>
                           </widget>
                          </item>

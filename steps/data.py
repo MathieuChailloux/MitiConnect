@@ -202,6 +202,7 @@ class ImportModel(DictModel):
         qgsUtils.removeRaster(out_path)
         crs, extent, resolution = self.pluginModel.getRasterParams()
         min_type, nodata_val = self.pluginModel.baseType, self.pluginModel.nodataVal
+        nodata_val_rasterization = 65535
         # Main
         reclassified = qgsUtils.mkTmpPath('reclassified.tif')
         if item.isVector():
@@ -240,7 +241,7 @@ class ImportModel(DictModel):
                     self.feedback.pushDebugInfo("min_type = {}".format(min_type))
                     qgsTreatments.applyRasterization(buffered,raster_path,
                         extent,resolution,field=burnField,out_type=min_type,
-                        nodata_val=nodata_val,all_touch=all_touch,
+                        nodata_val=nodata_val_rasterization,all_touch=all_touch,
                         context=context,feedback=feedback)
                     to_norm_path = raster_path
                 else:
@@ -252,7 +253,7 @@ class ImportModel(DictModel):
                         unique_path,assoc_path,context=context,feedback=feedback)
                     qgsTreatments.applyRasterization(unique_path,raster_path,
                         extent,resolution,field=outField,out_type=min_type,
-                        nodata_val=nodata_val,all_touch=all_touch,
+                        nodata_val=nodata_val_rasterization,all_touch=all_touch,
                         context=context,feedback=feedback)                    
                     # Reclassify
                     assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
@@ -284,7 +285,7 @@ class ImportModel(DictModel):
                 burnVal = self.pluginModel.classModel.getItemReclassVal(classItem)
                 # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyRasterization(buffered,raster_path,
-                    extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val,
+                    extent,resolution,burn_val=burnVal,out_type=min_type,nodata_val=nodata_val_rasterization,
                     all_touch=all_touch,context=context,feedback=feedback)
                 to_norm_path = raster_path
         else:
@@ -296,7 +297,7 @@ class ImportModel(DictModel):
                 table = self.pluginModel.classModel.getReclassTable(name)
                 # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(input_path,table,
-                    reclassified,out_type=min_type,nodata_val=nodata_val,
+                    reclassified,out_type=min_type,nodata_val=nodata_val_rasterization,
                     boundaries_mode=2,nodata_missing=True,
                     context=context,feedback=feedback)
                 to_norm_path = reclassified

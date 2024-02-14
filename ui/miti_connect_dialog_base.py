@@ -58,7 +58,7 @@ class Ui_MitiConnectDialogBase(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 837, 637))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 836, 637))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1436,7 +1436,7 @@ class Ui_MitiConnectDialogBase(object):
         self.initializeProject.setToolTip(_translate("MitiConnectDialogBase", "Create new project"))
         self.saveProjectAs.setToolTip(_translate("MitiConnectDialogBase", "Save project as"))
         self.saveProject.setToolTip(_translate("MitiConnectDialogBase", "Save project"))
-        self.label_11.setText(_translate("MitiConnectDialogBase", "<html><head/><body><p>Welcome in MitiConnect !</p><p>Homepage: <a href=\"https://github.com/MathieuChailloux/MitiConnect\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/MathieuChailloux/MitiConnect</span></a><br/>Video tutorials : <a href=\"https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr\"><span style=\" text-decoration: underline; color:#0000ff;\">https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr</span></a></p><p><span style=\" font-weight:600;\">Configuration should be frequently saved (buttons </span><img src=\":/plugins/BioDispersal/icons/mActionFileSaveAs.svg\"/><span style=\" font-weight:600;\">, </span><img src=\":/plugins/BioDispersal/icons/mActionFileSave.svg\"/><span style=\" font-weight:600;\"> in top left corner).</span></p></body></html>"))
+        self.label_11.setText(_translate("MitiConnectDialogBase", "<html><head/><body><p>Welcome in MitiConnect !</p><p>Homepage: <a href=\"https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md</span></a><br/>Video tutorials : <a href=\"https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr\"><span style=\" text-decoration: underline; color:#0000ff;\">https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr</span></a></p><p><span style=\" font-weight:600;\">Configuration should be frequently saved (buttons </span><img src=\":/plugins/BioDispersal/icons/mActionFileSaveAs.svg\"/><span style=\" font-weight:600;\">, </span><img src=\":/plugins/BioDispersal/icons/mActionFileSave.svg\"/><span style=\" font-weight:600;\"> in top left corner).</span></p></body></html>"))
         self.paramlabel.setText(_translate("MitiConnectDialogBase", "Parameters"))
         self.label_44.setText(_translate("MitiConnectDialogBase", "Workspace"))
         self.label_45.setText(_translate("MitiConnectDialogBase", "Extent layer"))
@@ -1512,17 +1512,17 @@ class Ui_MitiConnectDialogBase(object):
         self.textShortHelp.setHtml(_translate("MitiConnectDialogBase", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">Nom étape</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Description générale</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Ceci est une description générale</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt; font-weight:600;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Description détaillée</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">  </span><span style=\" font-size:8pt; font-style:italic;\">param1</span><span style=\" font-size:8pt;\"> : description du param 1</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">  </span><span style=\" font-size:8pt; font-style:italic;\">param2</span><span style=\" font-size:8pt;\"> : description du param 2</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt; font-weight:600;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Ceci est un test</span></p></body></html>"))
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt; font-weight:600;\">Nom étape</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\'; font-weight:600;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600;\">Description générale</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\'; font-weight:600;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt;\">Ceci est une description générale</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\'; font-weight:600;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600;\">Description détaillée</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt; font-weight:600;\">  </span><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt; font-style:italic;\">param1</span><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt;\"> : description du param 1</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt; font-weight:600;\">  </span><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt; font-style:italic;\">param2</span><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt;\"> : description du param 2</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\'; font-size:14pt; font-weight:600;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt;\">Ceci est un test</span></p></body></html>"))
 from qgis import gui
 from qgis.gui import QgsScrollArea

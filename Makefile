@@ -67,7 +67,8 @@ archive:
 #	rm -rf $(ARCHIVE_DIR)/sample_data/EPCI_Clermontais_2012/CBC/tmp
 #	rm -rf $(ARCHIVE_DIR)/sample_data/EPCI_Clermontais_2012/CUT/outputs
 #	rm -rf $(ARCHIVE_DIR)/sample_data/EPCI_Clermontais_2012/CUT/tmp
-	mkdir $(ARCHIVE_DIR)/docs
+	# Docs dir
+	#mkdir $(ARCHIVE_DIR)/docs
 	# cp docs/FragScape_UserGuide_en.pdf $(ARCHIVE_DIR)/docs
 	cp *.py $(ARCHIVE_DIR)
 	#cp *.ui $(ARCHIVE_DIR)

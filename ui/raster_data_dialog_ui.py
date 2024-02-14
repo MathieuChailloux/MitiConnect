@@ -52,7 +52,7 @@ class Ui_rasterDataDialog(object):
         self.frame_3 = QtWidgets.QFrame(rasterDataDialog)
         self.frame_3.setEnabled(True)
         self.frame_3.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.frame_3.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_3.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_3.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_3.setObjectName("frame_3")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.frame_3)

@@ -68,7 +68,7 @@
 <context>
     <name>ExtensiveTableModel</name>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1514"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1516"/>
         <source>Ignoring row without matching item: {}</source>
         <translation>Ignoring row without matching item: {}</translation>
     </message>
@@ -107,17 +107,17 @@
 <context>
     <name>ImportModel</name>
     <message>
-        <location filename="../steps/data.py" line="367"/>
+        <location filename="../steps/data.py" line="341"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../steps/data.py" line="368"/>
+        <location filename="../steps/data.py" line="342"/>
         <source>Input layer</source>
         <translation>Input layer</translation>
     </message>
     <message>
-        <location filename="../steps/data.py" line="369"/>
+        <location filename="../steps/data.py" line="343"/>
         <source>Value</source>
         <translation>Value</translation>
     </message>
@@ -133,12 +133,12 @@
 <context>
     <name>LanduseModel</name>
     <message>
-        <location filename="../steps/data.py" line="559"/>
+        <location filename="../steps/data.py" line="539"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../steps/data.py" line="560"/>
+        <location filename="../steps/data.py" line="540"/>
         <source>Imports</source>
         <translation></translation>
     </message>
@@ -146,12 +146,12 @@
 <context>
     <name>LaunchConnector</name>
     <message>
-        <location filename="../steps/launches.py" line="1062"/>
+        <location filename="../steps/launches.py" line="1013"/>
         <source>Command </source>
         <translation>Command </translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="1064"/>
+        <location filename="../steps/launches.py" line="1015"/>
         <source> does not exist, please install Java first</source>
         <translation> does not exist, please install Java first</translation>
     </message>
@@ -159,27 +159,27 @@
 <context>
     <name>LaunchModel</name>
     <message>
-        <location filename="../steps/launches.py" line="595"/>
+        <location filename="../steps/launches.py" line="567"/>
         <source>No friction value assigned to classes </source>
         <translation>No friction value assigned to classes </translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="892"/>
+        <location filename="../steps/launches.py" line="842"/>
         <source>Scenario</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="893"/>
+        <location filename="../steps/launches.py" line="843"/>
         <source>Specie</source>
         <translation>Specie</translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="894"/>
+        <location filename="../steps/launches.py" line="844"/>
         <source>Extent</source>
         <translation>Extent</translation>
     </message>
     <message>
-        <location filename="../steps/launches.py" line="895"/>
+        <location filename="../steps/launches.py" line="845"/>
         <source>Dispersal capacity</source>
         <translation>Dispersal capacity</translation>
     </message>
@@ -197,27 +197,27 @@
 <context>
     <name>MainDialog</name>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1647"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1649"/>
         <source>Ignoring custom exception : </source>
         <translation>Ignoring custom exception : </translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1743"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1745"/>
         <source>Model saved into file &apos;</source>
         <translation>Model saved into file &apos;</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1746"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1748"/>
         <source>Save project as</source>
         <translation>Save project as</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1770"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1772"/>
         <source>Open project</source>
         <translation>Open project</translation>
     </message>
     <message>
-        <location filename="../qgis_lib_mc/abstract_model.py" line="1683"/>
+        <location filename="../qgis_lib_mc/abstract_model.py" line="1685"/>
         <source>Are you sure you want to exit ? Please ensure your project is saved</source>
         <translation>Are you sure you want to exit ? Please ensure your project is saved</translation>
     </message>
@@ -233,107 +233,107 @@
 <context>
     <name>MitiConnectDialogBase</name>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1424"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1431"/>
         <source>MitiConnect</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1426"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1433"/>
         <source>No project loaded</source>
         <translation>No project loaded</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1429"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1436"/>
         <source>Create new project</source>
         <translation>Create new project</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1430"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1437"/>
         <source>Save project as</source>
         <translation>Save project as</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1427"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1434"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1425"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1432"/>
         <source>Open project</source>
         <translation>Open project</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1428"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1435"/>
         <source>About</source>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1502"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1510"/>
         <source>...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1431"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1438"/>
         <source>Save project</source>
         <translation>Save project</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1433"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1440"/>
         <source>Parameters</source>
         <translation>Parameters</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1434"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1441"/>
         <source>Workspace</source>
         <translation>Workspace</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1435"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1442"/>
         <source>Extent layer</source>
         <translation>Extent layer</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1436"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1443"/>
         <source>Resolution</source>
         <translation>Resolution</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1437"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1444"/>
         <source>Projection</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1438"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1445"/>
         <source>1 - Parameters</source>
         <translation>1 - Parameters</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1441"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1448"/>
         <source>Import layers</source>
         <translation>Import layers</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1442"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1449"/>
         <source>Import vector data</source>
         <translation>Import vector data</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1443"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1450"/>
         <source>Import raster data</source>
         <translation>Import raster data</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1444"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1451"/>
         <source>Delete selected lines</source>
         <translation>Delete selected lines</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1445"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1452"/>
         <source>Apply only to selected lines</source>
         <translation>Apply only to selected lines</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1440"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1447"/>
         <source>Import data</source>
         <translation>Import data</translation>
     </message>
@@ -343,12 +343,12 @@
         <translation type="obsolete">Merge data</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1447"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1454"/>
         <source>Add land use layer</source>
         <translation>Add land use layer</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1448"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1455"/>
         <source>Delete selected groups</source>
         <translation>Delete selected groups</translation>
     </message>
@@ -358,62 +358,62 @@
         <translation type="obsolete">Merge</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1450"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1457"/>
         <source>Classes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1451"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1458"/>
         <source>2 - Data</source>
         <translation>2 - Data</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1452"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1459"/>
         <source>Species</source>
         <translation>Species</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1453"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1460"/>
         <source>Add new species</source>
         <translation>Add new species</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1454"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1461"/>
         <source>Delete selected species</source>
         <translation>Delete selected species</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1455"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1462"/>
         <source>3 - Species</source>
         <translation>3 - Species</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1456"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1463"/>
         <source>Friction</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1457"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1464"/>
         <source>Reload classes</source>
         <translation>Reload classes</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1458"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1465"/>
         <source>Import friction from CSV file</source>
         <translation>Import friction from CSV file</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1459"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1466"/>
         <source>Save friction as CSV file</source>
         <translation>Save friction as CSV file</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1460"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1467"/>
         <source>4 - Friction</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1461"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1468"/>
         <source>Scenarios</source>
         <translation></translation>
     </message>
@@ -428,207 +428,212 @@
         <translation type="obsolete">Add scenario from scenario</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1463"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1470"/>
         <source>Delete selected scenario</source>
         <translation>Delete selected scenario</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1469"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1476"/>
         <source>Upgrade scenario</source>
         <translation>Upgrade scenario</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1470"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1477"/>
         <source>Downgrade scenario</source>
         <translation>Downgrade scenario</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1466"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1473"/>
         <source>5 - Scenarios</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1467"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1474"/>
         <source>Launches</source>
         <translation>Launches</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1468"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1475"/>
         <source>Reload scenarios</source>
         <translation>Reload scenarios</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1484"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1492"/>
         <source>Select scenarios</source>
         <translation>Select scenarios</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1481"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1488"/>
         <source>Launch parameters</source>
         <translation>Launch parameters</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1482"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1489"/>
         <source>Erase existing results</source>
         <translation>Erase existing results</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1485"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1493"/>
         <source>Select species</source>
         <translation>Select species</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1486"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1494"/>
         <source>Base layers</source>
         <translation>Base layers</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1489"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1497"/>
         <source>1 - Land Use </source>
         <translation>1 - Land Use </translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1490"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1498"/>
         <source>2 - Friction</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1471"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1478"/>
         <source>Graphab parameters</source>
         <translation>Graphab parameters</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1475"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1482"/>
         <source>Local metric</source>
         <translation>Local metric</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1472"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1479"/>
         <source>F</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1473"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1480"/>
         <source>IF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1474"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1481"/>
         <source>BC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1476"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1483"/>
         <source>Global metric</source>
         <translation>Global metric</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1477"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1484"/>
         <source>PC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1478"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1485"/>
         <source>EC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1479"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1486"/>
         <source>IIC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1487"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1495"/>
         <source>Graphab</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1491"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1499"/>
         <source>3 - Project</source>
         <translation>3 - Project</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1492"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1500"/>
         <source>4 - Linkset</source>
         <translation>4 - Linkset</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1493"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1501"/>
         <source>5 - Graph</source>
         <translation>5 - Graph</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1480"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1487"/>
         <source>Compare scenarios to initial state</source>
         <translation>Compare scenarios to initial state</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1488"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1496"/>
         <source>Metrics</source>
         <translation>Metrics</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1494"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1502"/>
         <source>6 - Spatialize</source>
         <translation>6 - Spatialize</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1495"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1503"/>
         <source>7 - Compare scenarios</source>
         <translation>7 - Compare scenarios</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1483"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1491"/>
         <source>Display comparison as percentage</source>
         <translation>Display comparison as percentage</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1496"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1504"/>
         <source>6 - Launches</source>
         <translation>6 - Launches</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1497"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1505"/>
         <source>Debug mode</source>
         <translation>Debug mode</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1499"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1507"/>
         <source>Save log as</source>
         <translation>Save log as</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1501"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1509"/>
         <source>Clear log</source>
         <translation>Clear log</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1503"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1511"/>
         <source>Log</source>
         <translation>Log</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1432"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1439"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome in MitiConnect !&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://github.com/MathieuChailloux/MitiConnect&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/MitiConnect&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Video tutorials : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Configuration should be frequently saved (buttons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; in top left corner).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome in MitiConnect !&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://github.com/MathieuChailloux/MitiConnect&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MathieuChailloux/MitiConnect&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;Video tutorials : &lt;a href=&quot;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Configuration should be frequently saved (buttons &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;, &lt;/span&gt;&lt;img src=&quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; in top left corner).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&amp;lt;html&amp;gt;&amp;lt;head/&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Welcome in MitiConnect !&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;Homepage: &amp;lt;a href=&amp;quot;https://github.com/MathieuChailloux/MitiConnect&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; text-decoration: underline; color:#0000ff;&amp;quot;&amp;gt;https://github.com/MathieuChailloux/MitiConnect&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;br/&amp;gt;Video tutorials : &amp;lt;a href=&amp;quot;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; text-decoration: underline; color:#0000ff;&amp;quot;&amp;gt;https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;&amp;lt;span style=&amp;quot; font-weight:600;&amp;quot;&amp;gt;Configuration should be frequently saved (buttons &amp;lt;/span&amp;gt;&amp;lt;img src=&amp;quot;:/plugins/BioDispersal/icons/mActionFileSaveAs.svg&amp;quot;/&amp;gt;&amp;lt;span style=&amp;quot; font-weight:600;&amp;quot;&amp;gt;, &amp;lt;/span&amp;gt;&amp;lt;img src=&amp;quot;:/plugins/BioDispersal/icons/mActionFileSave.svg&amp;quot;/&amp;gt;&amp;lt;span style=&amp;quot; font-weight:600;&amp;quot;&amp;gt; in top left corner).&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1449"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1456"/>
         <source>Create landuse layers</source>
         <translation>Create landuse layers</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1446"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1453"/>
         <source>Create</source>
         <translation>Create</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1462"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1469"/>
         <source>Add scenario</source>
         <translation>Add scenario</translation>
     </message>
     <message>
-        <location filename="../ui/miti_connect_dialog_base.py" line="1504"/>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1490"/>
+        <source>Load base layers</source>
+        <translation>Charger les couches de base</translation>
+    </message>
+    <message>
+        <location filename="../ui/miti_connect_dialog_base.py" line="1512"/>
         <source>&amp;lt;!DOCTYPE HTML PUBLIC &amp;quot;-//W3C//DTD HTML 4.0//EN&amp;quot; &amp;quot;http://www.w3.org/TR/REC-html40/strict.dtd&amp;quot;&amp;gt;
 &amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;meta name=&amp;quot;qrichtext&amp;quot; content=&amp;quot;1&amp;quot; /&amp;gt;&amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
 p, li { white-space: pre-wrap; }
@@ -707,12 +712,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>RasterDataDialog</name>
     <message>
-        <location filename="../ui/raster_data_dialog.py" line="173"/>
+        <location filename="../ui/raster_data_dialog.py" line="177"/>
         <source>Wrong value</source>
         <translation>Wrong value</translation>
     </message>
     <message>
-        <location filename="../ui/raster_data_dialog.py" line="173"/>
+        <location filename="../ui/raster_data_dialog.py" line="177"/>
         <source>Name &apos;{}&apos; contains invalid characters</source>
         <translation>Name &apos;{}&apos; contains invalid characters</translation>
     </message>
@@ -861,7 +866,7 @@ p, li { white-space: pre-wrap; }
         <translation>Name &apos;{}&apos; contains invalid characters</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="337"/>
+        <location filename="../ui/scenario_dialog.py" line="338"/>
         <source>No values found, please check that layer is not empty</source>
         <translation>No values found, please check that layer is not empty</translation>
     </message>
@@ -869,12 +874,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ScenarioInitialStateDialog</name>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="421"/>
+        <location filename="../ui/scenario_dialog.py" line="422"/>
         <source>Wrong value</source>
         <translation>Wrong value</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="421"/>
+        <location filename="../ui/scenario_dialog.py" line="422"/>
         <source>Name &apos;{}&apos; contains invalid characters</source>
         <translation>Name &apos;{}&apos; contains invalid characters</translation>
     </message>
@@ -882,22 +887,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ScenarioLanduseDialog</name>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="454"/>
+        <location filename="../ui/scenario_dialog.py" line="455"/>
         <source>Wrong parameter value</source>
         <translation>Wrong parameter value</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="465"/>
+        <location filename="../ui/scenario_dialog.py" line="466"/>
         <source>Empty landuse</source>
         <translation>Empty landuse</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="460"/>
+        <location filename="../ui/scenario_dialog.py" line="461"/>
         <source>Wrong value</source>
         <translation>Wrong value</translation>
     </message>
     <message>
-        <location filename="../ui/scenario_dialog.py" line="460"/>
+        <location filename="../ui/scenario_dialog.py" line="461"/>
         <source>Name &apos;{}&apos; contains invalid characters</source>
         <translation>Name &apos;{}&apos; contains invalid characters</translation>
     </message>

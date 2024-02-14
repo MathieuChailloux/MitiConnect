@@ -548,14 +548,16 @@ class LaunchModel(DictModel):
             feedback=mf)
         mf.setCurrentStep(3)
         return out_path
-         
-    def getMatrixFromPath(self,spName,path):
-        #spName = item.getSpName()
+        
+    def getMatrixFromSpName(self,spName):
         frictionModel = self.pluginModel.frictionModel
         matrixes = frictionModel.getReclassifyMatrixes([spName])
         self.feedback.pushDebugInfo("matrixes = " + str(matrixes))
         matrix = matrixes[spName]
         self.feedback.pushDebugInfo("matrix = " + str(matrix))
+        return matrix
+    def getMatrixFromPath(self,spName,path):
+        matrix = self.getMatrixFromSpName(spName)
         # Get non assigned values
         inVals = qgsUtils.getRasterValsFromPath(path)
         mInVals, mOutVals = matrix[::3], matrix[2::3]
@@ -601,24 +603,37 @@ class LaunchModel(DictModel):
         else:
             # Stacked mode
             # Retrieve base scenario friction
-            baseScName = scItem.getBase()
-            baseScItem = self.pluginModel.scenarioModel.getItemFromName(baseScName)
-            baseLaunchItem = self.getItemFromNames(baseScName,spName,extName)
-            baseFriction = self.getItemFriction(baseLaunchItem)
-            if not utils.fileExists(baseFriction):
-                self.feedback.user_error("No friction file %s for specie %s in scenario %s"%(baseFriction,spName,baseScName))
-            # Build scenario modification friction layer
-            scModifRaster = self.pluginModel.scenarioModel.normalizeLayer(scItem,feedback=feedback)
-            # Apply reclassification
-            matrix = self.getMatrixFromPath(spName,scModifRaster)
-            scModifFriction = qgsUtils.mkTmpPath("{}ModifFriction.tif".format(scName))
-            qgsTreatments.applyReclassifyByTable(scModifRaster,matrix,scModifFriction,
-                out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
-                feedback=feedback)
-            # Merge modif friction and base friction
-            frictionLayers = [baseFriction,scModifFriction]
-            qgsTreatments.applyMergeRaster(frictionLayers,out_path,
-                out_type=baseType,nodata_val=nodataVal,feedback=feedback)
+            # baseScName = scItem.getBase()
+            # baseScItem = self.pluginModel.scenarioModel.getItemFromName(baseScName)
+            if spItem.getFrictionMode():
+                # Friction from TAB
+                matrix = self.getMatrixFromPath(spName,in_path)
+                qgsTreatments.applyReclassifyByTable(in_path,matrix,out_path,
+                    out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
+                    feedback=feedback)
+            else:
+                # Friction from layer
+                scHierarchy = self.pluginModel.scenarioModel.getItemHierarchy(scItem)
+                nbSc = len(scHierarchy)
+                mf = feedbacks.ProgressMultiStepFeedback(nbSc * 2 + 1,feedback)
+                IS_name = self.pluginModel.scenarioModel.IS_NAME
+                baseLaunchItem = self.getItemFromNames(IS_name,spName,extName)
+                baseFriction = self.getItemFriction(baseLaunchItem)
+                frictionLayers = [baseFriction]
+                for cpt, sc in enumerate(reversed(scHierarchy),start=1):
+                    scModifRaster = self.pluginModel.scenarioModel.normalizeLayer(sc,feedback=mf)
+                    mf.setCurrentStep(cpt * 2 - 1)
+                    matrix = self.getMatrixFromPath(spName,scModifRaster)
+                    scModifFriction = qgsUtils.mkTmpPath("{}ModifFriction.tif".format(scName))
+                    frictionLayer = qgsTreatments.applyReclassifyByTable(
+                        scModifRaster,matrix,scModifFriction,
+                        out_type=baseType,nodata_val=nodataVal,boundaries_mode=2,
+                        feedback=mf)
+                    frictionLayers.append(frictionLayer)
+                    mf.setCurrentStep(cpt * 2)
+                qgsTreatments.applyMergeRaster(frictionLayers,out_path,
+                    out_type=baseType,nodata_val=nodataVal,feedback=mf)
+                mf.setCurrentStep(nbSc * 2 + 1)
             
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
     def applyItemGraphabProject(self,item,feedback=None):

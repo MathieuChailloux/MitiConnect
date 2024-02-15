@@ -744,6 +744,8 @@ class LaunchModel(DictModel):
                     return
         # Retrieve regression values
         maxDispCost = self.getMaxDispCost(item,feedback)
+        if maxDispCost <= 0:
+            feedback.user_error("Inccorrect dispersal distance (null or negative) for specie {}".format(spName))
         # Build graph
         createGraphabGraph(project,linksetName,
             unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)

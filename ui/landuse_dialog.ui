@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
+    <width>292</width>
     <height>319</height>
    </rect>
   </property>
@@ -65,7 +65,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
+      <iconset>
        <normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</iconset>
      </property>
      <property name="autoRaise">
@@ -79,7 +79,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
+      <iconset>
        <normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</iconset>
      </property>
      <property name="autoRaise">
@@ -105,7 +105,7 @@
     <widget class="QTableView" name="landuseDialogView">
      <property name="minimumSize">
       <size>
-       <width>300</width>
+       <width>200</width>
        <height>200</height>
       </size>
      </property>

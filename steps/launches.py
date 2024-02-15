@@ -558,6 +558,8 @@ class LaunchModel(DictModel):
         return matrix
     def getMatrixFromPath(self,spName,path):
         matrix = self.getMatrixFromSpName(spName)
+        if not matrix:
+            self.feedback.user_error("No friction value for specie {}".format(spName))
         # Get non assigned values
         inVals = qgsUtils.getRasterValsFromPath(path)
         mInVals, mOutVals = matrix[::3], matrix[2::3]

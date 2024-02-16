@@ -119,7 +119,11 @@ def computeGlobalMetric(project,graphName,metricName=0,unit=0,
 def getRegression(layer):
     distArr = [f["Dist"] for f in layer.getFeatures()]
     distMArr = [f["DistM"] for f in layer.getFeatures()]
-    res = numpy.polyfit(distArr,distMArr,1)
+    # res = numpy.polyfit(distArr,distMArr,1)
+    res = numpy.polyfit(distMArr,distArr,1)
+    utils.debug("distArr = {}".format(distArr))
+    utils.debug("distMArr = {}".format(distMArr))
+    utils.debug("res = {}".format(res))
     return res
 
 class LaunchItem(DictItem):
@@ -394,7 +398,7 @@ class LaunchModel(DictModel):
         if layer is None:
             msg = self.tr("Could not find layer for linkset ")
             msg += str(linksetName)
-            msg += self.tr(", please ensure graph has been created for item ")
+            msg += self.tr(", please ensure graph and linkset have been created for item ")
             msg += str(item)
             self.feedback.user_error(msg)
         scItem, spItem, extItem = self.getItems(item)
@@ -745,13 +749,20 @@ class LaunchModel(DictModel):
         # Retrieve regression values
         maxDispCost = self.getMaxDispCost(item,feedback)
         if maxDispCost <= 0:
-            feedback.user_error("Inccorrect dispersal distance (null or negative) for specie {}".format(spName))
+            feedback.user_error("Incorrect dispersal distance {} (null or negative) for specie {}".format(maxDispCost,spName))
         # Build graph
         createGraphabGraph(project,linksetName,
             unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)
             
             
-            
+    def checkGraph(self,proj,graphName):
+        for graph in proj.project.graphs:
+            if graph.name == graphName:
+                return
+        msg = self.tr("Could not find graph ")
+        msg += graphName
+        msg += self.tr(", please ensure step 5 has been launched before")
+        self.feedback.user_error(msg)
                 
     def computeLocalMetric(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
@@ -763,10 +774,10 @@ class LaunchModel(DictModel):
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
+        self.checkGraph(gProj,graphName)
         metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         self.feedback.pushDebugInfo("l = " + str(l))
-        # maxDispCost = self.getMaxDispCost(item,feedback)
         maxDispCost = self.getMaxDispCost(item,feedback)
         # Mode = max disp <=> p = 0.05
         dispMode = 1
@@ -795,6 +806,7 @@ class LaunchModel(DictModel):
         project = self.getItemGraphabProjectFile(item)
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
+        self.checkGraph(project,graphName)
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         self.feedback.pushDebugInfo("g = " + str(g))
         metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()

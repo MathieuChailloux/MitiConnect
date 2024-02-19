@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_landuseDialog(object):
     def setupUi(self, landuseDialog):
         landuseDialog.setObjectName("landuseDialog")
-        landuseDialog.resize(380, 319)
+        landuseDialog.resize(292, 319)
         self.gridLayout = QtWidgets.QGridLayout(landuseDialog)
         self.gridLayout.setObjectName("gridLayout")
         self.label = QtWidgets.QLabel(landuseDialog)
@@ -53,7 +53,7 @@ class Ui_landuseDialog(object):
         self.landuseDialogUp.setObjectName("landuseDialogUp")
         self.gridLayout.addWidget(self.landuseDialogUp, 2, 0, 1, 1)
         self.landuseDialogView = QtWidgets.QTableView(landuseDialog)
-        self.landuseDialogView.setMinimumSize(QtCore.QSize(300, 200))
+        self.landuseDialogView.setMinimumSize(QtCore.QSize(200, 200))
         self.landuseDialogView.setObjectName("landuseDialogView")
         self.gridLayout.addWidget(self.landuseDialogView, 2, 1, 2, 3)
         self.landuseDialogDown = QtWidgets.QToolButton(landuseDialog)

@@ -271,7 +271,7 @@ class MitiConnect:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/MitiConnect/icons/MitiConnect_LOGO_short.png'
+        icon_path = ':/plugins/MitiConnect/icons/icon.png'
         self.add_action(
             icon_path,
             text=self.pluginName,

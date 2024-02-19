@@ -311,18 +311,18 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
                 # str1 = "Exception in thread \"main\""
                 str1 = "java.lang."
                 if str1 in excMsg:
-                    msg2 = excMsg.split(str1)[1]
+                    msg2 = excMsg.split(str1)[-1]
                     self.feedback.pushDebugInfo("msg21 = {}".format(msg2))
                 else: 
                     str2 = "Exception:"
-                    msg1 = excMsg.split(str2)[1]
+                    msg1 = excMsg.split(str2)[-1]
                     self.feedback.pushDebugInfo("msg1 = {}".format(msg1))
                     msg2 = msg1.split("at org")[0]
                     self.feedback.pushDebugInfo("msg22 = {}".format(msg2))
                 self.feedback.error_msg(msg2,prefix="Graphab error")
             except Exception as e:
                 # raise e
-                self.feedback.error_msg(msg,prefix="Unexpected error")
+                self.feedback.error_msg(errmsg,prefix="Unexpected error")
                 # self.feedback.internal_error(msg)
         else:
             self.feedback.error_msg(msg,prefix="Unexpected error")

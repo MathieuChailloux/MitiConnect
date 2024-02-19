@@ -38,6 +38,8 @@ from .steps import (params, data, reclass, species, friction, scenario, launches
 from .ui import (vector_data_dialog, raster_data_dialog, landuse_dialog, scenario_dialog)
 from . import tabs
 
+from .graphab4qgis.processing import GraphabAlgoProcessing
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 PLUGIN_DIR = os.path.dirname(__file__)
 UI_DIR = os.path.join(PLUGIN_DIR,'ui')
@@ -280,28 +282,43 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
         self.feedback.pushDebugInfo("exceptionHook")
         self.feedback.pushDebugInfo(str(excType))
         self.feedback.pushDebugInfo(str(excType.__name__))
+        excMsg = str(excValue)
         tbinfofile = StringIO()
         traceback.print_tb(tracebackobj, None, tbinfofile)
         tbinfofile.seek(0)
         tbinfo = tbinfofile.read()
-        errmsg = str(excType.__name__) + " : " + str(excValue)
+        errmsg = str(excType.__name__) + " : " + excMsg
         separator = '-' * 80
         msg = separator + "\n" + errmsg + "\n" + separator
         self.feedback.pushDebugInfo("Traceback : " + tbinfo)
         if excType == utils.CustomException:
-            self.feedback.pushDebugInfo("Ignoring custom exception : " + str(excValue))
+            self.feedback.pushDebugInfo("Ignoring custom exception : " + excMsg)
         elif excType == utils.UserError:
-            self.feedback.user_error(str(excValue),fatal=False)
+            self.feedback.user_error(excMsg,fatal=False)
         elif excType == utils.InternalError:
-            self.feedback.internal_error(str(excValue),fatal=False)
+            self.feedback.internal_error(excMsg,fatal=False)
         elif excType == utils.TodoError:
-            self.feedback.todo_error(str(excValue),fatal=False)
+            self.feedback.todo_error(excMsg,fatal=False)
+        elif excType == GraphabAlgoProcessing.GraphabException:
+            assert(False)
+            self.feedback.error_msg(errmsg,prefix="Graphab error")
         elif excType == QgsProcessingException:
             self.feedback.pushDebugInfo("Graphab catched")
             try:
-                msg1 = str(excValue).split("Exception:")[1]
-                msg2 = msg1.split("at org")[0]
-                self.feedback.pushDebugInfo(msg)
+                excMsg = str(excValue)
+                self.feedback.pushDebugInfo("excMsg = {}".format(excMsg))
+                self.feedback.pushDebugInfo("msg = {}".format(msg))
+                # str1 = "Exception in thread \"main\""
+                str1 = "java.lang."
+                if str1 in excMsg:
+                    msg2 = excMsg.split(str1)[1]
+                    self.feedback.pushDebugInfo("msg21 = {}".format(msg2))
+                else: 
+                    str2 = "Exception:"
+                    msg1 = excMsg.split(str2)[1]
+                    self.feedback.pushDebugInfo("msg1 = {}".format(msg1))
+                    msg2 = msg1.split("at org")[0]
+                    self.feedback.pushDebugInfo("msg22 = {}".format(msg2))
                 self.feedback.error_msg(msg2,prefix="Graphab error")
             except Exception as e:
                 # raise e

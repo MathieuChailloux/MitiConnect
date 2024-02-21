@@ -206,10 +206,19 @@ class ScenarioModel(DictModel):
             qgsTreatments.applyReprojectLayer(absLayerPath,crs,reprojected,feedback=mf)
             absLayerPath = reprojected
         mf.setCurrentStep(1)
+        if item.isFixedMode():
+            classItem = self.pluginModel.classModel.getItemFromOrigin(name)
+            burnVal = classItem.getNewVal() if classItem else item.getBurnVal()
+        elif item.isValueMode():
+            reclassTable = self.pluginModel.classModel.getReclassTable(name)
+            if not reclassTable:
+                self.feedback.internal_error("No reclass rule for scenario {} in data tab".format(name))
+        else:
+            feedback.user_error("Unexpected scenario mode : " + str(mode))
         if item.isVectorFixedMode():
             # Fixed mode
             qgsTreatments.applyRasterization(absLayerPath,toNormPath,
-                extent,resolution,burn_val=item.getBurnVal(),
+                extent,resolution,burn_val=burnVal,
                 nodata_val=nodataVal,out_type=baseType,feedback=mf)
         elif item.isVectorFieldMode():
             # Field mode
@@ -219,28 +228,19 @@ class ScenarioModel(DictModel):
                 extent,resolution,field=item.getBurnField(),
                 nodata_val=nodataVal,out_type=baseType,feedback=mff)
             mff.setCurrentStep(1)
-            reclassTable = self.pluginModel.classModel.getReclassTable(name)
-            if not reclassTable:
-                self.feedback.internal_error("No reclass rule for scenario {} in data tab".format(name))
             qgsTreatments.applyReclassifyByTable(rasterPath,
                 reclassTable,toNormPath,
                 boundaries_mode=2,feedback=mff)
             mff.setCurrentStep(2)
         elif item.isRasterValuesMode():
-            reclassTable = self.pluginModel.classModel.getReclassTable(name)
-            if not reclassTable:
-                self.feedback.internal_error("No reclass rule for scenario {} in data tab".format(name))
             qgsTreatments.applyReclassifyByTable(absLayerPath,reclassTable,toNormPath,
                 boundaries_mode=2,feedback=mf)
             # toNormPath = absLayerPath
         elif item.isRasterFixedMode():
             min, max = qgsUtils.getRasterMinMax(absLayer)
-            newV = item.getBurnVal()
-            reclassTable = [min,max,newV]
+            reclassTable = [min,max,burnVal]
             qgsTreatments.applyReclassifyByTable(absLayerPath,reclassTable,toNormPath,
                 boundaries_mode=2,feedback=mf)
-        else:
-            feedback.user_error("Unexpected scenario mode : " + str(mode))
         mf.setCurrentStep(2)
         self.pluginModel.paramsModel.normalizeRaster(toNormPath,
             extentLayerPath=extLayer,out_path=outPath,feedback=mf)

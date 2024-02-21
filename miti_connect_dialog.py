@@ -313,6 +313,7 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
                 if str1 in excMsg:
                     msg2 = excMsg.split(str1)[-1]
                     self.feedback.pushDebugInfo("msg21 = {}".format(msg2))
+                    raise utils.CustomException(msg2)
                 else: 
                     str2 = "Exception:"
                     msg1 = excMsg.split(str2)[-1]
@@ -320,10 +321,10 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
                     msg2 = msg1.split("at org")[0]
                     self.feedback.pushDebugInfo("msg22 = {}".format(msg2))
                 self.feedback.error_msg(msg2,prefix="Graphab error")
+                raise utils.CustomException(msg2)
             except Exception as e:
-                # raise e
                 self.feedback.error_msg(errmsg,prefix="Unexpected error")
-                # self.feedback.internal_error(msg)
+                raise utils.CustomException(errmsg)
         else:
             self.feedback.error_msg(msg,prefix="Unexpected error")
         self.mTabWidget.setCurrentWidget(self.logTab)

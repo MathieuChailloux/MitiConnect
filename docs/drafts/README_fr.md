@@ -20,7 +20,7 @@ en mission pour le [*Centre de ressources Trame verte et bleue*](http://www.tram
 
 *Conception* : Simon Tarabon (s.tarabon@ubiquiste.fr)
 
-*Coordination* : Jennifer Amsallem (jennifer.amsallem@irstea.fr)
+*Coordination* : Jennifer Amsallem (jennifer.amsallem@inrae.fr)
     
 # Citation
 

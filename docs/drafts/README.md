@@ -20,7 +20,7 @@ on mission for the [*French ecological network resource center*](http://www.tram
 
 *Design* : Simon Tarabon (s.tarabon@ubiquiste.fr)
 
-*Coordination* : Jennifer Amsallem (jennifer.amsallem@irstea.fr)
+*Coordination* : Jennifer Amsallem (jennifer.amsallem@inrae.fr)
 
 # Quotation
 

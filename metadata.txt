@@ -25,7 +25,7 @@ hasProcessingProvider=yes
 # Tags are comma separated with spaces allowed
 tags=ecologocial, continuities, connectivity, landscape, mitigation, hierarchy, graph, graphab, connexity
 
-homepage=
+homepage=https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md
 category=Plugins
 icon=icons/icon.png
 # experimental flag

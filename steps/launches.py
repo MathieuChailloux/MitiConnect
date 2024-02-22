@@ -1075,7 +1075,7 @@ class LaunchConnector(TableToDialogConnector):
         else:
             # Load project in QGIS
             feedback.pushInfo("Graphab file " + str(project) + " already exists")
-            self.pluginModel.loadProject(project)
+            self.model.pluginModel.loadProject(project)
         return project
     def graphabProjectRun(self):
         self.feedback.beginSection("Creating Graphab project(s)")

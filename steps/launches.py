@@ -756,6 +756,9 @@ class LaunchModel(DictModel):
             
             
     def checkGraph(self,proj,graphName):
+        if proj is None:
+            msg = self.tr("Could not find Graphab project for graph {}".format(graphName))
+            self.feedback.user_error(msg)
         for graph in proj.project.graphs:
             if graph.name == graphName:
                 return
@@ -804,9 +807,10 @@ class LaunchModel(DictModel):
         scName, spName = item.getScSpNames()
         projName = self.getItemGraphabProjectName(item)
         project = self.getItemGraphabProjectFile(item)
+        gProj = self.pluginModel.graphabPlugin.getProject(projName)
         graphName = self.getItemGraphName(item)
         self.pluginModel.loadProject(project)
-        self.checkGraph(project,graphName)
+        self.checkGraph(gProj,graphName)
         l, g, d, p = self.pluginModel.paramsModel.getGraphabParams()
         self.feedback.pushDebugInfo("g = " + str(g))
         metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()

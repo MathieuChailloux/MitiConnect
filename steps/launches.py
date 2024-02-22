@@ -398,7 +398,7 @@ class LaunchModel(DictModel):
         if layer is None:
             msg = self.tr("Could not find layer for linkset ")
             msg += str(linksetName)
-            msg += self.tr(", please ensure graph and linkset have been created for item ")
+            msg += self.tr(", please ensure graphab project and linkset have been created for item ")
             msg += str(item)
             self.feedback.user_error(msg)
         scItem, spItem, extItem = self.getItems(item)

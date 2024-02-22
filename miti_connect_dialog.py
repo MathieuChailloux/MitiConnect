@@ -293,40 +293,43 @@ class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
         self.feedback.pushDebugInfo("Traceback : " + tbinfo)
         if excType == utils.CustomException:
             self.feedback.pushDebugInfo("Ignoring custom exception : " + excMsg)
+            self.mTabWidget.setCurrentWidget(self.logTab)
+            self.feedback.focusLogTab()
+            return
         elif excType == utils.UserError:
-            self.feedback.user_error(excMsg,fatal=False)
+            prefix = self.tr("User error")
         elif excType == utils.InternalError:
-            self.feedback.internal_error(excMsg,fatal=False)
+            prefix = self.tr("Internal error")
         elif excType == utils.TodoError:
-            self.feedback.todo_error(excMsg,fatal=False)
+            prefix = self.tr("Feature not yet implemented")
         elif excType == GraphabAlgoProcessing.GraphabException:
-            assert(False)
-            self.feedback.error_msg(errmsg,prefix="Graphab error")
+            prefix = self.tr("Graphab error")
         elif excType == QgsProcessingException:
-            self.feedback.pushDebugInfo("Graphab catched")
-            try:
-                excMsg = str(excValue)
-                self.feedback.pushDebugInfo("excMsg = {}".format(excMsg))
-                self.feedback.pushDebugInfo("msg = {}".format(msg))
-                # str1 = "Exception in thread \"main\""
-                str1 = "java.lang."
-                if str1 in excMsg:
-                    msg2 = excMsg.split(str1)[-1]
-                    self.feedback.pushDebugInfo("msg21 = {}".format(msg2))
-                    raise utils.CustomException(msg2)
-                else: 
-                    str2 = "Exception:"
-                    msg1 = excMsg.split(str2)[-1]
-                    self.feedback.pushDebugInfo("msg1 = {}".format(msg1))
-                    msg2 = msg1.split("at org")[0]
-                    self.feedback.pushDebugInfo("msg22 = {}".format(msg2))
-                self.feedback.error_msg(msg2,prefix="Graphab error")
-                raise utils.CustomException(msg2)
-            except Exception as e:
-                self.feedback.error_msg(errmsg,prefix="Unexpected error")
-                raise utils.CustomException(errmsg)
+            excMsg = str(excValue)
+            self.feedback.pushDebugInfo("excMsg = {}".format(excMsg))
+            self.feedback.pushDebugInfo("msg = {}".format(msg))
+            # str1 = "Exception in thread \"main\""
+            str1 = "java.lang."
+            str2 = "Exception:"
+            str3 = "at org"
+            if str1 in excMsg:
+                msg2 = excMsg.split(str1)[-1]
+                self.feedback.pushDebugInfo("msg21 = {}".format(msg2))
+                excMsg = msg2
+                prefix = self.tr("Graphab error")
+            elif str2 in excMsg: 
+                str2 = "Exception:"
+                msg1 = excMsg.split(str2)[-1]
+                self.feedback.pushDebugInfo("msg1 = {}".format(msg1))
+                msg2 = msg1.split(str3)[0]
+                self.feedback.pushDebugInfo("msg22 = {}".format(msg2))
+                excMsg = msg2
+                prefix = self.tr("Graphab error")
+            else:
+                prefix = self.tr("Unexpected error")
         else:
-            self.feedback.error_msg(msg,prefix="Unexpected error")
+            prefix = self.tr("Unexpected error")
+        self.feedback.error_msg(excMsg,prefix=prefix)
         self.mTabWidget.setCurrentWidget(self.logTab)
         self.feedback.focusLogTab()
         

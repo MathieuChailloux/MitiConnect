@@ -8,7 +8,7 @@
 *MitiConnect* définit une procédure en 6 étapes depuis le prétraitement des données jusqu'à la comparaison des scenarios quant à leur impact sur l'état du réseau écologique.
 Le paramétrage de l'outil peut être exporté et importé par le biais d'un fichier de configuration.
 
-<![Compare](/docs/pictures/metricsCmp+Graph.png)>
+![Compare](/docs/pictures/metricsCmp+Graph.png)
 
 *MitiConnect* a été développé par l'[*INRAE*](http://www.inrae.fr), 
 en mission pour le [*Centre de ressources Trame verte et bleue*](http://www.trameverteetbleue.fr/) 

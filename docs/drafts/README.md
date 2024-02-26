@@ -8,7 +8,7 @@
 *MitiConnect* has been designed as a 6-steps plugin from raw data preprocessing to landscape graphs comparison.
 Parameters settings can be saved to and loaded from a configuration file.
 
-<![dispEx](/docs/pictures/MitiConnectExamplePicture.png)>
+<![Compare](/docs/pictures/metricsCmp+Graph.png)>
 
 *MitiConnect* has been developped by [*INRAE*](http://www.inrae.fr), 
 on mission for the [*French ecological network resource center*](http://www.trameverteetbleue.fr/) 

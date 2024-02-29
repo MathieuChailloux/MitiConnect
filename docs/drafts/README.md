@@ -28,16 +28,15 @@ on mission for the [*French ecological network resource center*](http://www.tram
 
 # Installation
 
-*MitiConnect* requires QGIS 3.16 (or superior version) and GRASS.
+*MitiConnect* requires QGIS 3.16 (or superior version).
 
-Go to plugins menu, *Install/manage plugins*, type *MitiConnect* and click on *Install* button. A dear icon should appear. Otherwise, it is available in plugins menu.
+Go to plugins menu, *Install/manage plugins*, type *MitiConnect* and click on *Install* button. MitiConnect icon should appear. Otherwise, it is available in plugins menu.
 
 # Documentation
 
 Available documentation:
- - [Video tutorials](https://www.youtube.com/playlist?list=PL0Wd1JAi6QuHdwALwwJqj5TcfNYvjRbcs)
- - [Method guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/Guide_MitiConnect.pdf) (only in french)
- - [MitiConnect user guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/MitiConnect_GuideUtilisateur.pdf) (only in french)
+ - [Video tutorials] (English subtitles) (https://www.youtube.com/playlist?list=PL0Wd1JAi6QuHdwALwwJqj5TcfNYvjRbcs)
+ - [MitiConnect user guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/en/MitiConnect_UserGuide.pdf)
  
 # Steps
 

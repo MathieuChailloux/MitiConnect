@@ -1,0 +1,70 @@
+
+[[English](https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md) | [Français](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/drafts/README_fr.md)]
+
+# Aperçu
+
+*MitiConnect* est une extension QGIS qui permet d'évaluer les continuités écologiques lors de la séquence ERC (Eviter-Réduire-Compenser).
+
+*MitiConnect* se base sur les coefficients de friction et les graphes paysagers pour évaluer la qualité du réseau écologique à un état donné. C'est un outil tout-en-un avec une interface graphique dédiée qui permet à l'utilisateur de définir les espèces cibles, les coefficients de friction, les scénarios de la séquence, etc., puis fait appel à QGIS et Graphab pour calculer le résultat de chaque étape.
+
+
+![Compare](/docs/pictures/metricsCmp+Graph.png)
+
+*MitiConnect* définit une procédure en 6 étapes depuis le prétraitement des données jusqu'à la comparaison des scenarios quant à leur impact sur l'état du réseau écologique.
+Le paramétrage de l'outil peut être exporté et importé par le biais d'un fichier de configuration.
+
+Les étapes de *MitiConnect* :
+ 1. Définition des paramètres généraux
+ 2. Import et uniformisation des données
+ 3. Définition des espèces cibles
+ 4. Définition des coefficients de friction
+ 5. Définition des scenarios
+ 6. Gestion des lancements
+	6.1 Occupation du sol
+	6.2 Couche de friction
+	6.3 Projet Graphab
+	6.4 Jeu de liens
+	6.5 Graphe paysager
+	6.6 Hiérarchisation des enjeux
+	6.7 Comparaison des scénarios
+    
+Chaque étape est détaillée dans le panneau d'aide.
+
+![Compare](/docs/pictures/stepsGIF.gif)
+
+*MitiConnect* a été développé par l'[*INRAE*](http://www.inrae.fr), 
+en mission pour le [*Centre de ressources Trame verte et bleue*](http://www.trameverteetbleue.fr/) 
+(piloté par le [*Ministère de la Transition Écologique et Solidaire*](https://www.ecologie.gouv.fr/)).
+
+# Contact
+
+*Développement* : Mathieu Chailloux (mathieu@chailloux.org)
+
+*Conception* : Simon Tarabon (s.tarabon@ubiquiste.fr)
+
+*Coordination* : Jennifer Amsallem (jennifer.amsallem@inrae.fr)
+    
+# Citation
+
+> Chailloux M., Tarabon S., Papet G., Amsallem J. & Vanpeene S (2024). MitiConnect : une extension QGIS pour intégrer les continuités écologiques dans la séquence Éviter, Réduire, Compenser (ERC)
+
+# Installation
+
+*MitiConnect* doit être lancé depuis QGIS 3.16 ou version supérieure avec la bilbiothèque GRASS.
+
+Aller dans le menu *Installer/gérer les extensions*, taper *MitiConnect* dans la barre de recherche et appuyer sur *Installer*. Une icône de cerf apparaît alors dans la barre d'outils.
+
+# Documentation
+
+Documentation disponible :
+ - [Tutoriels vidéo](https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr)
+ - [Guide de mise en œuvre de la méthode](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/GuideMethode_MitiConnect.pdf)
+ - [Guide d'utilisation de MitiConnect](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/MitiConnect_GuideUtilisateur.pdf)
+ 
+    
+# Liens
+ - [Dépôt git](https://github.com/MathieuChailloux/MitiConnect)
+ - [INRAE](http://www.inrae.fr)
+ - [Centre de ressources Trame verte et bleue](http://www.trameverteetbleue.fr/)
+ - [Ministère de la Transition Écologique et Solidaire](https://www.ecologie.gouv.fr/)
+

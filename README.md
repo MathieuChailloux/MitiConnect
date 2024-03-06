@@ -1,14 +1,35 @@
 
-[[English](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/drafts/README.md) | [Français](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/drafts/README_fr.md)]
+[[English](https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md) | [Français](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/drafts/README_fr.md)]
 
 # Overview
 
-*MitiConnect* is a QGIS 3 plugin assessing mitigations scenarios impact on an ecological network.
+*MitiConnect* is a QGIS 3 plugin to assess ecological connectivity in mitigation herarchy.
+
+*MitiConnect* uses resistance surfaces and landscape graphs to assess ecological connectivity at a given state. It provides an all-in-one tool with a dedicated GUI allowing user to define target species, resistance values, mitigation scenarios, ect., and then calls QGIS or Graphab functionalities to compute each step.
+
+![Compare](/docs/pictures/metricsCmp+Graph.png)
 
 *MitiConnect* has been designed as a 6-steps plugin from raw data preprocessing to landscape graphs comparison.
 Parameters settings can be saved to and loaded from a configuration file.
 
-![Compare](/docs/pictures/metricsCmp+Graph.png)
+*MitiConnect* steps are:
+ 1. Parameters setting
+ 2. Data import
+ 3. Species definition
+ 4. Resistance values definition
+ 5. Mitigation scenarios definition
+ 6. Launches manager
+	6.1 Land use layer
+	6.2 Resistance surfaces
+	6.3 Graphab project
+	6.4 Link set
+	6.5 Landscape graph
+	6.6 Prioritization
+	6.7 Mitigation scenarios comparison
+    
+Each step is detailed in plugin help panel.
+
+![Compare](/docs/pictures/stepsGIF.gif)
 
 *MitiConnect* has been developped by [*INRAE*](http://www.inrae.fr), 
 on mission for the [*French ecological network resource center*](http://www.trameverteetbleue.fr/) 
@@ -24,7 +45,7 @@ on mission for the [*French ecological network resource center*](http://www.tram
 
 # Quotation
 
-> Chailloux M., Tarabon S., Papet G., Amsallem J. & Vanpeene S (2024). MitiConnect : a QGIS plugin to assess mitigations scenarios impact on an ecological network using landscape graphs
+> Chailloux M., Tarabon S., Papet G., Amsallem J. & Vanpeene S (2024). MitiConnect : a QGIS plugin to assess ecological connectivity in mitigation hierarchy
 
 # Installation
 
@@ -35,20 +56,10 @@ Go to plugins menu, *Install/manage plugins*, type *MitiConnect* and click on *I
 # Documentation
 
 Available documentation:
- - [Video tutorials] (English subtitles) (https://www.youtube.com/playlist?list=PL0Wd1JAi6QuHdwALwwJqj5TcfNYvjRbcs)
+ - [Video tutorials](https://www.youtube.com/playlist?list=PL0Wd1JAi6QuHdwALwwJqj5TcfNYvjRbcs) (English subtitles) 
+ - [Method guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/en/MethodGuide_MitiConnect.pdf)
  - [MitiConnect user guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/en/MitiConnect_UserGuide.pdf)
  
-# Steps
-
-*MitiConnect* is a **6 steps** plugin:
- 1. Parameters setting
- 2. Data import
- 3. Species definition
- 4. Friction coefficients definition
- 5. Scenarios definition
- 6. Launches manager
-    
-Each step is detailed in plugin help panel.
     
 # Links
  - [MitiConnect git repository](https://github.com/MathieuChailloux/MitiConnect)

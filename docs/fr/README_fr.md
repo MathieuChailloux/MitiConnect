@@ -1,5 +1,5 @@
 
-[[English](https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md) | [Français](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/README_fr.md)]
+[[English](https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md) | [Français](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs//README_fr.md)]
 
 # Aperçu
 
@@ -20,13 +20,13 @@ Les étapes de *MitiConnect* :
  4. Définition des coefficients de friction
  5. Définition des scenarios
  6. Gestion des lancements
-	6.1 Occupation du sol
-	6.2 Couche de friction
-	6.3 Projet Graphab
-	6.4 Jeu de liens
-	6.5 Graphe paysager
-	6.6 Hiérarchisation des enjeux
-	6.7 Comparaison des scénarios
+	1. Occupation du sol
+	2. Couche de friction
+	3. Projet Graphab
+	4. Jeu de liens
+	5. Graphe paysager
+	6. Hiérarchisation des enjeux
+	7. Comparaison des scénarios
     
 Chaque étape est détaillée dans le panneau d'aide.
 

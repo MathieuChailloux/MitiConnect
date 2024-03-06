@@ -19,13 +19,13 @@ Parameters settings can be saved to and loaded from a configuration file.
  4. Resistance values definition
  5. Mitigation scenarios definition
  6. Launches manager
-	6.1 Land use layer
-	6.2 Resistance surfaces
-	6.3 Graphab project
-	6.4 Link set
-	6.5 Landscape graph
-	6.6 Prioritization
-	6.7 Mitigation scenarios comparison
+    1. Land use layer
+    2. Resitance surfaces
+    3. Graphab project
+	4. Link set
+	5. Landscape graph
+	6. Prioritization
+	7. Mitigation scenarios comparison
     
 Each step is detailed in plugin help panel.
 

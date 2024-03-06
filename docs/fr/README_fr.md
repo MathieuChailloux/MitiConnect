@@ -1,5 +1,5 @@
 
-[[English](https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md) | [Français](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/drafts/README_fr.md)]
+[[English](https://github.com/MathieuChailloux/MitiConnect/blob/main/README.md) | [Français](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/README_fr.md)]
 
 # Aperçu
 

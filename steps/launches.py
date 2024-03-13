@@ -353,6 +353,14 @@ class LaunchModel(DictModel):
         return self.getItemNameSuffix(item,"linkset")
     def getItemGraphName(self,item):
         return self.getItemNameSuffix(item,"graph")
+    def getItemDispersal(self,item):
+        return self.getItemOutBase(item,suffix="dispersal")
+    def getItemPatchFile(self,item):
+        baseDir = self.getItemGraphabProjectDir(item)
+        outBname = "patches.tif"
+        return self.normPath(joinPath(baseDir,outBname))
+    def getItemStartFile(self,item):
+        return self.getItemOutBase(item,suffix="start")
         
     # Table flags
     def flags(self, index):
@@ -449,16 +457,21 @@ class LaunchModel(DictModel):
             qgsUtils.removeRaster(filename)
     def clearStep(self,item,step=1):
         self.feedback.pushDebugInfo("clearStep " + str(step))
-        if step <= 7:
+        if step <= 8:
             metricStr = self.pluginModel.paramsModel.getGlobalMetricStr()
             if metricStr in self.fields:
                 item.dict[metricStr] = None
                 self.layoutChanged.emit()
-        if step <= 6:
+        if step <= 7:
             metricStr = self.pluginModel.paramsModel.getLocalMetricStr()
             if metricStr in self.fields:
                 item.dict[metricStr] = None
                 self.layoutChanged.emit()
+        if step <= 6:
+            dispPath = self.getItemDispersal(item)
+            startPath = self.getItemStartFile(item)
+            self.clearFile(dispPath)
+            self.clearFile(startPath)
         projName = self.getItemGraphabProjectName(item)
         gProj = self.pluginModel.graphabPlugin.getProject(projName)
         if step <= 5:
@@ -573,7 +586,7 @@ class LaunchModel(DictModel):
         self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
         return matrix
         
-    def applyItemFriction(self,item,feedback=None,  eraseFlag=False):
+    def applyItemFriction(self,item,feedback=None,eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
         feedback.pushDebugInfo("applyItemFriction")
@@ -752,8 +765,7 @@ class LaunchModel(DictModel):
             feedback.user_error("Incorrect dispersal distance {} (null or negative) for specie {}".format(maxDispCost,spName))
         # Build graph
         createGraphabGraph(project,linksetName,
-            unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)
-            
+            unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)        
             
     def checkGraph(self,proj,graphName):
         if proj is None:
@@ -766,6 +778,29 @@ class LaunchModel(DictModel):
         msg += graphName
         msg += self.tr(", please ensure step 5 has been launched before")
         self.feedback.user_error(msg)
+            
+    def computeDispersal(self,item,eraseFlag=False,feedback=None):
+        if eraseFlag:
+            self.clearStep(item,6)
+        # Paths
+        patchPath = self.getItemPatchFile(item)
+        startPath = self.getItemStartFile(item)
+        frictionPath = self.getItemFriction(item)
+        outPath = self.getItemDispersal(item)
+        # Compute dispersal
+        if eraseFlag or not utils.fileExists(outPath):
+            # Prepare start
+            if not utils.fileExists(patchPath):
+                feedback.user_error("No patch file %s for item %s"%(patchPath,item))
+            qgsTreatments.applyRSetNull(patchPath,'0,-1',startPath,feedback=feedback)
+            # Fetch dispersal capacity
+            maxDispCost = self.getMaxDispCost(item,feedback)
+            # Computes dispersal areas
+            qgsTreatments.applyRCostFilterMaxCost(startPath,frictionPath,maxDispCost,outPath,feedback=feedback)
+        # Load layers
+        if not qgsUtils.isLayerLoaded(outPath):
+            outLayer = qgsUtils.loadRasterLayer(outPath,loadProject=True)
+            styles.setRandomColorRasterRenderer(outLayer)
                 
     def computeLocalMetric(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
@@ -898,6 +933,7 @@ class LaunchConnector(TableToDialogConnector):
         self.dlg.projectRun.clicked.connect(self.graphabProjectRun)
         self.dlg.linksetRun.clicked.connect(self.graphabLinksetRun)
         self.dlg.graphRun.clicked.connect(self.graphabGraphRun)
+        self.dlg.dispersalRun.clicked.connect(self.computeDispersal)
         self.dlg.localMetricsRun.clicked.connect(self.computeLocalMetric)
         self.dlg.compareScenariosRun.clicked.connect(self.computeGlobalMetric)
         self.dlg.reloadButton.clicked.connect(self.model.reloadErase)
@@ -1091,6 +1127,10 @@ class LaunchConnector(TableToDialogConnector):
         self.feedback.beginSection("Creating graphs(s)")
         self.checkJavaInstalled()
         self.iterateRunExtent(self.model.applyItemGraphabGraph)
+        self.feedback.endSection()
+    def computeDispersal(self):
+        self.feedback.beginSection("Computing dispersal areas(s)")
+        self.iterateRunExtent(self.model.computeDispersal)
         self.feedback.endSection()
     def computeLocalMetric(self):
         self.feedback.beginSection("Computing local metric(s)")

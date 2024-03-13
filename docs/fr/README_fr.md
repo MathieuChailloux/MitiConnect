@@ -57,7 +57,7 @@ Aller dans le menu *Installer/gérer les extensions*, taper *MitiConnect* dans l
 # Documentation
 
 Documentation disponible :
- - [Tutoriels vidéo](https://www.youtube.com/playlist?list=PLTT27q-Qtk3rTeXq1mjfxtyD_wA6phvTr)
+ - [Tutoriels vidéo](https://vimeo.com/922467098)
  - [Guide de mise en œuvre de la méthode](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/GuideMethode_MitiConnect.pdf)
  - [Guide d'utilisation de MitiConnect](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/fr/MitiConnect_GuideUtilisateur.pdf)
  

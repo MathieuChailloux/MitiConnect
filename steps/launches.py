@@ -82,12 +82,14 @@ def createGraphabProject(landuse,codes,out_dir,project_name,
         'SIZEPATCHES' : patch_size,
         'CON8' : con8 }
     return applyProcessingAlg(PROVIDER,'create_project',params,feedback=feedback)
-def createGraphabLinkset(project,name,frictionPath,type=1,feedback=None):
+def createGraphabLinkset(project,name,frictionPath,type=1,maxcost=None,feedback=None):
     params = { 'CODE' : '',
         'EXTCOST' : frictionPath,
         'INPUT' : project,
         'NAME' : name,
         'TYPE' : type }
+    if maxcost:
+        params['MAXCOST'] = maxcost
     return applyProcessingAlg(PROVIDER,'create_linkset',params,feedback=feedback)
 def createGraphabGraph(project,linkset,unit=0,dist=0,graphName="",
         feedback=None):
@@ -431,12 +433,15 @@ class LaunchModel(DictModel):
                 isSc = self.pluginModel.scenarioModel.getInitialState()
                 isName = isSc.getName()
                 isItem = self.getItemFromNames(isName,spName,extName)
-            regr = self.getItemRegression(isItem)
-            feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
-            if regr is None:
-                feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
-            isA, isB = regr
-            maxDispCost = float(isA * maxDisp + isB)
+            if spItem.dispUnitIsMeters():
+                regr = self.getItemRegression(isItem)
+                feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
+                if regr is None:
+                    feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
+                isA, isB = regr
+                maxDispCost = float(isA * maxDisp + isB)
+            else:
+                maxDispCost = maxDisp
             isItem.setMaxDisp(maxDispCost)
         item.setMaxDisp(maxDispCost)
         self.layoutChanged.emit()
@@ -467,7 +472,7 @@ class LaunchModel(DictModel):
             if metricStr in self.fields:
                 item.dict[metricStr] = None
                 self.layoutChanged.emit()
-        if step <= 6:
+        if step <= 4:
             dispPath = self.getItemDispersal(item)
             startPath = self.getItemStartFile(item)
             self.clearFile(dispPath)
@@ -716,11 +721,22 @@ class LaunchModel(DictModel):
                             layer.setItemVisibilityChecked(True)
                             return
                     # gProj.reloadLinksetCSV(linksetName)
+        # Displays classes
         classes,array,nodata = qgsUtils.getRasterValsArrayND(friction)
         feedback.pushDebugInfo("classes = " + str(classes))
         feedback.pushDebugInfo("nodata = " + str(nodata))
-        createGraphabLinkset(project,linksetName,friction,feedback=feedback)
-        self.computeMaxDispCost(item,feedback)
+        # Launches
+        mf = feedbacks.ProgressMultiStepFeedback(2,feedback)
+        flag, coeff = self.pluginModel.paramsModel.linksetMaxFlag, self.pluginModel.paramsModel.linksetMaxCoeff
+        maxcost = None
+        if flag:
+            maxDispCost = spItem.getMaxDisp()
+            maxcost = coeff * maxDispCost
+            self.feedback.pushDebugInfo("maxcost = {}".format(maxcost))
+        createGraphabLinkset(project,linksetName,friction,maxcost=maxcost,feedback=mf)
+        mf.setCurrentStep(1)
+        self.computeMaxDispCost(item,mf)
+        mf.setCurrentStep(2)
         feedback.pushDebugInfo("Max disp cost of %s set to %s"%(item.getNames(),item.getMaxDisp()))
             
             

@@ -25,8 +25,9 @@ Les étapes de *MitiConnect* :
 	3. Projet Graphab
 	4. Jeu de liens
 	5. Graphe paysager
-	6. Hiérarchisation des enjeux
-	7. Comparaison des scénarios
+	6. Aires de dispersion
+	6. Hiérarchisation des enjeux (métriques locales)
+	7. Comparaison des scénarios (métriques globales)
     
 Chaque étape est détaillée dans le panneau d'aide.
 

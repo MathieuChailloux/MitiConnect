@@ -32,6 +32,7 @@ from PyQt5.QtCore import QVariant, QAbstractTableModel, QModelIndex, Qt, QCoreAp
 from PyQt5.QtWidgets import QAbstractItemView, QFileDialog, QHeaderView
 
 from ..qgis_lib_mc import utils, qgsUtils, qgsTreatments, abstract_model
+from ..graphab4qgis import GraphabPlugin
 
 # BioDispersal global parameters
 
@@ -51,6 +52,8 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
         self.globalMetric = 1
         self.distParam = 1000
         self.probaParam = 0
+        self.linksetMaxFlag = False
+        self.linksetMaxCoeff = 0
         # self.workspace = None
         # self.extentLayer = None
         # self.resolution = 0.0
@@ -89,11 +92,15 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
     def setProbaParam(self,val):
         self.feedback.pushDebugInfo("setProbaParam")
         self.probaParam = val
+    def setLinksetMaxFlag(self,isChecked):
+        self.linksetMaxFlag = isChecked
+    def setLinksetMaxCoeff(self,val):
+        self.linksetMaxCoeff = val
     def getLocalMetricStr(self):
-        names = ["F","IF","BC"]
+        names = GraphabPlugin.GraphabPlugin.LMETRICS
         return names[self.localMetric]
     def getGlobalMetricStr(self):
-        names = ["PC","EC","IIC"]
+        names = GraphabPlugin.GraphabPlugin.GMETRICS
         return names[self.globalMetric]
         
     def getGraphabParams(self):
@@ -119,6 +126,8 @@ class ParamsConnector:
         self.dlg.workspace.fileChanged.connect(self.model.setWorkspace)
         self.dlg.paramsCrs.crsChanged.connect(self.model.setCrs)
         # graphab params connectors
+        self.dlg.linksetMaxFlag.stateChanged.connect(self.model.setLinksetMaxFlag)
+        self.dlg.linksetMaxCoeff.valueChanged.connect(self.model.setLinksetMaxCoeff)
         self.dlg.localMetric.currentIndexChanged.connect(self.model.setLocalMetric)
         self.dlg.globalMetric.currentIndexChanged.connect(self.model.setGlobalMetric)
         # self.dlg.probaParam.currentIndexChanged.connect(self.model.setProbaParam)

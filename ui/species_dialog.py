@@ -66,6 +66,7 @@ class SpeciesItem(abstract_model.DictItem):
     ID = 'ID'
     FULL_NAME = 'FULL_NAME'
     MAX_DISP = 'MAX_DISP'
+    DISP_UNIT = 'DISP_UNIT'
     MIN_AREA = 'MIN_AREA'
     LANDUSE = 'LANDUSE'
     HABITAT_MODE = 'HABITAT_MODE'
@@ -75,7 +76,7 @@ class SpeciesItem(abstract_model.DictItem):
     FRICTION_LAYER = 'FRICTION_LAYER'
     EXTENT_MODE = 'EXTENT_MODE'
     EXTENT_VAL = 'EXTENT_VAL'
-    FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
+    FIELDS = [ ID, FULL_NAME, MAX_DISP, DISP_UNIT, MIN_AREA, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
     DISPLAY_FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE ]
     
     def __init__(self,dict,feedback=None):
@@ -90,6 +91,7 @@ class SpeciesItem(abstract_model.DictItem):
         dict = { cls.ID : name,
                  cls.FULL_NAME : full_name,
                  cls.MAX_DISP : max_disp,
+                 cls.DISP_UNIT : disp_unit,
                  cls.MIN_AREA : min_patch,
                  cls.LANDUSE : landuse,
                  cls.HABITAT_MODE : habitatMode,
@@ -114,6 +116,11 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.MIN_AREA]
     def getMaxDisp(self):
         return self.dict[self.MAX_DISP]
+    def dispUnitIsMeters(self):
+        if self.DISP_UNIT in self.dict:
+            return self.dict[self.DISP_UNIT]
+        else:
+            return True
     def getHabitatMode(self):
         return self.dict[self.HABITAT_MODE]
     def getHabitatVal(self):
@@ -240,7 +247,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                 continue
             full_name = self.speciesFullName.text()
             max_disp = self.speciesMaxDisp.value()
-            disp_unit = self.speciesDispUnit.currentIndex()
+            disp_unit = self.speciesDispUnit.currentIndex() == 0
             min_patch = self.speciesMinPatch.value()
             patch_unit = self.speciesPatchUnit.currentIndex()
             # landuse = self.speciesLanduse.currentLayer()
@@ -284,8 +291,11 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             self.speciesID.setText(dlg_item.dict[SpeciesItem.ID])
             self.speciesFullName.setText(dlg_item.dict[SpeciesItem.FULL_NAME])
             self.speciesMaxDisp.setValue(dlg_item.getMaxDisp())
+            if dlg_item.dispUnitIsMeters():
+                self.speciesDispUnit.setCurrentIndex(0)
+            else:
+                self.speciesDispUnit.setCurrentIndex(1)
             self.speciesMinPatch.setValue(dlg_item.getMinArea())
-            self.speciesDispUnit.setCurrentIndex(0)
             self.speciesLanduse.setCurrentText(dlg_item.dict[SpeciesItem.LANDUSE])
             # Habitat
             habitat_mode = dlg_item.getHabitatMode()

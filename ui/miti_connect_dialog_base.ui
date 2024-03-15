@@ -2183,7 +2183,7 @@
                      <property name="minimumSize">
                       <size>
                        <width>0</width>
-                       <height>167</height>
+                       <height>227</height>
                       </size>
                      </property>
                      <property name="maximumSize">
@@ -2198,7 +2198,7 @@
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QGridLayout" name="gridLayout_21">
+                     <layout class="QHBoxLayout" name="horizontalLayout_11">
                       <property name="leftMargin">
                        <number>0</number>
                       </property>
@@ -2211,264 +2211,7 @@
                       <property name="bottomMargin">
                        <number>0</number>
                       </property>
-                      <item row="1" column="1">
-                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_2">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                         <size>
-                          <width>0</width>
-                          <height>45</height>
-                         </size>
-                        </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>16777215</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="title">
-                         <string>Graphab parameters</string>
-                        </property>
-                        <layout class="QGridLayout" name="gridLayout_20">
-                         <property name="topMargin">
-                          <number>0</number>
-                         </property>
-                         <property name="bottomMargin">
-                          <number>0</number>
-                         </property>
-                         <item row="0" column="1">
-                          <widget class="QComboBox" name="localMetric">
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>18</height>
-                            </size>
-                           </property>
-                           <item>
-                            <property name="text">
-                             <string>F</string>
-                            </property>
-                           </item>
-                           <item>
-                            <property name="text">
-                             <string>IF</string>
-                            </property>
-                           </item>
-                           <item>
-                            <property name="text">
-                             <string>BC</string>
-                            </property>
-                           </item>
-                          </widget>
-                         </item>
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_54">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <pointsize>10</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string>Local metric</string>
-                           </property>
-                           <property name="scaledContents">
-                            <bool>true</bool>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_55">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <pointsize>10</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string>Global metric</string>
-                           </property>
-                           <property name="scaledContents">
-                            <bool>true</bool>
-                           </property>
-                           <property name="wordWrap">
-                            <bool>false</bool>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="1">
-                          <widget class="QComboBox" name="globalMetric">
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>18</height>
-                            </size>
-                           </property>
-                           <property name="currentIndex">
-                            <number>1</number>
-                           </property>
-                           <item>
-                            <property name="text">
-                             <string>PC</string>
-                            </property>
-                           </item>
-                           <item>
-                            <property name="text">
-                             <string>EC</string>
-                            </property>
-                           </item>
-                           <item>
-                            <property name="text">
-                             <string>IIC</string>
-                            </property>
-                           </item>
-                          </widget>
-                         </item>
-                        </layout>
-                       </widget>
-                      </item>
-                      <item row="2" column="1">
-                       <widget class="QCheckBox" name="cmpInit">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                         <size>
-                          <width>0</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <pointsize>10</pointsize>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Compare scenarios to initial state</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="1">
-                       <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_3">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                         <size>
-                          <width>0</width>
-                          <height>40</height>
-                         </size>
-                        </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>16777215</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="title">
-                         <string>Launch parameters</string>
-                        </property>
-                        <layout class="QGridLayout" name="gridLayout_15">
-                         <property name="topMargin">
-                          <number>0</number>
-                         </property>
-                         <property name="bottomMargin">
-                          <number>0</number>
-                         </property>
-                         <property name="verticalSpacing">
-                          <number>0</number>
-                         </property>
-                         <item row="0" column="0">
-                          <widget class="QCheckBox" name="eraseResults">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <pointsize>10</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string>Erase existing results</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="0">
-                          <widget class="QCheckBox" name="loadResults">
-                           <property name="font">
-                            <font>
-                             <pointsize>10</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string>Load base layers</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </widget>
-                      </item>
-                      <item row="3" column="1">
-                       <widget class="QCheckBox" name="cmpPerc">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                         <size>
-                          <width>0</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <pointsize>10</pointsize>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Display comparison as percentage</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="0" rowspan="4">
+                      <item>
                        <widget class="QFrame" name="frame_17">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -2670,6 +2413,9 @@
                            </property>
                            <layout class="QGridLayout" name="gridLayout_17">
                             <property name="leftMargin">
+                             <number>0</number>
+                            </property>
+                            <property name="bottomMargin">
                              <number>0</number>
                             </property>
                             <item row="0" column="0" colspan="3">
@@ -3043,6 +2789,381 @@
                              </widget>
                             </item>
                            </layout>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QFrame" name="frame_21">
+                        <property name="minimumSize">
+                         <size>
+                          <width>10</width>
+                          <height>227</height>
+                         </size>
+                        </property>
+                        <property name="frameShape">
+                         <enum>QFrame::NoFrame</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Raised</enum>
+                        </property>
+                        <layout class="QVBoxLayout" name="verticalLayout_4">
+                         <property name="spacing">
+                          <number>6</number>
+                         </property>
+                         <property name="leftMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <item>
+                          <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_3">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>0</width>
+                             <height>60</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>16777215</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <pointsize>8</pointsize>
+                            </font>
+                           </property>
+                           <property name="title">
+                            <string>Launch parameters</string>
+                           </property>
+                           <layout class="QGridLayout" name="gridLayout_15">
+                            <property name="topMargin">
+                             <number>0</number>
+                            </property>
+                            <property name="bottomMargin">
+                             <number>0</number>
+                            </property>
+                            <property name="verticalSpacing">
+                             <number>0</number>
+                            </property>
+                            <item row="1" column="0">
+                             <widget class="QCheckBox" name="loadResults">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>17</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string>Load base layers</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="0" column="0">
+                             <widget class="QCheckBox" name="eraseResults">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>17</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string>Erase existing results</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QgsCollapsibleGroupBox" name="graphabParamsGroup_2">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>0</width>
+                             <height>90</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>16777215</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="title">
+                            <string>Graphab parameters</string>
+                           </property>
+                           <layout class="QGridLayout" name="gridLayout_20">
+                            <item row="0" column="0" colspan="2">
+                             <widget class="QFrame" name="frame_20">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>17</height>
+                               </size>
+                              </property>
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
+                              </property>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_10">
+                               <property name="spacing">
+                                <number>0</number>
+                               </property>
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
+                               <item>
+                                <widget class="QCheckBox" name="linksetMaxFlag">
+                                 <property name="text">
+                                  <string>Links &lt;=</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item>
+                                <widget class="QSpinBox" name="linksetMaxCoeff"/>
+                               </item>
+                               <item>
+                                <widget class="QLabel" name="label_2">
+                                 <property name="text">
+                                  <string> * max disp</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </widget>
+                            </item>
+                            <item row="1" column="0">
+                             <widget class="QLabel" name="label_54">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string>Local metric</string>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="1" column="1">
+                             <widget class="QComboBox" name="localMetric">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>18</height>
+                               </size>
+                              </property>
+                              <item>
+                               <property name="text">
+                                <string>BC</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>CF</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>F</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>IF</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>CC</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>CCe</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>CCor</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>Dg</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>Ec</string>
+                               </property>
+                              </item>
+                             </widget>
+                            </item>
+                            <item row="2" column="0">
+                             <widget class="QLabel" name="label_55">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string>Global metric</string>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                              <property name="wordWrap">
+                               <bool>false</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item row="2" column="1">
+                             <widget class="QComboBox" name="globalMetric">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>18</height>
+                               </size>
+                              </property>
+                              <property name="currentIndex">
+                               <number>1</number>
+                              </property>
+                              <item>
+                               <property name="text">
+                                <string>PC</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>EC</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>IIC</string>
+                               </property>
+                              </item>
+                             </widget>
+                            </item>
+                           </layout>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QCheckBox" name="cmpInit">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>0</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <pointsize>8</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Compare scenarios to initial state</string>
+                           </property>
+                           <property name="checked">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QCheckBox" name="cmpPerc">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>0</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <pointsize>8</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Display comparison as percentage</string>
+                           </property>
+                           <property name="checked">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                         </layout>

@@ -24,8 +24,9 @@ Parameters settings can be saved to and loaded from a configuration file.
     3. Graphab project
 	4. Link set
 	5. Landscape graph
-	6. Prioritization
-	7. Mitigation scenarios comparison
+	6. Dispersal areas
+	7. Prioritization (local metrics)
+	8. Mitigation scenarios comparison (global metrics)
     
 Each step is detailed in plugin help panel.
 

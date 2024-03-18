@@ -269,7 +269,7 @@ class ImportModel(DictModel):
                                 + str(list(reclassDict)[0].__class__.__name__))
                         tmpVal = f[outField]
                         if initVal not in reclassDict:
-                            self.feedback.internal_error("No matching found for {} in {}".format(initval,self.pluginModel.classModel.items))
+                            self.feedback.internal_error("No matching found for {} in {}".format(initVal,self.pluginModel.classModel.items))
                         outVal = reclassDict[initVal]
                         row = [tmpVal,tmpVal,outVal]
                         reclassTable += row

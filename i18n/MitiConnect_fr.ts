@@ -718,7 +718,7 @@
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1547"/>
         <source>Links &lt;=</source>
-        <translation>Liens &amp;lt;=</translation>
+        <translation>Liens &lt;=</translation>
     </message>
     <message>
         <location filename="../ui/miti_connect_dialog_base.py" line="1548"/>

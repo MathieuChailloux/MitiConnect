@@ -486,6 +486,9 @@ class LaunchModel(DictModel):
                 #if graph:
                 #    qgsUtils.removeGroups(graphName)
                 gProj.removeGraph(graphName)
+            projectDir = self.getItemGraphabProjectDir(item)
+            path_to_patchesshp = os.path.join(projectDir, "patches-topo.shp")
+            self.clearFile(path_to_patchesshp)
             self.feedback.pushDebugInfo("SETTING DISP TO NONE " + str(item))
             item.setMaxDisp(None)
             self.layoutChanged.emit()

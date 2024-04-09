@@ -549,8 +549,9 @@ class LanduseConnector(TableToDialogConnector):
         super().__init__(landuseModel,self.dlg.mergeView,
                         addButton=self.dlg.mergeNew,
                         removeButton=self.dlg.mergeRemove,#,
-                        runButton=self.dlg.mergeRun)
-                        #selectionCheckbox=self.dlg.landuseSelection)
+                        runButton=self.dlg.mergeRun,
+                        selectionCheckbox=self.dlg.landuseSelection)
+        self.onlySelection = False
     
     # def connectComponents(self):
         # super().connectComponents()

@@ -424,33 +424,31 @@ class LaunchModel(DictModel):
             isSc = self.pluginModel.scenarioModel.getInitialState()
             isName = isSc.getName()
             isItem = self.getItemFromNames(isName,spName,extName)
-        maxDispCost = isItem.getMaxDisp()
-        if maxDispCost is None:
-            maxDisp = spItem.getMaxDisp()
-            if scItem.isInitialState():
-                isItem = item
-            else:
-                isSc = self.pluginModel.scenarioModel.getInitialState()
-                isName = isSc.getName()
-                isItem = self.getItemFromNames(isName,spName,extName)
-            if spItem.dispUnitIsMeters():
+        # Computes max disp
+        spMaxDisp = spItem.getMaxDisp()
+        if spItem.dispUnitIsMeters():
+            isMaxDispCost = isItem.getMaxDisp()
+            if isMaxDispCost is None:
                 regr = self.getItemRegression(isItem)
                 feedback.pushDebugInfo("paramRegr of %s equals to %s"%(isItem.getNames(),regr))
                 if regr is None:
                     feedback.internal_error("No regression after computation for %s from %s"%(isItem,item))
                 isA, isB = regr
-                maxDispCost = float(isA * maxDisp + isB)
+                maxDispCost = float(isA * spMaxDisp + isB)
             else:
-                maxDispCost = maxDisp
-            isItem.setMaxDisp(maxDispCost)
+                maxDispCost = isMaxDispCost
+        else:
+            maxDispCost = spMaxDisp
+        isItem.setMaxDisp(maxDispCost)
         item.setMaxDisp(maxDispCost)
         self.layoutChanged.emit()
         return maxDispCost
     def getMaxDispCost(self,item,feedback):
         self.feedback.pushDebugInfo("getMaxDispCost %s"%(item))
+        scItem, spItem, extItem = self.getItems(item)
         maxDispCost = item.getMaxDisp()
         self.feedback.pushDebugInfo("maxDispCost %s"%(maxDispCost))
-        if maxDispCost is None:
+        if maxDispCost is None or not spItem.dispUnitIsMeters():
             maxDispCost = self.computeMaxDispCost(item,feedback)
         return maxDispCost
         

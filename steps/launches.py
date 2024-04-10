@@ -487,6 +487,8 @@ class LaunchModel(DictModel):
             projectDir = self.getItemGraphabProjectDir(item)
             path_to_patchesshp = os.path.join(projectDir, "patches-topo.shp")
             self.clearFile(path_to_patchesshp)
+            patches_csv = os.path.join(projectDir, "patches.csv")
+            self.clearFile(patches_csv)
             self.feedback.pushDebugInfo("SETTING DISP TO NONE " + str(item))
             item.setMaxDisp(None)
             self.layoutChanged.emit()
@@ -1119,7 +1121,7 @@ class LaunchConnector(TableToDialogConnector):
         # loadResults = self.dlg.loadResults.isChecked()
         project = self.model.getItemGraphabProjectFile(item)
         fileExists = utils.fileExists(project)
-        if fileExists and eraseFlag:
+        if eraseFlag:
             # Remove results
             self.model.clearStep(item,3)
         if eraseFlag or not fileExists:

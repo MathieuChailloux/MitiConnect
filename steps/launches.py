@@ -487,8 +487,8 @@ class LaunchModel(DictModel):
             projectDir = self.getItemGraphabProjectDir(item)
             path_to_patchesshp = os.path.join(projectDir, "patches-topo.shp")
             self.clearFile(path_to_patchesshp)
-            patches_csv = os.path.join(projectDir, "patches.csv")
-            self.clearFile(patches_csv)
+            # patches_csv = os.path.join(projectDir, "patches.csv")
+            # self.clearFile(patches_csv)
             self.feedback.pushDebugInfo("SETTING DISP TO NONE " + str(item))
             item.setMaxDisp(None)
             self.layoutChanged.emit()
@@ -626,7 +626,8 @@ class LaunchModel(DictModel):
                 absFrictionLayer = self.pluginModel.paramsModel.getOrigPath(frictionLayer)
                 extentPath = self.getItemExtentPath(item)
                 self.pluginModel.paramsModel.normalizeRaster(absFrictionLayer,
-                    extentLayerPath=extentPath,out_path=out_path,feedback=feedback)
+                    extentLayerPath=extentPath,out_path=out_path,nodata_val=nodataVal,
+                    feedback=feedback)
         else:
             # Stacked mode
             # Retrieve base scenario friction
@@ -853,6 +854,14 @@ class LaunchModel(DictModel):
         self.addField(metricStr)
         item.dict[metricStr] = val
         self.layoutChanged.emit()
+        # Update nodes
+        # projectDir = self.getItemGraphabProjectDir(item)
+        # path_to_patchesshp = os.path.join(projectDir, "patches-topo.shp")
+        # patch_layer = qgsUtils.getLayerByFilename(path_to_patchesshp)
+        # patches_csv = os.path.join(projectDir, "patches.csv")
+        # csv_layer = qgsUtils.loadLayer(patches_csv)
+        # csv_layer.reload()
+        # patch_layer.triggerRepaint()
         return val
                 
     def computeGlobalMetric(self,item,eraseFlag=False,feedback=None):

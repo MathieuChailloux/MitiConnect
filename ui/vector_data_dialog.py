@@ -159,7 +159,9 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             # print("lets go")
             self.nameValue.setText(self.data_item.getName())
             self.vectorLayerCombo.setLayer(None)
-            self.layerComboDlg.setLayerPath(self.data_item.getLayerPath())
+            layerPath = self.data_item.getLayerPath()
+            if utils.fileExists(layerPath):
+                self.layerComboDlg.setLayerPath(layerPath)
             self.vectorSelectionExpression.setExpression(self.data_item.getExpression())
             burnMode = self.data_item.getBurnMode()
             self.setBurnMode(burnMode)

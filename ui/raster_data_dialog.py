@@ -158,10 +158,10 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
         if self.data_item:
             name = self.data_item.getName()
             self.nameValue.setText(name)
-            layer = self.data_item.getLayerPath()
+            layerPath = self.data_item.getLayerPath()
             # utils.checkFileExists(layer)
             if utils.fileExists(layerPath):
-                self.layerComboDlg.setLayerPath(layer)
+                self.layerComboDlg.setLayerPath(layerPath)
             self.keepValues.setChecked(self.data_item.keepValues())
             # model = self.data_item.child
             # if model:

@@ -58,7 +58,7 @@ Go to plugins menu, *Install/manage plugins*, type *MitiConnect* and click on *I
 
 Available documentation:
  - [Video tutorials](https://www.youtube.com/watch?v=uhbXupWRqGk) (English subtitles) 
- - [Method guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/en/MethodGuide_MitiConnect.pdf)
+ - [Method guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/en/MitiConnect_MethodGuide.pdf)
  - [MitiConnect user guide](https://github.com/MathieuChailloux/MitiConnect/blob/main/docs/en/MitiConnect_UserGuide.pdf)
  
     

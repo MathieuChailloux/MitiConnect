@@ -53,7 +53,7 @@ en mission pour le [*Centre de ressources Trame verte et bleue*](http://www.tram
 
 *MitiConnect* doit être lancé depuis QGIS 3.16 ou version supérieure avec la bilbiothèque GRASS.
 
-Aller dans le menu *Installer/gérer les extensions*, taper *MitiConnect* dans la barre de recherche et appuyer sur *Installer*. Une icône de cerf apparaît alors dans la barre d'outils.
+Aller dans le menu *Installer/gérer les extensions*, taper *MitiConnect* dans la barre de recherche et appuyer sur *Installer*. L'icône de MitiConnect apparaît alors dans la barre d'outils.
 
 # Documentation
 

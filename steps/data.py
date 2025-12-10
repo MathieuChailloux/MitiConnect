@@ -121,6 +121,7 @@ class ImportModel(DictModel):
     def addItem(self,item,addValues=False):
         name = item.getName()
         super().addItem(item)
+        self.feedback.pushDebugInfo("addItem {}".format(addValues))
         if addValues:
             self.addClassItems(item)
         

@@ -26,6 +26,7 @@ changelog=MitiConnect changelog:
     1.0.1 : Minor bugfixes
     1.0.2 : Bugfix #73 for QGIS 3.34
     1.0.3 : Minor bugfixes
+    1.1 : Add weighting tab + PyQt6 compatibility
 
 # Tags are comma separated with spaces allowed
 tags=ecologocial, continuities, connectivity, landscape, mitigation, hierarchy, graph, graphab, connexity
@@ -42,7 +43,7 @@ deprecated=False
 # Since QGIS 3.8, a comma separated list of plugins to be installed
 # (or upgraded) can be specified.
 # Check the documentation for more information.
-# plugin_dependencies=
+plugin_dependencies=qpip
 
 Category of the plugin: Raster, Vector, Database or Web
 # category=

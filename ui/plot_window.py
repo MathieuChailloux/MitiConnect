@@ -1,3 +1,4 @@
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -20,6 +21,7 @@ class MplCanvas(FigureCanvasQTAgg):
 class PlotWindow(QtWidgets.QDialog):
 
     def __init__(self,values,cmpInit,percentFlag,metricName,feedback):
+        
         super().__init__()
         self.values = values
         self.cmpInit = cmpInit

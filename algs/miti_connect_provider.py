@@ -24,7 +24,7 @@
 
 import os, sys
 
-from PyQt5.QtGui import QIcon
+from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsApplication, QgsProcessingProvider, QgsMessageLog, Qgis
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 

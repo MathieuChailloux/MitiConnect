@@ -1214,7 +1214,7 @@ class LaunchConnector(TableToDialogConnector):
         globalMetric = self.model.pluginModel.paramsModel.getGlobalMetricStr()
         window = PlotWindow(values,cmpInit,percentFlag,globalMetric,self.feedback)
         window.show()
-        while window.exec_():
+        while window.exec():
             pass
 
 

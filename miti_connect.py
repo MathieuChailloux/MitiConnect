@@ -327,7 +327,7 @@ class MitiConnect:
         self.dlg.feedback.pushInfo("PATH = " + str(self.provider.getenv_system("PATH").split(os.pathsep)))
         self.dlg.feedback.pushInfo("java = " + str(self.provider.getJavaWin('javaw.exe')))
         # Run the dialog event loop
-        result = self.dlg.exec_()
+        result = self.dlg.exec()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and

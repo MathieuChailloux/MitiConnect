@@ -43,6 +43,7 @@ from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 from ..ui.plot_window import PlotWindow
 from . import scenario
+from ..qgis_lib_mc.qt_compatibility import *
 
 # Graphab utils
 
@@ -366,7 +367,7 @@ class LaunchModel(DictModel):
         
     # Table flags
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
         
     def reload(self,eraseFlag=False):
         scModel = self.pluginModel.scenarioModel

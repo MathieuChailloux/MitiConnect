@@ -33,12 +33,19 @@ from qgis.core import Qgis, QgsProcessingContext, QgsProcessingException, QgsCoo
 import traceback
 from io import StringIO
 
-from .qgis_lib_mc import utils, feedbacks, log, qgsUtils, abstract_model, qgsTreatments
+from .qgis_lib_mc import (
+    utils,
+    feedbacks,
+    log,
+    qgsUtils,
+    abstract_model,
+    qgsTreatments)
 from .steps import (params, data, reclass, species, friction, scenario, launches)#, species, friction, scenarios)
 from .ui import (vector_data_dialog, raster_data_dialog, landuse_dialog, scenario_dialog)
 from . import tabs
 
 from .graphab4qgis.processing import GraphabAlgoProcessing
+from .qgis_lib_mc.qt_compatibility import *
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 PLUGIN_DIR = os.path.dirname(__file__)

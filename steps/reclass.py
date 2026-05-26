@@ -27,6 +27,7 @@ import sys
 from qgis.PyQt.QtCore import Qt
 
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, AbstractConnector
+from ..qgis_lib_mc.qt_compatibility import *
 
 class ClassItem(DictItem):
 
@@ -184,9 +185,9 @@ class ClassModel(DictModel):
         self.pluginModel.frictionModel.updateFromImports()
         
     def flags(self, index):
-        baseFlags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        baseFlags = ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
         if index.column() in [2,3]:
-            baseFlags = baseFlags | Qt.ItemIsEditable
+            baseFlags = baseFlags | ITEM_IS_EDITABLE
         return baseFlags
         
         

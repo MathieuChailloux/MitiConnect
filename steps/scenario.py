@@ -39,6 +39,7 @@ from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDi
 from ..ui.plot_window import PlotWindow
 
 from . import friction
+from ..qgis_lib_mc.qt_compatibility import *
 
 # Scenario
         
@@ -253,7 +254,7 @@ class ScenarioModel(DictModel):
             self.addInitialState()
                                 
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
 
     def getHeaderString(self,col):
         h = [self.tr('Name'),

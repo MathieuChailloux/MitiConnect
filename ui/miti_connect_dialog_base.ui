@@ -2442,7 +2442,7 @@
                                </size>
                               </property>
                               <property name="sizeAdjustPolicy">
-                               <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                               <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                               </property>
                              </widget>
                             </item>
@@ -2467,7 +2467,7 @@
                                </size>
                               </property>
                               <property name="sizeAdjustPolicy">
-                               <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                               <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                               </property>
                              </widget>
                             </item>

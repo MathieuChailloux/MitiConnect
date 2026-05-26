@@ -9,7 +9,7 @@
 
 
 from qgis.PyQt import QtCore, QtGui, QtWidgets
-
+from ..qgis_lib_mc.qt_compatibility import *
 
 class Ui_MitiConnectDialogBase(object):
     def setupUi(self, MitiConnectDialogBase):
@@ -1094,7 +1094,7 @@ class Ui_MitiConnectDialogBase(object):
         self.scenariosSelection.setSizePolicy(sizePolicy)
         self.scenariosSelection.setMinimumSize(QtCore.QSize(0, 23))
         self.scenariosSelection.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.scenariosSelection.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
+        self.scenariosSelection.setSizeAdjustPolicy(COMBO_ADJUST_TO_MINIMUM_CONTENTS_LENGTH)
         self.scenariosSelection.setObjectName("scenariosSelection")
         self.gridLayout_17.addWidget(self.scenariosSelection, 0, 0, 1, 3)
         self.speciesSelection = gui.QgsCheckableComboBox(self.frame_19)
@@ -1105,7 +1105,7 @@ class Ui_MitiConnectDialogBase(object):
         self.speciesSelection.setSizePolicy(sizePolicy)
         self.speciesSelection.setMinimumSize(QtCore.QSize(0, 23))
         self.speciesSelection.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.speciesSelection.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
+        self.speciesSelection.setSizeAdjustPolicy(COMBO_ADJUST_TO_MINIMUM_CONTENTS_LENGTH)
         self.speciesSelection.setObjectName("speciesSelection")
         self.gridLayout_17.addWidget(self.speciesSelection, 1, 0, 1, 3)
         self.landuseRun = QtWidgets.QPushButton(self.frame_19)

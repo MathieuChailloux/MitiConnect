@@ -189,7 +189,7 @@ class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
         self.workspaceDir.setStorageMode(QgsFileWidget.GetDirectory)
         
     def showDialog(self):
-        while self.exec_():
+        while self.exec():
             d = self.workspaceDir.filePath()
             n = self.projectName.text()
             if not utils.isValidTag(n):

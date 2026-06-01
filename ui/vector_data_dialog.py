@@ -219,7 +219,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def showDialog(self):
         self.feedback.pushDebugInfo("showDialog")
-        while self.exec_():
+        while self.exec():
             dict = {}
             name = self.nameValue.text()
             if not utils.isValidTag(name):

@@ -239,7 +239,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.switchFrictionMode(False)
         
     def showDialog(self):
-        while self.exec_():
+        while self.exec():
             name = self.speciesID.text()
             if not utils.isValidTag(name):
                 feedbacks.launchDialog(self,self.tr("Wrong value"),

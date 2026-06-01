@@ -257,7 +257,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
         
     def showDialog(self):
-        while self.exec_():
+        while self.exec():
             # Name
             name = self.scName.text()
             if not utils.isValidTag(name):
@@ -416,7 +416,7 @@ class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
             assert(False)
         
     def showDialog(self):
-        while self.exec_():
+        while self.exec():
             name = self.scName.text()
             if not utils.isValidTag(name):
                 feedbacks.launchDialog(self,self.tr("Wrong value"),
@@ -455,7 +455,7 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
         feedbacks.launchDialog(self,self.tr('Wrong parameter value'),msg)
         
     def showDialog(self):
-        while self.exec_():
+        while self.exec():
             name = self.scName.text()
             if not utils.isValidTag(name):
                 feedbacks.launchDialog(self,self.tr("Wrong value"),

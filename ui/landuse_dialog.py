@@ -142,7 +142,7 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
         
     def showDialog(self):
         self.feedback.pushDebugInfo("showDialog")
-        while self.exec_():
+        while self.exec():
             name = self.landuseDialogName.text()
             if not utils.isValidTag(name):
                 feedbacks.launchDialog(self,self.tr("Wrong value"),

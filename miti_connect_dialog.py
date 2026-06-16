@@ -40,9 +40,20 @@ from .qgis_lib_mc import (
     qgsUtils,
     abstract_model,
     qgsTreatments)
-from .steps import (params, data, reclass, species, friction, scenario, launches)#, species, friction, scenarios)
-from .ui import (vector_data_dialog, raster_data_dialog,
-    landuse_dialog, scenario_dialog, miti_connect_dialog_base)
+from .steps import (
+    params,
+    data,
+    reclass,
+    species,
+    friction,
+    scenario,
+    launches)#, species, friction, scenarios)
+from .ui import (
+    vector_data_dialog,
+    raster_data_dialog,
+    landuse_dialog,
+    scenario_dialog,
+    miti_connect_dialog_base)
 from . import tabs
 
 from .graphab4qgis.processing import GraphabAlgoProcessing
@@ -216,7 +227,7 @@ class CreateProjectDialog(QtWidgets.QDialog):#,CREATE_PROJECT_CLASS):
             
 
 class MitiConnectDialog(abstract_model.MainDialog,
-        miti_connect_dialog_base.MitiConnectDialogBase):
+        miti_connect_dialog_base.Ui_MitiConnectDialogBase):
     def __init__(self, graphabPlugin,parent=None):
         """Constructor."""
         super(MitiConnectDialog, self).__init__(parent)

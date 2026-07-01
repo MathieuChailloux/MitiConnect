@@ -37,6 +37,7 @@ from ..ui.landuse_dialog import LanduseItem, LanduseDialog
 from ..qgis_lib_mc.abstract_model import (DictItem, DictModel,
     AbstractConnector, TableToDialogConnector,
     DictItemWithChild, DictItemWithChildren)
+from ..qgis_lib_mc.qt_compatibility import *
 
 
 class ImportItem(DictItemWithChild):
@@ -336,7 +337,7 @@ class ImportModel(DictModel):
         self.pluginModel.removeImports(name)
         
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
         
     # FIELDS = [ INPUT, MODE, VALUE, STATUS ]
     def getHeaderString(self,col):

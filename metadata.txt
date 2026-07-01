@@ -7,7 +7,7 @@ name=MitiConnect
 qgisMinimumVersion=3.16
 qgisMaximumVersion=4.99
 description=MitiConnect integrates ecological connecitivy in mitigation hierarchy based on landscape graphs.
-version=1.0.4
+version=2.0.0
 author=Mathieu Chailloux
 email=mathieu@chailloux.org
 
@@ -28,6 +28,7 @@ changelog=MitiConnect changelog:
     1.0.2 : Bugfix #73 for QGIS 3.34
     1.0.3 : Minor bugfixes
     1.1 : Add weighting tab + PyQt6 compatibility
+    2.0.0 : QGIS4 compatibility + weighting tab
 
 # Tags are comma separated with spaces allowed
 tags=ecologocial, continuities, connectivity, landscape, mitigation, hierarchy, graph, graphab, connexity

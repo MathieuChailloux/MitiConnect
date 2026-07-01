@@ -29,6 +29,7 @@ from qgis.PyQt.QtCore import Qt
 
 from ..qgis_lib_mc.abstract_model import DictItem, ExtensiveTableModel, AbstractConnector
 from ..qgis_lib_mc import utils, qgsUtils
+from ..qgis_lib_mc.qt_compatibility import *
 
 NEW_VAL_STR = "New Value"
 
@@ -274,9 +275,9 @@ class FrictionModel(ExtensiveTableModel):
             return self.fields[col]
         
     def flags(self, index):
-        baseFlags = Qt.ItemIsSelectable | Qt.ItemIsEnabled 
+        baseFlags = ITEM_IS_SELECTABLE | ITEM_IS_ENABLED 
         if index.column() > 2:
-            baseFlags = baseFlags | Qt.ItemIsEditable
+            baseFlags = baseFlags | ITEM_IS_EDITABLE
         return baseFlags
         
         

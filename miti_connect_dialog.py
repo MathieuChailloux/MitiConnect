@@ -33,19 +33,38 @@ from qgis.core import Qgis, QgsProcessingContext, QgsProcessingException, QgsCoo
 import traceback
 from io import StringIO
 
-from .qgis_lib_mc import utils, feedbacks, log, qgsUtils, abstract_model, qgsTreatments
-from .steps import (params, data, reclass, species, friction, scenario, launches)#, species, friction, scenarios)
-from .ui import (vector_data_dialog, raster_data_dialog, landuse_dialog, scenario_dialog)
+from .qgis_lib_mc import (
+    utils,
+    feedbacks,
+    log,
+    qgsUtils,
+    abstract_model,
+    qgsTreatments)
+from .steps import (
+    params,
+    data,
+    reclass,
+    species,
+    friction,
+    scenario,
+    launches)#, species, friction, scenarios)
+from .ui import (
+    vector_data_dialog,
+    raster_data_dialog,
+    landuse_dialog,
+    scenario_dialog,
+    miti_connect_dialog_base)
 from . import tabs
 
 from .graphab4qgis.processing import GraphabAlgoProcessing
+from .qgis_lib_mc.qt_compatibility import *
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 PLUGIN_DIR = os.path.dirname(__file__)
 UI_DIR = os.path.join(PLUGIN_DIR,'ui')
 STEPS_DIR = os.path.join(PLUGIN_DIR,'steps')
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    UI_DIR, 'miti_connect_dialog_base.ui'))
+# FORM_CLASS, _ = uic.loadUiType(os.path.join(
+#     UI_DIR, 'miti_connect_dialog_base.ui'))
 CREATE_PROJECT_CLASS, _ = uic.loadUiType(os.path.join(
     UI_DIR, 'new_project.ui'))
 
@@ -181,7 +200,7 @@ class MitiConnectModel(abstract_model.MainModel):
             
         
 
-class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
+class CreateProjectDialog(QtWidgets.QDialog):#,CREATE_PROJECT_CLASS):
 
     def __init__(self, parent=None):
         super(CreateProjectDialog, self).__init__(parent)
@@ -207,7 +226,8 @@ class CreateProjectDialog(QtWidgets.QDialog,CREATE_PROJECT_CLASS):
         return None
             
 
-class MitiConnectDialog(abstract_model.MainDialog, FORM_CLASS):
+class MitiConnectDialog(abstract_model.MainDialog,
+        miti_connect_dialog_base.Ui_MitiConnectDialogBase):
     def __init__(self, graphabPlugin,parent=None):
         """Constructor."""
         super(MitiConnectDialog, self).__init__(parent)

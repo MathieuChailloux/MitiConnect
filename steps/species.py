@@ -30,6 +30,7 @@ from qgis.PyQt.QtCore import Qt
 from ..qgis_lib_mc.utils import CustomException
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
 from ..ui.species_dialog import SpeciesItem, SpeciesDialog
+from ..qgis_lib_mc.qt_compatibility import *
 
 
 # class SpeciesItem(SpeciesDialogItem):
@@ -102,7 +103,7 @@ class SpeciesModel(DictModel):
         return [i.getBaseName() for i in self.items]
         
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
         
     def mkItemFromDict(self,dict,parent=None,feedback=None):
         return SpeciesItem.fromDict(dict)

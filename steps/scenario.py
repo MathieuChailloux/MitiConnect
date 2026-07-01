@@ -31,7 +31,7 @@ from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
 
 from ..qgis_lib_mc import utils
 from ..qgis_lib_mc.utils import CustomException, joinPath
-from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector, CheckableComboDelegate
+from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
 # from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
@@ -39,6 +39,7 @@ from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDi
 from ..ui.plot_window import PlotWindow
 
 from . import friction
+from ..qgis_lib_mc.qt_compatibility import *
 
 # Scenario
         
@@ -253,7 +254,7 @@ class ScenarioModel(DictModel):
             self.addInitialState()
                                 
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
 
     def getHeaderString(self,col):
         h = [self.tr('Name'),

@@ -30,10 +30,12 @@ from qgis.core import QgsFieldProxyModel
 
 from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks, qgsTreatments
 from ..steps import friction
+from . import scenario_dialog_ui
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-SC_DIALOG, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'scenario_dialog.ui'))
+# SC_DIALOG, _ = uic.loadUiType(os.path.join(
+#     os.path.dirname(__file__), 'scenario_dialog.ui'))
+SC_DIALOG = scenario_dialog_ui.Ui_scenarioDialog
 SC_LANDUSE_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_landuse_dialog.ui'))
 SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(

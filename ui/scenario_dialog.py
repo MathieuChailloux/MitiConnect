@@ -27,7 +27,13 @@ import os, sys, copy
 from qgis.PyQt import uic, QtWidgets, QtCore
 from qgis.core import QgsFieldProxyModel 
 
-from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks, qgsTreatments
+from ..qgis_lib_mc import (
+    utils,
+    abstract_model,
+    qgsUtils,
+    feedbacks,
+    qgsTreatments,
+    qt_compatibility)
 from ..steps import friction
 from . import scenario_dialog_ui
 
@@ -211,7 +217,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.speciesModel = SpeciesIntervalModel()
         self.speciesTable.setModel(self.speciesModel)
         if hasattr(self, "speciesLayerCombo"):
-            self.speciesLayerCombo.setFilters(gui.QgsMapLayerProxyModel.RasterLayer)
+            self.speciesLayerCombo.setFilters(qt_compatibility.RASTER_LAYER)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.scLayerCombo,self.scLayerButton)
         #self.layerComboDlg.setVectorMode()
@@ -462,21 +468,21 @@ class SpeciesIntervalModel(QtCore.QAbstractTableModel):
     def columnCount(self, parent=QtCore.QModelIndex()):
         return len(self.HEADERS)
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
-        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+    def headerData(self, section, orientation, role=qt_compatibility.DISPLAY_ROLE):
+        if role == qt_compatibility.DISPLAY_ROLE and orientation == qt_compatibility.HORIZONTAL:
             return self.HEADERS[section]
         return super().headerData(section, orientation, role)
 
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        return ITEM_IS_ENABLED | ITEM_IS_SELECTABLE |ITEM_IS_EDITABLE
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
-        if not index.isValid() or role not in (QtCore.Qt.DisplayRole, QtCore.Qt.EditRole):
+    def data(self, index, role=qt_compatibility.DISPLAY_ROLE):
+        if not index.isValid() or role not in (qt_compatibility.DISPLAY_ROLE, qt_compatibility.EDIT_ROLE):
             return None
         return self.rows[index.row()][index.column()]
 
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if not index.isValid() or role != QtCore.Qt.EditRole:
+    def setData(self, index, value, role=qt_compatibility.EDIT_ROLE):
+        if not index.isValid() or role != qt_compatibility.EDIT_ROLE:
             return False
         try:
             value = float(value)

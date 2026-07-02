@@ -236,7 +236,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scBase.setModel(self.scModel)
         self.speciesAddRowButton.clicked.connect(self.speciesModel.addRow)
         self.speciesRemoveRowButton.clicked.connect(self.removeSelectedSpeciesRow)
-        self.stack.setCurrentIndex(0) 
+        self.stack.setCurrentIndex(1) 
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
@@ -474,7 +474,7 @@ class SpeciesIntervalModel(QtCore.QAbstractTableModel):
         return super().headerData(section, orientation, role)
 
     def flags(self, index):
-        return ITEM_IS_ENABLED | ITEM_IS_SELECTABLE |ITEM_IS_EDITABLE
+        return qt_compatibility.ITEM_IS_ENABLED | qt_compatibility.ITEM_IS_SELECTABLE |qt_compatibility.ITEM_IS_EDITABLE
 
     def data(self, index, role=qt_compatibility.DISPLAY_ROLE):
         if not index.isValid() or role not in (qt_compatibility.DISPLAY_ROLE, qt_compatibility.EDIT_ROLE):

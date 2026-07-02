@@ -53,7 +53,6 @@ class Ui_scenarioDialog(object):
         # Stack
         self.stack = QtWidgets.QStackedWidget(scenarioDialog)
         self.stack.addWidget(self.landuseModeBox)
-        self.stack.addWidget(self.landuseModeBox)
         self.mainLayout.addWidget(self.stack, 3, 0, 1, 3)
         # SC reclass Layer
         self.scLayerHorLayout = QtWidgets.QHBoxLayout(self.landuseModeFrame)
@@ -220,6 +219,7 @@ class Ui_scenarioDialog(object):
         self.speciesTableButtonsLayout.addWidget(self.speciesRemoveRowButton)
         self.speciesRasterBoxLayout.addLayout(self.speciesTableButtonsLayout, 2, 0, 1, 1)
         self.stack.addWidget(self.speciesRasterBox)
+        self.stack.setCurrentIndex(1)
         # retranslate
         self.retranslateUi(scenarioDialog)
         self.scField.setCurrentIndex(-1)

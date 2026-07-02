@@ -24,8 +24,7 @@
 
 import os, sys, copy
 
-from qgis.PyQt import uic
-from qgis.PyQt import QtWidgets
+from qgis.PyQt import uic, QtWidgets, QtCore
 from qgis.core import QgsFieldProxyModel 
 
 from ..qgis_lib_mc import utils, abstract_model, qgsUtils, feedbacks, qgsTreatments
@@ -160,9 +159,6 @@ class ScenarioItem(abstract_model.DictItem):
         else:
             return self.getBurnField() == other.getBurnField()
         
-    # def updateFromOther(self,other):
-        # for k in other.dict:
-            # self.dict[k] = other.dict[k]
     def updateFromDlgItem(self,dlgItem):
         self.updateFromOther(dlgItem)
                 
@@ -212,6 +208,10 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
         self.setupUi(self)
+        self.speciesModel = SpeciesIntervalModel()
+        self.speciesTable.setModel(self.speciesModel)
+        if hasattr(self, "speciesLayerCombo"):
+            self.speciesLayerCombo.setFilters(gui.QgsMapLayerProxyModel.RasterLayer)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.scLayerCombo,self.scLayerButton)
         #self.layerComboDlg.setVectorMode()
@@ -228,6 +228,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scField.setFilters(QgsFieldProxyModel.Numeric)
         self.scField.fieldChanged.connect(self.changeField)
         self.scBase.setModel(self.scModel)
+        self.speciesAddRowButton.clicked.connect(self.speciesModel.addRow)
+        self.speciesRemoveRowButton.clicked.connect(self.removeSelectedSpeciesRow)
+        self.stack.setCurrentIndex(0) 
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
@@ -257,6 +260,11 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
+
+    def removeSelectedSpeciesRow(self):
+        indexes = self.speciesTable.selectionModel().selectedRows()
+        for index in sorted(indexes, key=lambda i: i.row(), reverse=True):
+            self.speciesModel.removeSelectedRow(index.row())
         
     def showDialog(self):
         while self.exec():
@@ -300,7 +308,6 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                     layer=layerPath,base=base,
                     mode=mode,burnVal=burnVal,extentFlag=extentFlag,
                     feedback=self.feedback)
-                # self.values = [burnVal]
             else:
                 reclassField = ""
                 if isVectorMode:
@@ -309,25 +316,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                     if not reclassField:
                         self.errorDialog(self.tr("Empty field"))
                         continue
-                    # if not self.values:
-                        # self.values = qgsUtils.getLayerFieldUniqueValues(layer,reclassField)
                 else:
                     mode = ScenarioItem.RASTER_VALUES_MODE
-                    # self.feedback.setProgressText(self.tr("Fetching unique values"))
-                    # self.values = qgsTreatments.getRasterUniqueVals(layer,self.feedback)
-                    # self.feedback.setProgress(100)
-                # Check values count
-                # nb_values = len(self.values)
-                # if nb_values == 0:
-                    # self.errorDialog(self.tr("No values found, please check that layer is not empty"))
-                    # continue
-                # elif nb_values > 40:
-                    # title = "High values count"
-                    # msg = "Field {} contains {} unique values, is it ok ?".format(reclassField,nb_values)
-                    # reply = feedbacks.launchQuestionDialog(self,title,msg)
-                    # self.feedback.pushDebugInfo("reply {}".format(reply))
-                    # if reply == QtWidgets.QMessageBox.No:
-                        # continue
                 dlgItem = ScenarioItem.fromValues(name,descr=descr,
                     layer=layerPath,base=base,
                     mode=mode,reclassField=reclassField,extentFlag=extentFlag,
@@ -365,24 +355,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if layer and os.path.isfile(layer):
                 self.layerComboDlg.setLayerPath(layer)
             self.scExtentFlag.setChecked(dlgItem.getExtentFlag())
-            # fieldMode = dlgItem.dict[ScenarioItem.MODE] == ScenarioItem.VECTOR_FIELD_MODE
-            # fieldMode = dlgItem.isFieldMode()
             if dlgItem.isValueMode():
                 self.switchBurnMode(True)
-                # self.feedback.pushDebugInfo("updateUI child 2" + str(dlgItem.reclassModel))
-                # copyModel = dlgItem.reclassModel.__copy__()
-                # self.reclassModel = dlgItem.reclassModel.__copy__()
                 self.scField.setField(dlgItem.getBurnField())
-                # load model values
-                # initVals = self.frictionModel.getInitVals(origin=scName)
-                # newVals = self.frictionModel.getCodesStrComplete(origin=scName)
-                # self.reclassModel = dlgItem.reclassModel
-                # self.reclassModel = ScenarioReclassModel.fromValues(values=initVals,codes=newVals,feedback=self.feedback)
-                # self.feedback.pushDebugInfo("updateUI child 3 " + str(dlgItem.reclassModel))
-                # self.feedback.pushDebugInfo("updateUI child 4 " + str(self.reclassModel))
-                # self.scDialogView.setModel(copyModel)
-                # self.scDialogView.setModel(self.reclassModel)
-                # self.reclassModel.layoutChanged.emit()
                 burnVal = None
             elif dlgItem.isFixedMode():
                 self.switchBurnMode(False)
@@ -435,7 +410,6 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
         """Constructor."""
         super(ScenarioLanduseDialog, self).__init__(parent)
         self.feedback = feedback
-        # self.luModel = luModel
         self.dataNames=dataNames
         self.setupUi(self)
         self.connectComponents()
@@ -443,9 +417,6 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
         
     def connectComponents(self):
         self.scLanduseCombo.insertItems(0,self.dataNames)
-        # self.scLanduseCombo.setModel(self.luModel)
-        # self.layerComboDlg = qgsUtils.LayerComboDialog(self,
-            # self.scLayerCombo,self.scLayer)
                 
     def updateUi(self,dlgItem):
         if dlgItem:
@@ -467,10 +438,6 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             if not base:
                 feedbacks.paramError(self.tr("Empty landuse"),parent=self)
                 continue
-            # layer = self.scLayer.filePath()
-            # if not layer:
-                # self.errorDialog(self.tr("Empty layer"))
-                # continue
             dlgItem = ScenarioItem.fromValues(name=name,base=base,
                 layer=None,feedback=self.feedback)
             return dlgItem
@@ -478,4 +445,62 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
                 
                 
                 
-                
+class SpeciesIntervalModel(QtCore.QAbstractTableModel):
+    """Modèle table : intervalles [min, max] -> coefficient."""
+
+    MIN, MAX, COEF = range(3)
+    HEADERS = ["Min", "Max", "Coefficient"]
+
+    def __init__(self, rows=None, parent=None):
+        super().__init__(parent)
+        # chaque ligne : [min, max, coefficient]
+        self.rows = rows if rows is not None else []
+
+    def rowCount(self, parent=QtCore.QModelIndex()):
+        return len(self.rows)
+
+    def columnCount(self, parent=QtCore.QModelIndex()):
+        return len(self.HEADERS)
+
+    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+        if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+            return self.HEADERS[section]
+        return super().headerData(section, orientation, role)
+
+    def flags(self, index):
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+
+    def data(self, index, role=QtCore.Qt.DisplayRole):
+        if not index.isValid() or role not in (QtCore.Qt.DisplayRole, QtCore.Qt.EditRole):
+            return None
+        return self.rows[index.row()][index.column()]
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if not index.isValid() or role != QtCore.Qt.EditRole:
+            return False
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            return False
+        self.rows[index.row()][index.column()] = value
+        self.dataChanged.emit(index, index, [role])
+        return True
+
+    def addRow(self):
+        self.beginInsertRows(QtCore.QModelIndex(), len(self.rows), len(self.rows))
+        self.rows.append([0.0, 0.0, 1.0])
+        self.endInsertRows()
+
+    def removeSelectedRow(self, row):
+        if 0 <= row < len(self.rows):
+            self.beginRemoveRows(QtCore.QModelIndex(), row, row)
+            del self.rows[row]
+            self.endRemoveRows()
+
+    def getRows(self):
+        return self.rows
+
+    def setRows(self, rows):
+        self.beginResetModel()
+        self.rows = rows
+        self.endResetModel()

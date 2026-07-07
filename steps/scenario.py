@@ -257,9 +257,11 @@ class ScenarioModel(DictModel):
         return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
 
     def getHeaderString(self,col):
+        self.feedback.pushDebugInfo("col {}".format(col))
         h = [self.tr('Name'),
             self.tr('Description'),
             self.tr('Base scenario')]
+        self.feedback.pushDebugInfo("h {}".format(h))
         return h[col]
 
 class ScenarioConnector(TableToDialogConnector):

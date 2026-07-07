@@ -46,11 +46,12 @@ SC_LANDUSE_DIALOG, _ = uic.loadUiType(os.path.join(
 SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_initialState_dialog.ui'))
 
-class ScenarioItem(abstract_model.DictItem):
+class ScenarioItem(abstract_model.DictItemWithChild):
     
     NAME = 'NAME'
     DESCR = 'DESCR'
     BASE = 'BASE'
+    SC_MODE = 'SC_MODE'
     BASE_LAYER = 'BASE_LAYER'
     LAYER = 'LAYER'
     EXTENT_FLAG = 'EXTENT_FLAG'
@@ -68,27 +69,39 @@ class ScenarioItem(abstract_model.DictItem):
     INITIAL_STATE_MODE = 3
     RASTER_VALUES_MODE = 4
     RASTER_FIXED_MODE = 5
+    PONDERATION_MODE = 6
     
     BASE_FIELDS = [ NAME, DESCR, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
-    FIELDS = BASE_FIELDS + RECLASS_FIELDS
+    FIELDS = BASE_FIELDS + RECLASS_FIELDS + [SC_MODE]
     DISPLAY_FIELDS = BASE_FIELDS
     
     def __init__(self,dict,feedback=None):
+        if self.SC_MODE not in dict:
+            dict[self.SC_MODE] = 1
         super().__init__(dict,feedback=feedback)
         self.shortMode = False
         self.values = []
     
+
     @classmethod
-    def fromValues(cls, name, descr="", layer=None, base=None,
-            baseLayer=None,
-            extentFlag=True, mode=0, reclassField=None, burnVal=1,
-            feedback=None):
+    def fromDict(cls,dict,feedback=None):
+        if cls.SC_MODE not in dict:
+            dict[cls.SC_MODE] = 1
+        dict = utils.castDict(dict)
+        return cls(dict,feedback=feedback)
+
+    @classmethod
+    def fromValues(cls, name, descr="", layer=None,
+            base=None,baseLayer=None,extentFlag=True,
+            mode=0, reclassField=None, burnVal=1,
+            scMode=1,feedback=None):
         dict = { cls.NAME : name, cls.DESCR : descr, cls.BASE : base,
             cls.BASE_LAYER : baseLayer, cls.LAYER : layer,
             cls.EXTENT_FLAG : extentFlag, cls.MODE : mode,
             cls.RECLASS_FIELD : reclassField,
-            cls.BURN_VAL : burnVal }
+            cls.BURN_VAL : burnVal,
+            cls.SC_MODE : scMode }
         return cls(dict, feedback=feedback)
         
     def __deepcopy__(self):
@@ -171,10 +184,10 @@ class ScenarioItem(abstract_model.DictItem):
     # Mandatory to redefine it for import links reasons
     @classmethod
     def fromXML(cls,root,feedback=None):
-        utils.debug("fromXML " + str(root))
         if cls.DESCR not in root.attrib:
             root.attrib[cls.DESCR] = ""
         o = cls.fromDict(root.attrib,feedback=feedback)
+        utils.debug("fromXML result {}".format(o.dict))
         return o
     
     def computeValues(self,layer=None):

@@ -70,15 +70,19 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     RASTER_VALUES_MODE = 4
     RASTER_FIXED_MODE = 5
     PONDERATION_MODE = 6
+
+    SC_LANDUSE_MODE = 0
+    SC_POND_MODE = 1
     
     BASE_FIELDS = [ NAME, DESCR, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
+    FIELDS = BASE_FIELDS + RECLASS_FIELDS
     FIELDS = BASE_FIELDS + RECLASS_FIELDS + [SC_MODE]
     DISPLAY_FIELDS = BASE_FIELDS
     
     def __init__(self,dict,feedback=None):
-        if self.SC_MODE not in dict:
-            dict[self.SC_MODE] = 1
+        # if self.SC_MODE not in dict:
+        #     dict[self.SC_MODE] = 1
         super().__init__(dict,feedback=feedback)
         self.shortMode = False
         self.values = []
@@ -86,8 +90,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
 
     @classmethod
     def fromDict(cls,dict,feedback=None):
-        if cls.SC_MODE not in dict:
-            dict[cls.SC_MODE] = 1
+        # if cls.SC_MODE not in dict:
+        #     dict[cls.SC_MODE] = 1
         dict = utils.castDict(dict)
         return cls(dict,feedback=feedback)
 
@@ -123,8 +127,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     def getLayer(self):
         return self.dict[self.LAYER]
     def getExtentFlag(self):
-        if self.EXTENT_FLAG not in self.dict:
-            self.dict[self.EXTENT_FLAG] = True
+        # if self.EXTENT_FLAG not in self.dict:
+        #     self.dict[self.EXTENT_FLAG] = True
         return self.dict[self.EXTENT_FLAG]
     def getMode(self):
         return self.dict[self.MODE]
@@ -155,6 +159,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.getMode() in [self.VECTOR_FIXED_MODE, self.VECTOR_FIELD_MODE]
     def isRasterMode(self):
         return self.getMode() in [self.RASTER_FIXED_MODE, self.RASTER_VALUES_MODE]
+    def isPondMode(self):
+        return self.getMode() in [self.PONDERATION_MODE, self.RASTER_VALUES_MODE]
         
     def isLeaf(self):
         return self.getBase() == None
@@ -221,8 +227,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.newFlag = dlgItem is None
         self.reloadFlag = False
         self.feedback = feedback
-        if model is None:
-            assert(False)
+        # if model is None:
+        #     assert(False)
         self.scModel = model.scenarioModel
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
@@ -234,6 +240,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.scLayerCombo,self.scLayerButton)
         #self.layerComboDlg.setVectorMode()
+        self.pondLayerComboDlg = qgsUtils.LayerComboDialog(self,
+            self.pondLayerCombo,self.pondLayerButton)
         self.connectComponents()
         self.updateUi(dlgItem)
         self.reloadFlag = True
@@ -247,9 +255,13 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scField.setFilters(QgsFieldProxyModel.Numeric)
         self.scField.fieldChanged.connect(self.changeField)
         self.scBase.setModel(self.scModel)
+        self.scMode.addItems([
+            self.tr("Changement d'occupation du sol"),
+            self.tr("Pondération des coefficients de friction")])
+        self.scMode.currentIndexChanged.connect(
+            lambda idx : self.stack.setCurrentIndex(idx))
         self.speciesAddRowButton.clicked.connect(self.speciesModel.addRow)
         self.speciesRemoveRowButton.clicked.connect(self.removeSelectedSpeciesRow)
-        self.stack.setCurrentIndex(1) 
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
@@ -306,41 +318,53 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if base is None:
                 self.errorDialog(self.tr("Empty base scenario"))
                 continue
-            # new layer
-            layer = self.scLayerCombo.currentLayer()
+            # Mode
+            landuseMode = self.scMode.currentValue() == self.SC_LANDUSE_MODE
+            fixedMode = self.scFixedMode.isChecked()
+            # Layer
+            if landuseMode:
+                layer = self.scLayerCombo.currentLayer()
+            else:
+                layer = self.scPondLayerCombo.currentLayer()
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
                 continue
             isVectorMode = qgsUtils.isVectorLayer(layer)
             layerPath = qgsUtils.pathOfLayer(layer)
+            # Landuse parameters
             extentFlag = self.scExtentFlag.isChecked()
             shortMode = self.scShort.isChecked()
             scPerValueMode = self.scPerValue.isChecked()
-            fixedMode = self.scFixedMode.isChecked()
-            # reclassField = self.scField.currentField()
+            # Build item according to mode
             self.feedback.pushDebugInfo("fixedMode = " + str(fixedMode))
-            if fixedMode:
-                mode = ScenarioItem.VECTOR_FIXED_MODE if isVectorMode else ScenarioItem.RASTER_FIXED_MODE
-                burnVal = self.scBurnVal.text()
-                # burnVal = self.frictionModel.getCodeFromCombo(self.scBurnVal)
-                dlgItem = ScenarioItem.fromValues(name,descr=descr,
-                    layer=layerPath,base=base,
-                    mode=mode,burnVal=burnVal,extentFlag=extentFlag,
-                    feedback=self.feedback)
-            else:
-                reclassField = ""
-                if isVectorMode:
-                    mode = ScenarioItem.VECTOR_FIELD_MODE
-                    reclassField = self.scField.currentField()
-                    if not reclassField:
-                        self.errorDialog(self.tr("Empty field"))
-                        continue
+            if landuseMode:
+                if fixedMode:
+                    mode = ScenarioItem.VECTOR_FIXED_MODE if isVectorMode else ScenarioItem.RASTER_FIXED_MODE
+                    burnVal = self.scBurnVal.text()
+                    dlgItem = ScenarioItem.fromValues(name,descr=descr,
+                        layer=layerPath,base=base,
+                        mode=mode,burnVal=burnVal,extentFlag=extentFlag,
+                        feedback=self.feedback)
                 else:
-                    mode = ScenarioItem.RASTER_VALUES_MODE
+                    if isVectorMode:
+                        mode = ScenarioItem.VECTOR_FIELD_MODE
+                        reclassField = self.scField.currentField()
+                        if not reclassField:
+                            self.errorDialog(self.tr("Empty field"))
+                            continue
+                    else:
+                        mode = ScenarioItem.RASTER_VALUES_MODE
+                    dlgItem = ScenarioItem.fromValues(name,descr=descr,
+                        layer=layerPath,base=base,
+                        mode=mode,reclassField=reclassField,extentFlag=extentFlag,
+                        feedback=self.feedback)
+            else:
+                mode = ScenarioItem.PONDERATION_MODE
                 dlgItem = ScenarioItem.fromValues(name,descr=descr,
                     layer=layerPath,base=base,
-                    mode=mode,reclassField=reclassField,extentFlag=extentFlag,
+                    mode=mode,extentFlag=extentFlag,
                     feedback=self.feedback)
+            # Compute values
             dlgItem.computeValues(layer=layer)
             # Check values count
             if dlgItem.isValueMode():
@@ -374,6 +398,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             if layer and os.path.isfile(layer):
                 self.layerComboDlg.setLayerPath(layer)
             self.scExtentFlag.setChecked(dlgItem.getExtentFlag())
+            # Set burn val
             if dlgItem.isValueMode():
                 self.switchBurnMode(True)
                 self.scField.setField(dlgItem.getBurnField())
@@ -389,8 +414,19 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                     burnVal = self.frictionModel.getFreeVal()
                 self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
                 self.scBurnVal.setValue(burnVal)
-                # self.scBurnVal.setText(burnVal)
-                # self.frictionModel.initComboCodes(self.scBurnVal,burnVal)
+            # Set stacked widget
+            elif dlgItem.isPondMode():
+                # Pond layer
+                layer = dlgItem.getLayer()
+                if layer and os.path.isfile(layer):
+                    self.pondLayerComboDlg.setLayerPath(layer)
+                # Weighting model
+
+            # Index
+            if dlgItem.isPondMode():
+                self.stack.setCurrentIndex(1)
+            else:
+                self.stack.setCurrentIndex(0)
         else:
             burnVal = self.frictionModel.getFreeVal()
             self.scBurnVal.setValue(burnVal)

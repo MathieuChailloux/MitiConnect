@@ -17,7 +17,7 @@ class Ui_scenarioDialog(object):
     def setupUi(self, scenarioDialog):
         scenarioDialog.setObjectName("scenarioDialog")
         scenarioDialog.resize(488, 350)
-        scenarioDialog.setMinimumSize(QtCore.QSize(0, 350))
+        scenarioDialog.setMinimumSize(QtCore.QSize(0, 390))
         self.mainLayout = QtWidgets.QGridLayout(scenarioDialog)
         self.mainLayout.setObjectName("mainLayout")
         self.landuseModeBox = QtWidgets.QGroupBox(scenarioDialog)
@@ -53,7 +53,7 @@ class Ui_scenarioDialog(object):
         # Stack
         self.stack = QtWidgets.QStackedWidget(scenarioDialog)
         self.stack.addWidget(self.landuseModeBox)
-        self.mainLayout.addWidget(self.stack, 3, 0, 1, 3)
+        self.mainLayout.addWidget(self.stack, 4, 0, 1, 3)
         # SC reclass Layer
         self.scLayerHorLayout = QtWidgets.QHBoxLayout(self.landuseModeFrame)
         self.scLayerHorLayout.setContentsMargins(0, 0, 0, 0)
@@ -144,7 +144,7 @@ class Ui_scenarioDialog(object):
         self.buttonBox.setOrientation(qt_compatibility.HORIZONTAL)
         self.buttonBox.setStandardButtons(qt_compatibility.CANCEL|qt_compatibility.OK)
         self.buttonBox.setObjectName("buttonBox")
-        self.mainLayout.addWidget(self.buttonBox, 4, 0, 1, 3)
+        self.mainLayout.addWidget(self.buttonBox, 5, 0, 1, 3)
         # Base scenario
         self.scBaseLabel = QtWidgets.QLabel(scenarioDialog)
         self.scBaseLabel.setMinimumSize(QtCore.QSize(0, 0))
@@ -161,6 +161,23 @@ class Ui_scenarioDialog(object):
         self.scBase.setMaximumSize(QtCore.QSize(16777215, 20))
         self.scBase.setObjectName("scBase")
         self.mainLayout.addWidget(self.scBase, 2, 2, 1, 1)
+        # Scenario MODE
+        self.scModeLabel = QtWidgets.QLabel(scenarioDialog)
+        self.scModeLabel.setMinimumSize(QtCore.QSize(0, 0))
+        self.scModeLabel.setScaledContents(True)
+        self.scModeLabel.setObjectName("label_3")
+        self.mainLayout.addWidget(self.scModeLabel, 3, 0, 1, 1)
+        self.scMode = QtWidgets.QComboBox(scenarioDialog)
+        sizePolicy = QtWidgets.QSizePolicy(qt_compatibility.SIZEPOLICY_EXPANDING, qt_compatibility.SIZEPOLICY_FIXED)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scMode.sizePolicy().hasHeightForWidth())
+        self.scMode.setSizePolicy(sizePolicy)
+        self.scMode.setMinimumSize(QtCore.QSize(0, 20))
+        self.scMode.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.scMode.setObjectName("scMode")
+        self.mainLayout.addWidget(self.scMode, 3, 2, 1, 1)
+        # Scenario MODE
         # --- Page raster + table espèces / intervalles / coefficients ---
         self.speciesRasterBox = QtWidgets.QGroupBox(scenarioDialog)
         self.speciesRasterBox.setObjectName("speciesRasterBox")
@@ -219,7 +236,8 @@ class Ui_scenarioDialog(object):
         self.speciesTableButtonsLayout.addWidget(self.speciesRemoveRowButton)
         self.speciesRasterBoxLayout.addLayout(self.speciesTableButtonsLayout, 2, 0, 1, 1)
         self.stack.addWidget(self.speciesRasterBox)
-        self.stack.setCurrentIndex(1)
+        # Mode de pondération
+        self.stack.setCurrentIndex(0)
         # retranslate
         self.retranslateUi(scenarioDialog)
         self.scField.setCurrentIndex(-1)
@@ -231,6 +249,7 @@ class Ui_scenarioDialog(object):
         _translate = QtCore.QCoreApplication.translate
         scenarioDialog.setWindowTitle(_translate("scenarioDialog", "Create new scenario"))
         self.scBaseLabel.setText(_translate("scenarioDialog", "Base scenario"))
+        self.scModeLabel.setText(_translate("scenarioDialog", "Mode"))
         self.landuseModeBox.setTitle(_translate("scenarioDialog", "Add vector layer"))
         self.scLayerLabel.setText(_translate("scenarioDialog", "Layer"))
         self.scLayerButton.setText(_translate("scenarioDialog", "..."))

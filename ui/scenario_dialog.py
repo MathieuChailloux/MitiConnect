@@ -233,10 +233,10 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
         self.setupUi(self)
-        self.speciesModel = SpeciesIntervalModel()
-        self.speciesTable.setModel(self.speciesModel)
-        if hasattr(self, "speciesLayerCombo"):
-            self.speciesLayerCombo.setFilters(qt_compatibility.RASTER_LAYER)
+        self.pondModel = PondModel()
+        self.pondTable.setModel(self.pondModel)
+        if hasattr(self, "pondLayerCombo"):
+            self.pondLayerCombo.setFilters(qt_compatibility.RASTER_LAYER)
         self.layerComboDlg = qgsUtils.LayerComboDialog(self,
             self.scLayerCombo,self.scLayerButton)
         #self.layerComboDlg.setVectorMode()
@@ -260,8 +260,8 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.tr("Pondération des coefficients de friction")])
         self.scMode.currentIndexChanged.connect(
             lambda idx : self.stack.setCurrentIndex(idx))
-        self.speciesAddRowButton.clicked.connect(self.speciesModel.addRow)
-        self.speciesRemoveRowButton.clicked.connect(self.removeSelectedSpeciesRow)
+        self.pondAddRowButton.clicked.connect(self.pondModel.addRow)
+        self.pondRemoveRowButton.clicked.connect(self.removeSelectedSpeciesRow)
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
@@ -293,9 +293,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
 
     def removeSelectedSpeciesRow(self):
-        indexes = self.speciesTable.selectionModel().selectedRows()
+        indexes = self.pondTable.selectionModel().selectedRows()
         for index in sorted(indexes, key=lambda i: i.row(), reverse=True):
-            self.speciesModel.removeSelectedRow(index.row())
+            self.pondModel.removeSelectedRow(index.row())
         
     def showDialog(self):
         while self.exec():
@@ -499,63 +499,69 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
         return None
                 
                 
-                
-class SpeciesIntervalModel(QtCore.QAbstractTableModel):
-    """Modèle table : intervalles [min, max] -> coefficient."""
+class PondItemModel(abstract_model.DictModel):
+    MIN, MAX, COEF = range(3)
+    FIELDS = ["Min", "Max", "Coefficient"]
 
+
+class PondModel(abstract_model.AbstractGroupModel):
+    """Modèle table : intervalles [min, max] -> coefficient."""
     MIN, MAX, COEF = range(3)
     HEADERS = ["Min", "Max", "Coefficient"]
 
-    def __init__(self, rows=None, parent=None):
-        super().__init__(parent)
-        # chaque ligne : [min, max, coefficient]
-        self.rows = rows if rows is not None else []
+    def __init__(self):
+        itemClass = getattr(sys.modules[__name__],
+            PondItemModel.__name__)
+        super().__init__(itemClass=itemClass,
+            fields=PondItemModel.FIELDS)
 
-    def rowCount(self, parent=QtCore.QModelIndex()):
-        return len(self.rows)
+    # def rowCount(self, parent=QtCore.QModelIndex()):
+    #     return len(self.items)
 
-    def columnCount(self, parent=QtCore.QModelIndex()):
-        return len(self.HEADERS)
+    # def columnCount(self, parent=QtCore.QModelIndex()):
+    #     return len(self.HEADERS)
 
-    def headerData(self, section, orientation, role=qt_compatibility.DISPLAY_ROLE):
-        if role == qt_compatibility.DISPLAY_ROLE and orientation == qt_compatibility.HORIZONTAL:
-            return self.HEADERS[section]
-        return super().headerData(section, orientation, role)
+    # def headerData(self, section, orientation, role=qt_compatibility.DISPLAY_ROLE):
+    #     if role == qt_compatibility.DISPLAY_ROLE and orientation == qt_compatibility.HORIZONTAL:
+    #         return self.HEADERS[section]
+    #     return super().headerData(section, orientation, role)
 
-    def flags(self, index):
-        return qt_compatibility.ITEM_IS_ENABLED | qt_compatibility.ITEM_IS_SELECTABLE |qt_compatibility.ITEM_IS_EDITABLE
+    # def flags(self, index):
+    #     return qt_compatibility.ITEM_IS_ENABLED | qt_compatibility.ITEM_IS_SELECTABLE |qt_compatibility.ITEM_IS_EDITABLE
 
-    def data(self, index, role=qt_compatibility.DISPLAY_ROLE):
-        if not index.isValid() or role not in (qt_compatibility.DISPLAY_ROLE, qt_compatibility.EDIT_ROLE):
-            return None
-        return self.rows[index.row()][index.column()]
+    # def data(self, index, role=qt_compatibility.DISPLAY_ROLE):
+    #     if not index.isValid() or role not in (qt_compatibility.DISPLAY_ROLE, qt_compatibility.EDIT_ROLE):
+    #         return None
+    #     return self.items[index.row()][index.column()]
 
-    def setData(self, index, value, role=qt_compatibility.EDIT_ROLE):
-        if not index.isValid() or role != qt_compatibility.EDIT_ROLE:
-            return False
-        try:
-            value = float(value)
-        except (TypeError, ValueError):
-            return False
-        self.rows[index.row()][index.column()] = value
-        self.dataChanged.emit(index, index, [role])
-        return True
+    # def setData(self, index, value, role=qt_compatibility.EDIT_ROLE):
+    #     if not index.isValid() or role != qt_compatibility.EDIT_ROLE:
+    #         return False
+    #     try:
+    #         value = float(value)
+    #     except (TypeError, ValueError):
+    #         return False
+    #     self.items[index.row()][index.column()] = value
+    #     self.dataChanged.emit(index, index, [role])
+    #     return True
 
     def addRow(self):
-        self.beginInsertRows(QtCore.QModelIndex(), len(self.rows), len(self.rows))
-        self.rows.append([0.0, 0.0, 1.0])
+        self.beginInsertRows(QtCore.QModelIndex(),
+            len(self.items), len(self.items))
+        self.items.append([0.0, 0.0, 1.0])
         self.endInsertRows()
 
     def removeSelectedRow(self, row):
-        if 0 <= row < len(self.rows):
-            self.beginRemoveRows(QtCore.QModelIndex(), row, row)
-            del self.rows[row]
+        if 0 <= row < len(self.items):
+            self.beginRemoveRows(QtCore.QModelIndex(),
+                row, row)
+            del self.items[row]
             self.endRemoveRows()
 
     def getRows(self):
-        return self.rows
+        return self.items
 
     def setRows(self, rows):
         self.beginResetModel()
-        self.rows = rows
+        self.items = rows
         self.endResetModel()

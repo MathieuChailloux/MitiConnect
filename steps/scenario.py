@@ -372,7 +372,7 @@ class ScenarioConnector(TableToDialogConnector):
                     scItem.setBase(newName)
             self.model.pluginModel.renameClassImports(initName,newName)
         self.updateFrictionFromDlg(dlgItem)
-        if dlgItem.shortMode:
+        if dlgItem.shortMode and not dlgItem.isPondMode():
             si = self.model.addShortItem(dlgItem)
             self.preDlg(si)
             si.computeValues()

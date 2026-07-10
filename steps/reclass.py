@@ -162,9 +162,7 @@ class ClassModel(DictModel):
         scName = scItem.getName()
         self.feedback.pushDebugInfo("updateFromScenario1 " + str(scName))
         self.feedback.pushDebugInfo("updateFromScenario4 " + str(len(self.items)))
-        if scItem.isInitialState():
-            pass
-        elif scItem.isLanduseMode():
+        if scItem.isInitialState() or scItem.isLanduseMode() or scItem.isPondMode():
             pass
         elif scItem.isFixedMode():
             burnVal = scItem.getBurnVal()

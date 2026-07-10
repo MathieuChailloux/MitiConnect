@@ -51,7 +51,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     NAME = 'NAME'
     DESCR = 'DESCR'
     BASE = 'BASE'
-    SC_MODE = 'SC_MODE'
+    # SC_MODE = 'SC_MODE'
     BASE_LAYER = 'BASE_LAYER'
     LAYER = 'LAYER'
     EXTENT_FLAG = 'EXTENT_FLAG'
@@ -77,35 +77,33 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     BASE_FIELDS = [ NAME, DESCR, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
     FIELDS = BASE_FIELDS + RECLASS_FIELDS
-    FIELDS = BASE_FIELDS + RECLASS_FIELDS + [SC_MODE]
+    # FIELDS = BASE_FIELDS + RECLASS_FIELDS + [SC_MODE]
     DISPLAY_FIELDS = BASE_FIELDS
     
-    def __init__(self,dict,feedback=None):
+    def __init__(self,dict,feedback=None,child=None):
         # if self.SC_MODE not in dict:
         #     dict[self.SC_MODE] = 1
-        super().__init__(dict,feedback=feedback)
+        if child is None:
+            child = PondModel(feedback)
+        super().__init__(dict,feedback=feedback,child=child)
         self.shortMode = False
         self.values = []
     
 
-    @classmethod
-    def fromDict(cls,dict,feedback=None):
-        # if cls.SC_MODE not in dict:
-        #     dict[cls.SC_MODE] = 1
-        dict = utils.castDict(dict)
-        return cls(dict,feedback=feedback)
+    # @classmethod
+    # def fromDict(cls,dict,feedback=None):
+    #     dict = utils.castDict(dict)
+    #     return cls(dict,feedback=feedback)
 
     @classmethod
     def fromValues(cls, name, descr="", layer=None,
             base=None,baseLayer=None,extentFlag=True,
-            mode=0, reclassField=None, burnVal=1,
-            scMode=1,feedback=None):
+            mode=0, reclassField=None, burnVal=1,feedback=None):
         dict = { cls.NAME : name, cls.DESCR : descr, cls.BASE : base,
             cls.BASE_LAYER : baseLayer, cls.LAYER : layer,
             cls.EXTENT_FLAG : extentFlag, cls.MODE : mode,
             cls.RECLASS_FIELD : reclassField,
-            cls.BURN_VAL : burnVal,
-            cls.SC_MODE : scMode }
+            cls.BURN_VAL : burnVal }
         return cls(dict, feedback=feedback)
         
     def __deepcopy__(self):
@@ -160,7 +158,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     def isRasterMode(self):
         return self.getMode() in [self.RASTER_FIXED_MODE, self.RASTER_VALUES_MODE]
     def isPondMode(self):
-        return self.getMode() in [self.PONDERATION_MODE, self.RASTER_VALUES_MODE]
+        return self.getMode() in [self.PONDERATION_MODE]
         
     def isLeaf(self):
         return self.getBase() == None
@@ -200,16 +198,15 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         if not layer:
             layerPath = self.getLayer()
             layer = qgsUtils.loadLayer(layerPath)
-        if self.isFixedMode():
-            # self.values = [self.getBurnVal()]
-            self.values = []
-        elif self.isVectorFieldMode():
+        if self.isVectorFieldMode():
             fieldname = self.getBurnField()
             self.values = qgsUtils.getLayerFieldUniqueValues(layer,fieldname)
         elif self.isRasterValuesMode():
             self.feedback.setProgressText("Fetching unique values")
             self.values = qgsTreatments.getRasterUniqueVals(layer,self.feedback)
             self.feedback.setProgress(100)
+        else:
+            self.values = []
         self.feedback.pushDebugInfo("computeValues {} = {}".format(self,self.values))
         
             
@@ -233,7 +230,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
         self.setupUi(self)
-        self.pondModel = PondModel()
+        self.pondModel = PondModel(feedback=feedback)
         self.pondTable.setModel(self.pondModel)
         if hasattr(self, "pondLayerCombo"):
             self.pondLayerCombo.setFilters(qt_compatibility.RASTER_LAYER)
@@ -261,7 +258,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.scMode.currentIndexChanged.connect(
             lambda idx : self.stack.setCurrentIndex(idx))
         self.pondAddRowButton.clicked.connect(self.pondModel.addRow)
-        self.pondRemoveRowButton.clicked.connect(self.removeSelectedSpeciesRow)
+        self.pondRemoveRowButton.clicked.connect(self.removeSelectedPondItems)
         self.scModel.layoutChanged.emit()
         
     def switchBurnMode(self,fieldMode):
@@ -292,8 +289,9 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
 
-    def removeSelectedSpeciesRow(self):
-        indexes = self.pondTable.selectionModel().selectedRows()
+    def removeSelectedPondItems(self):
+        indexes = self.pondTable.selectedIndexes()
+        # assert(False)
         for index in sorted(indexes, key=lambda i: i.row(), reverse=True):
             self.pondModel.removeSelectedRow(index.row())
         
@@ -319,13 +317,13 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 self.errorDialog(self.tr("Empty base scenario"))
                 continue
             # Mode
-            landuseMode = self.scMode.currentValue() == self.SC_LANDUSE_MODE
+            landuseMode = self.scMode.currentIndex() == ScenarioItem.SC_LANDUSE_MODE
             fixedMode = self.scFixedMode.isChecked()
             # Layer
             if landuseMode:
                 layer = self.scLayerCombo.currentLayer()
             else:
-                layer = self.scPondLayerCombo.currentLayer()
+                layer = self.pondLayerCombo.currentLayer()
             if not layer:
                 self.errorDialog(self.tr("Empty layer"))
                 continue
@@ -407,11 +405,14 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 self.switchBurnMode(False)
                 # burnVal = str(dlgItem.dict[ScenarioItem.BURN_VAL])
                 classItem = self.classModel.getItemFromOrigin(scName)
-                burnVal = classItem.getNewVal() if classItem else dlgItem.getBurnVal()
-                try:
-                    burnVal =  int(burnVal)
-                except TypeError:
-                    burnVal = self.frictionModel.getFreeVal()
+                if classItem:
+                    burnVal = classItem.getNewVal()
+                else:
+                    burnValStr = dlgItem.getBurnVal()
+                    try:
+                        burnVal =  int(burnValStr)
+                    except TypeError:
+                        burnVal = self.frictionModel.getFreeVal()
                 self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
                 self.scBurnVal.setValue(burnVal)
             # Set stacked widget
@@ -421,11 +422,12 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 if layer and os.path.isfile(layer):
                     self.pondLayerComboDlg.setLayerPath(layer)
                 # Weighting model
-
             # Index
             if dlgItem.isPondMode():
+                self.scMode.setCurrentIndex(1)
                 self.stack.setCurrentIndex(1)
             else:
+                self.scMode.setCurrentIndex(0)
                 self.stack.setCurrentIndex(0)
         else:
             burnVal = self.frictionModel.getFreeVal()
@@ -498,22 +500,28 @@ class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
             return dlgItem
         return None
                 
-                
-class PondItemModel(abstract_model.DictModel):
-    MIN, MAX, COEF = range(3)
-    FIELDS = ["Min", "Max", "Coefficient"]
+
+class PondItem(abstract_model.DictItem):
+    
+    MIN, MAX, COEFF = "MIN", "MAX", "COEFF"
+    FIELDS = [MIN,MAX,COEFF]
+    
+    def __init__(self,dict=None,feedback=None):
+        if not dict:
+            dict = {self.MIN : 0, self.MAX : 0, self.COEFF : 1}
+        super().__init__(dict)
 
 
-class PondModel(abstract_model.AbstractGroupModel):
+class PondModel(abstract_model.DictModel):
     """Modèle table : intervalles [min, max] -> coefficient."""
-    MIN, MAX, COEF = range(3)
-    HEADERS = ["Min", "Max", "Coefficient"]
+    # HEADERS = ["Min", "Max", "Coefficient"]
 
-    def __init__(self):
+    def __init__(self,feedback=None):
         itemClass = getattr(sys.modules[__name__],
-            PondItemModel.__name__)
+            PondItem.__name__)
         super().__init__(itemClass=itemClass,
-            fields=PondItemModel.FIELDS)
+            fields=PondItem.FIELDS)
+        self.feedback = feedback
 
     # def rowCount(self, parent=QtCore.QModelIndex()):
     #     return len(self.items)
@@ -548,7 +556,7 @@ class PondModel(abstract_model.AbstractGroupModel):
     def addRow(self):
         self.beginInsertRows(QtCore.QModelIndex(),
             len(self.items), len(self.items))
-        self.items.append([0.0, 0.0, 1.0])
+        self.items.append(PondItem())
         self.endInsertRows()
 
     def removeSelectedRow(self, row):
@@ -557,6 +565,7 @@ class PondModel(abstract_model.AbstractGroupModel):
                 row, row)
             del self.items[row]
             self.endRemoveRows()
+            self.layoutChanged.emit()
 
     def getRows(self):
         return self.items

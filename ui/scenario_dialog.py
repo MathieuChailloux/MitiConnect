@@ -192,6 +192,9 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         if cls.DESCR not in root.attrib:
             root.attrib[cls.DESCR] = ""
         o = cls.fromDict(root.attrib,feedback=feedback)
+        for child in root:
+            childObj = PondModel.fromXML(child,feedback=feedback)
+            o.setChild(childObj)
         utils.debug("fromXML result {}".format(o.dict))
         return o
     

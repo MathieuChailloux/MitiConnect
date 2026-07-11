@@ -107,7 +107,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return cls(dict, feedback=feedback)
         
     def __deepcopy__(self):
-        item = ScenarioItem(copy.deepcopy(self.dict),feedback=self.feedback)
+        item = ScenarioItem(copy.deepcopy(self.dict),
+            feedback=self.feedback,child=self.child)
         return item
         
     def getName(self):
@@ -209,6 +210,19 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             self.values = []
         self.feedback.pushDebugInfo("computeValues {} = {}".format(self,self.values))
         
+    def preDlg(self,dlg_item):
+        self.feedback.pushDebugInfo(
+            "preDlg {}".format(dlg_item))
+        self.feedback.pushDebugInfo(
+            "preDlgChild {}".format(dlg_item.child))
+    def postDlg(self,dlg_item):
+        self.feedback.pushDebugInfo(
+            "postDlg {}".format(dlg_item))
+        self.feedback.pushDebugInfo(
+            "postDlgChild {}".format(dlg_item.child))
+    def postDlgNew(self,dlg_item):
+        self.feedback.pushDebugInfo(
+            "postDlgNew {}".format(dlg_item))
             
     
 
@@ -230,7 +244,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
         self.setupUi(self)
-        self.pondModel = PondModel(feedback=feedback)
+        self.pondModel = dlgItem.child#PondModel(feedback=feedback)
         self.pondTable.setModel(self.pondModel)
         if hasattr(self, "pondLayerCombo"):
             self.pondLayerCombo.setFilters(qt_compatibility.RASTER_LAYER)
@@ -362,6 +376,11 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                     layer=layerPath,base=base,
                     mode=mode,extentFlag=extentFlag,
                     feedback=self.feedback)
+            # Pond Model
+            self.feedback.pushDebugInfo("model1 {}".format(self.pondModel))
+            dlgItem.setChild(self.pondModel)
+            self.feedback.pushDebugInfo("child1 {}".format(dlgItem.child))
+            self.feedback.pushDebugInfo("dlgItem1 {}".format(str(dlgItem)))
             # Compute values
             dlgItem.computeValues(layer=layer)
             # Check values count
@@ -421,7 +440,10 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 layer = dlgItem.getLayer()
                 if layer and os.path.isfile(layer):
                     self.pondLayerComboDlg.setLayerPath(layer)
-                # Weighting model
+                # Pond model
+                self.feedback.pushDebugInfo("child2 {}".format(dlgItem.child))
+                self.pondTable.setModel(dlgItem.child)
+                self.pondTable.model().layoutChanged.emit()
             # Index
             if dlgItem.isPondMode():
                 self.scMode.setCurrentIndex(1)
@@ -460,46 +482,7 @@ class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
             dlgItem = ScenarioItem.fromValues(name=name,descr=descr,
                 mode=3,layer=None,feedback=self.feedback)
             return dlgItem
-        return None
-
-class ScenarioLanduseDialog(QtWidgets.QDialog, SC_LANDUSE_DIALOG):
-    def __init__(self, parent, dlgItem, feedback=None, dataNames=[]):
-        """Constructor."""
-        super(ScenarioLanduseDialog, self).__init__(parent)
-        self.feedback = feedback
-        self.dataNames=dataNames
-        self.setupUi(self)
-        self.connectComponents()
-        self.updateUi(dlgItem)
-        
-    def connectComponents(self):
-        self.scLanduseCombo.insertItems(0,self.dataNames)
-                
-    def updateUi(self,dlgItem):
-        if dlgItem:
-            self.scName.setText(dlgItem.getName())
-            self.scLayer.setFilePath(dlgItem.getLayer())
-            self.scLanduseCombo.setCurrentText(dlgItem.getBase())
-        
-    def errorDialog(self,msg):
-        feedbacks.launchDialog(self,self.tr('Wrong parameter value'),msg)
-        
-    def showDialog(self):
-        while self.exec():
-            name = self.scName.text()
-            if not utils.isValidTag(name):
-                feedbacks.launchDialog(self,self.tr("Wrong value"),
-                    self.tr("Name '{}' contains invalid characters".format(name)))
-                continue
-            base = self.scLanduseCombo.currentText()
-            if not base:
-                feedbacks.paramError(self.tr("Empty landuse"),parent=self)
-                continue
-            dlgItem = ScenarioItem.fromValues(name=name,base=base,
-                layer=None,feedback=self.feedback)
-            return dlgItem
-        return None
-                
+        return None              
 
 class PondItem(abstract_model.DictItem):
     

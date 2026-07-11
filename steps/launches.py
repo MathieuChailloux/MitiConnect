@@ -40,9 +40,7 @@ from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConne
 # from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
-from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 from ..ui.plot_window import PlotWindow
-from . import scenario
 from ..qgis_lib_mc.qt_compatibility import *
 
 # Graphab utils

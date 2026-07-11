@@ -35,7 +35,7 @@ from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConne
 # from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
-from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog, ScenarioInitialStateDialog
+from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioInitialStateDialog
 from ..ui.plot_window import PlotWindow
 
 from . import friction
@@ -277,7 +277,6 @@ class ScenarioConnector(TableToDialogConnector):
         super().connectComponents()
         self.dlg.scenarioUp.clicked.connect(self.upgradeItem)
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
-        # self.dlg.scenarioAddLanduse.clicked.connect(self.openDialogLanduseNew)
                 
     def preDlg(self,item):
         self.feedback.pushDebugInfo("preDlg = " + str(item))
@@ -290,24 +289,10 @@ class ScenarioConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("postDlg = " + str(dlg_item))
         if dlg_item is not None:
             self.pathFieldToRel(dlg_item,ScenarioItem.LAYER)
-            # if dlg_item.isLanduseMode():
-                 # self.pathFieldToRel(dlg_item,ScenarioItem.BASE)
-            # self.updateFrictionFromDlg(dlg_item)
     def postDlgNew(self,dlg_item):
         self.feedback.pushDebugInfo("postDlgNew = " + str(dlg_item))
         self.updateFrictionFromDlg(dlg_item)
-    
-    # def openDialog(self,item): 
-        # self.feedback.pushDebugInfo("item = " + str(item))
-        # if not item or item.getBase():
-            # scenarioNames = self.model.getScenarioNames()
-            # if not scenarioNames:
-                # msg = self.tr("No scenario in model : please create base scenario from landuse")
-                # self.feedback.user_error(msg)
-            # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
-        # else:
-            # scenarioDlg = ScenarioLanduseDialog(self.dlg,item.dlg_item)
-        # return scenarioDlg
+
     def openDialog(self,item): 
         self.feedback.pushDebugInfo("item = " + str(item))
         if (item is None):
@@ -315,7 +300,7 @@ class ScenarioConnector(TableToDialogConnector):
             luFlag = False
         else:
             luFlag = item.isLanduseMode()
-        if item is None or item.isStackedMode():
+        if item is None or not item.isInitialState():
             self.feedback.pushDebugInfo("openDialog overlap")
             scenarioNames = self.model.getScenarioNames()
             if not scenarioNames:
@@ -323,16 +308,13 @@ class ScenarioConnector(TableToDialogConnector):
                 # self.feedback.user_error(msg)
                 self.feedback.pushWarning(msg)
                 self.model.addInitialState()
+            self.feedback.pushDebugInfo(
+                "openD item {}".format(item))
             item_copy = item.__deepcopy__() if item else None
+            self.feedback.pushDebugInfo(
+                "openD item {}".format(item_copy))
             scenarioDlg = ScenarioDialog(self.dlg,item_copy,
                 model=self.model.pluginModel,feedback=self.feedback)
-            # scenarioDlg = ScenarioDialog(self.dlg,item,scenarioModel=self.model,feedback=self.feedback)
-        elif item.isLanduseMode():
-            self.feedback.pushDebugInfo("openDialog landuse")   
-            dataNames = self.model.pluginModel.getDataNames()
-            scenarioDlg = ScenarioLanduseDialog(self.dlg,item,
-                feedback=self.feedback,dataNames=dataNames)
-                #luModel=self.model.pluginModel.landuseModel)
         elif item.isInitialState():
             self.feedback.pushDebugInfo("Ignoring double click on initial state")
             scenarioDlg = ScenarioInitialStateDialog(self.dlg,item,

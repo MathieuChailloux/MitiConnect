@@ -509,36 +509,6 @@ class PondModel(abstract_model.DictModel):
             fields=PondItem.FIELDS)
         self.feedback = feedback
 
-    # def rowCount(self, parent=QtCore.QModelIndex()):
-    #     return len(self.items)
-
-    # def columnCount(self, parent=QtCore.QModelIndex()):
-    #     return len(self.HEADERS)
-
-    # def headerData(self, section, orientation, role=qt_compatibility.DISPLAY_ROLE):
-    #     if role == qt_compatibility.DISPLAY_ROLE and orientation == qt_compatibility.HORIZONTAL:
-    #         return self.HEADERS[section]
-    #     return super().headerData(section, orientation, role)
-
-    # def flags(self, index):
-    #     return qt_compatibility.ITEM_IS_ENABLED | qt_compatibility.ITEM_IS_SELECTABLE |qt_compatibility.ITEM_IS_EDITABLE
-
-    # def data(self, index, role=qt_compatibility.DISPLAY_ROLE):
-    #     if not index.isValid() or role not in (qt_compatibility.DISPLAY_ROLE, qt_compatibility.EDIT_ROLE):
-    #         return None
-    #     return self.items[index.row()][index.column()]
-
-    # def setData(self, index, value, role=qt_compatibility.EDIT_ROLE):
-    #     if not index.isValid() or role != qt_compatibility.EDIT_ROLE:
-    #         return False
-    #     try:
-    #         value = float(value)
-    #     except (TypeError, ValueError):
-    #         return False
-    #     self.items[index.row()][index.column()] = value
-    #     self.dataChanged.emit(index, index, [role])
-    #     return True
-
     def addRow(self):
         self.beginInsertRows(QtCore.QModelIndex(),
             len(self.items), len(self.items))
@@ -560,3 +530,11 @@ class PondModel(abstract_model.DictModel):
         self.beginResetModel()
         self.items = rows
         self.endResetModel()
+
+    def toProcessingMatrix(self):
+        m = []
+        for i in self.items:
+            m.append(i.dict[PondItem.MIN])
+            m.append(i.dict[PondItem.MAX])
+            m.append(i.dict[PondItem.COEFF])
+        return m

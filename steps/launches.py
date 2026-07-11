@@ -298,6 +298,13 @@ class LaunchModel(DictModel):
                 qgsUtils.removeLayerFromPath(out_path)
             else:
                 return out_path
+        # Ponderation case
+        if scItem.isPondMode():
+            baseScName = scItem.getBase()
+            baseItem = self.getItemFromNames(
+                baseScName,spName,extName)
+            return self.computeItemExtent(baseItem,
+                eraseFlag=eraseFlag,feedback=feeback)
         # Union of scenario and children
         scExtentLayers = self.pluginModel.scenarioModel.getItemExtentLayers(extItem)
         self.feedback.pushDebugInfo("scExtentLayers " + str(scExtentLayers))
@@ -531,8 +538,14 @@ class LaunchModel(DictModel):
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         # Main action
-        if scItem.isInitialState() or scItem.isLanduseMode():
+        if (scItem.isInitialState()
+                or scItem.isLanduseMode()):
             luPath = spLanduse
+        elif scItem.isPondMode():
+            baseScName = scItem.getBase()
+            baseItem = self.getItemFromNames(
+                baseScName,spName,extName)
+            luPath = self.getItemLanduse(baseItem)
         elif scItem.isStackedMode():
             feedback.pushDebugInfo("LU2")
             # Get base layer
@@ -627,6 +640,24 @@ class LaunchModel(DictModel):
                 self.pluginModel.paramsModel.normalizeRaster(absFrictionLayer,
                     extentLayerPath=extentPath,out_path=out_path,nodata_val=nodataVal,
                     feedback=feedback)
+        elif scItem.isPondMode():
+            # Retrieve base friction layer
+            baseScName = scItem.getBase
+            baseItem = self.getItemFromNames(
+                baseScName,spName,extName)
+            baseFriction = baseItem.getItemFriction()
+            # Convert Pond Model to processing matrix
+            reclassTable = scItem.child.toProcessingMatrix()
+            # Reclassify weighting layer (reclassify by table)
+            pondLayer = self.pluginModel.scenarioModel.normalizeLayer(
+                scItem,feedback=feedback)
+            reclassified = qgsUtils.mkTmpPath(
+                "ReclassPond{}{}.tif".format(scName,spName))
+            qgsTreatments.applyReclassifyByTable(
+                pondLayer,reclassTable,reclassified)
+            # Apply weighting
+            qgsTreatments.applyRasterCalcMult(
+                baseFriction,reclassified,out_path,feedback=feedback)
         else:
             # Stacked mode
             # Retrieve base scenario friction

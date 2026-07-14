@@ -214,6 +214,8 @@ class ScenarioModel(DictModel):
             reclassTable = self.pluginModel.classModel.getReclassTable(name)
             if not reclassTable:
                 self.feedback.internal_error("No reclass rule for scenario {} in data tab".format(name))
+        elif item.isPondMode():
+            toNormPath = absLayerPath
         else:
             feedback.user_error("Unexpected scenario mode : " + str(mode))
         if item.isVectorFixedMode():
@@ -243,6 +245,9 @@ class ScenarioModel(DictModel):
             qgsTreatments.applyReclassifyByTable(absLayerPath,reclassTable,toNormPath,
                 boundaries_mode=2,feedback=mf)
         mf.setCurrentStep(2)
+        mf.pushDebugInfo("toNormPath {}".format(toNormPath))
+        mf.pushDebugInfo("extLayer {}".format(extLayer))
+        mf.pushDebugInfo("toNormPath {}".format(toNormPath))
         self.pluginModel.paramsModel.normalizeRaster(toNormPath,
             extentLayerPath=extLayer,out_path=outPath,feedback=mf)
         mf.setCurrentStep(3)

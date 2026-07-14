@@ -642,10 +642,10 @@ class LaunchModel(DictModel):
                     feedback=feedback)
         elif scItem.isPondMode():
             # Retrieve base friction layer
-            baseScName = scItem.getBase
+            baseScName = scItem.getBase()
             baseItem = self.getItemFromNames(
                 baseScName,spName,extName)
-            baseFriction = baseItem.getItemFriction()
+            baseFriction = self.getItemFriction(baseItem)
             # Convert Pond Model to processing matrix
             reclassTable = scItem.child.toProcessingMatrix()
             # Reclassify weighting layer (reclassify by table)
@@ -654,7 +654,8 @@ class LaunchModel(DictModel):
             reclassified = qgsUtils.mkTmpPath(
                 "ReclassPond{}{}.tif".format(scName,spName))
             qgsTreatments.applyReclassifyByTable(
-                pondLayer,reclassTable,reclassified)
+                pondLayer,reclassTable,reclassified,
+                feedback=feedback)
             # Apply weighting
             qgsTreatments.applyRasterCalcMult(
                 baseFriction,reclassified,out_path,feedback=feedback)

@@ -273,11 +273,16 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
             self.tr("Changement d'occupation du sol"),
             self.tr("Pondération des coefficients de friction")])
         self.scMode.currentIndexChanged.connect(
-            lambda idx : self.stack.setCurrentIndex(idx))
+            self.switchScMode)
         self.pondAddRowButton.clicked.connect(self.pondModel.addRow)
         self.pondRemoveRowButton.clicked.connect(self.removeSelectedPondItems)
         self.scModel.layoutChanged.emit()
         
+    def switchScMode(self,modeIdx):
+        self.stack.setCurrentIndex(modeIdx)
+        if modeIdx == 1:
+            self.scExtentFlag.setChecked(False)
+
     def switchBurnMode(self,fieldMode):
         self.scFixedMode.setChecked(not fieldMode)
         self.scFieldMode.setChecked(fieldMode)
@@ -428,13 +433,13 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 # burnVal = str(dlgItem.dict[ScenarioItem.BURN_VAL])
                 classItem = self.classModel.getItemFromOrigin(scName)
                 if classItem:
-                    burnVal = classItem.getNewVal()
+                    burnValStr = classItem.getNewVal()
                 else:
                     burnValStr = dlgItem.getBurnVal()
-                    try:
-                        burnVal =  int(burnValStr)
-                    except TypeError:
-                        burnVal = self.frictionModel.getFreeVal()
+                try:
+                    burnVal =  int(burnValStr)
+                except TypeError:
+                    burnVal = self.frictionModel.getFreeVal()
                 self.feedback.pushDebugInfo("burnVal = " + str(burnVal))
                 self.scBurnVal.setValue(burnVal)
             # Set stacked widget

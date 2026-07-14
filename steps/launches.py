@@ -304,7 +304,7 @@ class LaunchModel(DictModel):
             baseItem = self.getItemFromNames(
                 baseScName,spName,extName)
             return self.computeItemExtent(baseItem,
-                eraseFlag=eraseFlag,feedback=feeback)
+                eraseFlag=eraseFlag,feedback=feedback)
         # Union of scenario and children
         scExtentLayers = self.pluginModel.scenarioModel.getItemExtentLayers(extItem)
         self.feedback.pushDebugInfo("scExtentLayers " + str(scExtentLayers))
@@ -333,7 +333,7 @@ class LaunchModel(DictModel):
             if maxDisp == 0:
                 self.feedback.user_error("Empty dispersal distance for specie " + str(spName))
             bufferVal = bufferMulVal * maxDisp
-            extent = qgsTreatments.applyBufferFromExpr(extPath,
+            qgsTreatments.applyBufferFromExpr(extPath,
                 bufferVal,out_path,feedback=mf)
         elif spItem.isCustomLayerMode():
             self.feedback.internal_error("Custom extent layer mode not implemented yet")

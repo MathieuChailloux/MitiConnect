@@ -138,7 +138,7 @@ with open(ARCHIVE_DIR / "git-versions.txt", "w") as fp:
 # Création du zip
 with zipfile.ZipFile(ARCHIVE_PATH, "w", zipfile.ZIP_DEFLATED) as z:
     for p in ARCHIVE_DIR.rglob("*"):
-        z.write(p, p)
+        z.write(p, p.relative_to(ARCHIVE_DIR))
 
 shutil.rmtree(ARCHIVE_DIR)
 

@@ -144,3 +144,45 @@ shutil.rmtree(ARCHIVE_DIR)
 
 print(f"{ARCHIVE_PATH} créé.")
 
+# BUILD plugins.xml
+
+def read_metadata(path):
+    metadata = {}
+
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+            metadata[key.strip()] = value.strip()
+
+    return metadata
+
+metadata = read_metadata(ROOT_DIR / "metadata.txt")
+
+version = metadata["version"]
+name = metadata["name"]
+description = metadata.get("description", "")
+qgis_minimum_version = metadata.get("qgisMinimumVersion", "3.0")
+
+
+download_url = (
+    f"https://github.com/MathieuChailloux/MitiConnect/releases/download/"
+    f"v{version}/{ARCHIVE_NAME}"
+)
+
+plugins_xml = f"""<?xml version="1.0" encoding="utf-8"?>
+<plugins>
+  <pyqgis_plugin name="{name}">
+    <version>{version}</version>
+    <description>{description}</description>
+    <qgis_minimum_version>{qgis_minimum_version}</qgis_minimum_version>
+    <download_url>{download_url}</download_url>
+  </pyqgis_plugin>
+</plugins>
+"""
+
+with open(ROOT_DIR / "plugins.xml", "w", encoding="utf-8") as f:
+    f.write(plugins_xml)

@@ -181,6 +181,7 @@ plugins_xml = f"""<?xml version="1.0" encoding="utf-8"?>
     <qgis_minimum_version>{qgis_minimum_version}</qgis_minimum_version>
     <icon>icons/icon.png</icon>
     <author_name>Mathieu Chailloux</author_name>
+    <homepage>https://github.com/MathieuChailloux/MitiConnect</homepage>
     <download_url>{download_url}</download_url>
   </pyqgis_plugin>
 </plugins>

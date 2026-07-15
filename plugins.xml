@@ -7,6 +7,5 @@
     <icon>icons/icon.png</icon>
     <author_name>Mathieu Chailloux</author_name>
     <download_url>https://github.com/MathieuChailloux/MitiConnect/releases/download/v2.0.0/MitiConnect.zip</download_url>
-    <file_name>MitiConnect.zip</file_name>
   </pyqgis_plugin>
 </plugins>

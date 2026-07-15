@@ -46,6 +46,61 @@ SC_LANDUSE_DIALOG, _ = uic.loadUiType(os.path.join(
 SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_initialState_dialog.ui'))
 
+
+
+class PondItem(abstract_model.DictItem):
+    
+    MIN, MAX, COEFF = "MIN", "MAX", "COEFF"
+    FIELDS = [MIN,MAX,COEFF]
+    
+    def __init__(self,dict=None,feedback=None):
+        if not dict:
+            dict = {self.MIN : 0, self.MAX : 0, self.COEFF : 1}
+        super().__init__(dict)
+
+
+class PondModel(abstract_model.DictModel):
+    """Modèle table : intervalles [min, max] -> coefficient."""
+    # HEADERS = ["Min", "Max", "Coefficient"]
+
+    def __init__(self,feedback=None):
+        itemClass = getattr(sys.modules[__name__],
+            PondItem.__name__)
+        # itemClass = PondItem.__class__
+        super().__init__(itemClass=itemClass,
+            fields=PondItem.FIELDS)
+        self.feedback = feedback
+
+    def addRow(self):
+        self.beginInsertRows(QtCore.QModelIndex(),
+            len(self.items), len(self.items))
+        self.items.append(PondItem())
+        self.endInsertRows()
+
+    def removeSelectedRow(self, row):
+        if 0 <= row < len(self.items):
+            self.beginRemoveRows(QtCore.QModelIndex(),
+                row, row)
+            del self.items[row]
+            self.endRemoveRows()
+            self.layoutChanged.emit()
+
+    def getRows(self):
+        return self.items
+
+    def setRows(self, rows):
+        self.beginResetModel()
+        self.items = rows
+        self.endResetModel()
+
+    def toProcessingMatrix(self):
+        m = []
+        for i in self.items:
+            m.append(i.dict[PondItem.MIN])
+            m.append(i.dict[PondItem.MAX])
+            m.append(i.dict[PondItem.COEFF])
+        return m
+
 class ScenarioItem(abstract_model.DictItemWithChild):
     
     NAME = 'NAME'
@@ -247,7 +302,10 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
         self.setupUi(self)
-        self.pondModel = dlgItem.child#PondModel(feedback=feedback)
+        if self.newFlag:
+            self.pondModel = PondModel(feedback=feedback)
+        else:
+            self.pondModel = dlgItem.child
         self.pondTable.setModel(self.pondModel)
         if hasattr(self, "pondLayerCombo"):
             self.pondLayerCombo.setFilters(qt_compatibility.RASTER_LAYER)
@@ -491,56 +549,3 @@ class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
                 mode=3,layer=None,feedback=self.feedback)
             return dlgItem
         return None              
-
-class PondItem(abstract_model.DictItem):
-    
-    MIN, MAX, COEFF = "MIN", "MAX", "COEFF"
-    FIELDS = [MIN,MAX,COEFF]
-    
-    def __init__(self,dict=None,feedback=None):
-        if not dict:
-            dict = {self.MIN : 0, self.MAX : 0, self.COEFF : 1}
-        super().__init__(dict)
-
-
-class PondModel(abstract_model.DictModel):
-    """Modèle table : intervalles [min, max] -> coefficient."""
-    # HEADERS = ["Min", "Max", "Coefficient"]
-
-    def __init__(self,feedback=None):
-        # itemClass = getattr(sys.modules[__name__],
-        #     PondItem.__name__)
-        itemClass = PondItem.__class__
-        super().__init__(itemClass=itemClass,
-            fields=PondItem.FIELDS)
-        self.feedback = feedback
-
-    def addRow(self):
-        self.beginInsertRows(QtCore.QModelIndex(),
-            len(self.items), len(self.items))
-        self.items.append(PondItem())
-        self.endInsertRows()
-
-    def removeSelectedRow(self, row):
-        if 0 <= row < len(self.items):
-            self.beginRemoveRows(QtCore.QModelIndex(),
-                row, row)
-            del self.items[row]
-            self.endRemoveRows()
-            self.layoutChanged.emit()
-
-    def getRows(self):
-        return self.items
-
-    def setRows(self, rows):
-        self.beginResetModel()
-        self.items = rows
-        self.endResetModel()
-
-    def toProcessingMatrix(self):
-        m = []
-        for i in self.items:
-            m.append(i.dict[PondItem.MIN])
-            m.append(i.dict[PondItem.MAX])
-            m.append(i.dict[PondItem.COEFF])
-        return m

@@ -57,7 +57,7 @@ for f in [
     "README.md",
     "LICENSE",
     "pylintrc",
-    "metadata.txt",
+    "metadata.txt"
 ]:
     remove(ARCHIVE_DIR / GRAPHAB_NAME / f)
 
@@ -75,6 +75,7 @@ for f in Path(ROOT_DIR).glob("*.md"):
 
 shutil.copy2(ROOT_DIR / "LICENSE", ARCHIVE_DIR)
 shutil.copy2(ROOT_DIR / "metadata.txt", ARCHIVE_DIR)
+shutil.copy2(ROOT_DIR / "requirements.txt", ARCHIVE_DIR)
 
 
 ## git_hash function

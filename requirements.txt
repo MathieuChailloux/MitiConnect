@@ -1,1 +1,3 @@
-cookiecutter
+numpy
+matplotlib
+defusedxml

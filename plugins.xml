@@ -4,6 +4,9 @@
     <version>2.0.0</version>
     <description>MitiConnect integrates ecological connecitivy in mitigation hierarchy based on landscape graphs.</description>
     <qgis_minimum_version>3.16</qgis_minimum_version>
+    <icon>icons/icon.png</icon>
+    <author_name>Mathieu Chailloux</author_name>
     <download_url>https://github.com/MathieuChailloux/MitiConnect/releases/download/v2.0.0/MitiConnect.zip</download_url>
+    <file_name>MitiConnect.zip</file_name>
   </pyqgis_plugin>
 </plugins>

@@ -1,4 +1,12 @@
 
+from .utils import user_error
+
+try:
+    import numpy as np
+    import matplotlib
+except:
+    user_error("Module 'numpy' or 'matplotlib' not found, install it with QPip plugin")
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt

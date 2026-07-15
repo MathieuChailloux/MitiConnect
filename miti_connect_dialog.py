@@ -29,7 +29,12 @@ import xml.etree.ElementTree as ET
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.gui import QgsFileWidget
-from qgis.core import Qgis, QgsProcessingContext, QgsProcessingException, QgsCoordinateReferenceSystem
+from qgis.core import (
+    Qgis,
+    QgsProcessingContext,
+    QgsProcessingException,
+    QgsCoordinateReferenceSystem,
+    QgsMessageLog)
 import traceback
 from io import StringIO
 
@@ -349,6 +354,7 @@ class MitiConnectDialog(abstract_model.MainDialog,
                 prefix = self.tr("Unexpected error")
         else:
             prefix = self.tr("Unexpected error")
+        QgsMessageLog.logMessage(msg,"Extensions")
         self.feedback.error_msg(excMsg,prefix=prefix)
         self.mTabWidget.setCurrentWidget(self.logTab)
         self.feedback.focusLogTab()
@@ -360,6 +366,11 @@ class MitiConnectDialog(abstract_model.MainDialog,
         utils.checkFileExists(fname)
         class_name = reclass.ClassModel.__name__
         self.feedback.pushDebugInfo("class_name = {}".format(class_name))
+        try:
+            from defusedxml import ElementTree as ET
+        except ModuleNotFoundError:
+            self.feedback.user_error(
+                "Module 'defusedxml' not found, install it with QPip plugin")
         tree = ET.parse(fname)
         tags = []
         root = tree.getroot()

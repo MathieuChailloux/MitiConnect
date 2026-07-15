@@ -35,21 +35,25 @@ jobs:
           name: MitiConnect
           path: MitiConnect.zip
 
-      - name: Create or update release
+      - name: Get plugin version
+        id: metadata
+        run: |
+          VERSION=$(grep '^version=' metadata.txt | cut -d '=' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          VERSION=${{ steps.metadata.outputs.version }}
 
-          git tag -f latest
-          git push origin latest --force
-
-          gh release create latest MitiConnect.zip \
-            --title "Latest build" \
-            --notes "Dernière version" \
+          gh release create "v${VERSION}" \
+            MitiConnect.zip \
+            plugins.xml \
+            --title "MitiConnect v${VERSION}" \
+            --notes "Release MitiConnect v${VERSION}" \
             --latest \
-            || gh release upload latest MitiConnect.zip --clobber
+          || gh release upload "v${VERSION}" MitiConnect.zip plugins.xml --clobber
 
       - name: Prepare GitHub Pages content
         run: |

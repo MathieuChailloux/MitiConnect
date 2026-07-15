@@ -66,7 +66,7 @@ remove(ARCHIVE_DIR / GRAPHAB_NAME / "processing" / "graphab-2.8.0.jar")
 # Copie des fichiers racine
 for f in Path(ROOT_DIR).glob("*.py"):
     print("Copy file {}".format(f))
-    if f != "build.py":
+    if f.name != "build.py":
         print("Copy file {}".format(ROOT_DIR / f))
         shutil.copy2(ROOT_DIR / f, ARCHIVE_DIR)
 

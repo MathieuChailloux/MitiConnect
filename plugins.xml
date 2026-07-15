@@ -6,6 +6,7 @@
     <qgis_minimum_version>3.16</qgis_minimum_version>
     <icon>icons/icon.png</icon>
     <author_name>Mathieu Chailloux</author_name>
+    <homepage>https://github.com/MathieuChailloux/MitiConnect</homepage>
     <download_url>https://github.com/MathieuChailloux/MitiConnect/releases/download/v2.0.0/MitiConnect.zip</download_url>
   </pyqgis_plugin>
 </plugins>

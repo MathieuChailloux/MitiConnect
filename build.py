@@ -182,7 +182,6 @@ plugins_xml = f"""<?xml version="1.0" encoding="utf-8"?>
     <icon>icons/icon.png</icon>
     <author_name>Mathieu Chailloux</author_name>
     <download_url>{download_url}</download_url>
-    <file_name>MitiConnect.zip</file_name>
   </pyqgis_plugin>
 </plugins>
 """

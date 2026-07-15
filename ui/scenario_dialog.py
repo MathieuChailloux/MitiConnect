@@ -508,8 +508,9 @@ class PondModel(abstract_model.DictModel):
     # HEADERS = ["Min", "Max", "Coefficient"]
 
     def __init__(self,feedback=None):
-        itemClass = getattr(sys.modules[__name__],
-            PondItem.__name__)
+        # itemClass = getattr(sys.modules[__name__],
+        #     PondItem.__name__)
+        itemClass = PondItem.__class__
         super().__init__(itemClass=itemClass,
             fields=PondItem.FIELDS)
         self.feedback = feedback

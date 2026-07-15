@@ -1,5 +1,5 @@
 
-from .utils import user_error
+from ..qgis_lib_mc.utils import user_error
 
 try:
     import numpy as np

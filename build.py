@@ -8,6 +8,7 @@ ROOT_DIR = Path(__file__).resolve().parent
 PLUGINNAME = "MitiConnect"
 ARCHIVE_DIR = ROOT_DIR / PLUGINNAME
 ARCHIVE_NAME = f"{PLUGINNAME}.zip"
+ARCHIVE_PATH = ROOT_DIR / ARCHIVE_NAME
 
 TO_COPY_DIRS = [
     "algs",
@@ -35,7 +36,7 @@ def remove(path):
 
 # Nettoyage
 remove(ARCHIVE_DIR)
-remove(ARCHIVE_NAME)
+remove(ARCHIVE_PATH)
 
 ARCHIVE_DIR.mkdir()
 
@@ -65,7 +66,7 @@ remove(ARCHIVE_DIR / GRAPHAB_NAME / "processing" / "graphab-2.8.0.jar")
 # Copie des fichiers racine
 for f in Path(ROOT_DIR).glob("*.py"):
     print("Copy file {}".format(f))
-    if f != "build.py":
+    if f.name != "build.py":
         print("Copy file {}".format(ROOT_DIR / f))
         shutil.copy2(ROOT_DIR / f, ARCHIVE_DIR)
 
@@ -135,11 +136,11 @@ with open(ARCHIVE_DIR / "git-versions.txt", "w") as fp:
     fp.write(gh_gra + "\n")
 
 # Création du zip
-with zipfile.ZipFile(ARCHIVE_NAME, "w", zipfile.ZIP_DEFLATED) as z:
+with zipfile.ZipFile(ARCHIVE_PATH, "w", zipfile.ZIP_DEFLATED) as z:
     for p in ARCHIVE_DIR.rglob("*"):
         z.write(p, p)
 
 shutil.rmtree(ARCHIVE_DIR)
 
-print(f"{ARCHIVE_NAME} créé.")
+print(f"{ARCHIVE_PATH} créé.")
 

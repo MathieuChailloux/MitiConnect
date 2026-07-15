@@ -1,10 +1,11 @@
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use('Qt5Agg')
+matplotlib.use('qtagg')
 # import pyqtgraph as pg
 # from pyqtgraph import PlotWidget, plot
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qtagg  import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 from qgis.PyQt import uic, QtWidgets
@@ -20,6 +21,7 @@ class MplCanvas(FigureCanvasQTAgg):
 class PlotWindow(QtWidgets.QDialog):
 
     def __init__(self,values,cmpInit,percentFlag,metricName,feedback):
+        
         super().__init__()
         self.values = values
         self.cmpInit = cmpInit

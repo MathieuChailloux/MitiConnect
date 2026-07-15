@@ -186,6 +186,9 @@ class RasterDataDialog(QtWidgets.QDialog, FORM_CLASS):
             if not layer_path:
                 feedbacks.paramError("Could not load layer " + str(layer_path),parent=self)
                 continue
+            if not self.values and layer:
+                self.values = qgsTreatments.getRasterUniqueVals(layer,
+                    feedback=self.feedback)
             dict[RasterDlgItem.INPUT] = layer_path
             dict[RasterDlgItem.KEEP_VALUES] = self.keepValues.isChecked()
             # dict[RasterDlgItem.RECLASS] = self.reclass_model

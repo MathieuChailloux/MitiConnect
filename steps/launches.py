@@ -40,9 +40,7 @@ from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConne
 # from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
-from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioLanduseDialog
 from ..ui.plot_window import PlotWindow
-from . import scenario
 from ..qgis_lib_mc.qt_compatibility import *
 
 # Graphab utils
@@ -300,6 +298,13 @@ class LaunchModel(DictModel):
                 qgsUtils.removeLayerFromPath(out_path)
             else:
                 return out_path
+        # Ponderation case
+        if scItem.isPondMode():
+            baseScName = scItem.getBase()
+            baseItem = self.getItemFromNames(
+                baseScName,spName,extName)
+            return self.computeItemExtent(baseItem,
+                eraseFlag=eraseFlag,feedback=feedback)
         # Union of scenario and children
         scExtentLayers = self.pluginModel.scenarioModel.getItemExtentLayers(extItem)
         self.feedback.pushDebugInfo("scExtentLayers " + str(scExtentLayers))
@@ -328,7 +333,7 @@ class LaunchModel(DictModel):
             if maxDisp == 0:
                 self.feedback.user_error("Empty dispersal distance for specie " + str(spName))
             bufferVal = bufferMulVal * maxDisp
-            extent = qgsTreatments.applyBufferFromExpr(extPath,
+            qgsTreatments.applyBufferFromExpr(extPath,
                 bufferVal,out_path,feedback=mf)
         elif spItem.isCustomLayerMode():
             self.feedback.internal_error("Custom extent layer mode not implemented yet")
@@ -533,8 +538,14 @@ class LaunchModel(DictModel):
         crs, maxExtent, resolution = self.pluginModel.getRasterParams()
         baseType, nodataVal = self.pluginModel.baseType, self.pluginModel.nodataVal
         # Main action
-        if scItem.isInitialState() or scItem.isLanduseMode():
+        if (scItem.isInitialState()
+                or scItem.isLanduseMode()):
             luPath = spLanduse
+        elif scItem.isPondMode():
+            baseScName = scItem.getBase()
+            baseItem = self.getItemFromNames(
+                baseScName,spName,extName)
+            luPath = self.getItemLanduse(baseItem)
         elif scItem.isStackedMode():
             feedback.pushDebugInfo("LU2")
             # Get base layer
@@ -629,6 +640,25 @@ class LaunchModel(DictModel):
                 self.pluginModel.paramsModel.normalizeRaster(absFrictionLayer,
                     extentLayerPath=extentPath,out_path=out_path,nodata_val=nodataVal,
                     feedback=feedback)
+        elif scItem.isPondMode():
+            # Retrieve base friction layer
+            baseScName = scItem.getBase()
+            baseItem = self.getItemFromNames(
+                baseScName,spName,extName)
+            baseFriction = self.getItemFriction(baseItem)
+            # Convert Pond Model to processing matrix
+            reclassTable = scItem.child.toProcessingMatrix()
+            # Reclassify weighting layer (reclassify by table)
+            pondLayer = self.pluginModel.scenarioModel.normalizeLayer(
+                scItem,feedback=feedback)
+            reclassified = qgsUtils.mkTmpPath(
+                "ReclassPond{}{}.tif".format(scName,spName))
+            qgsTreatments.applyReclassifyByTable(
+                pondLayer,reclassTable,reclassified,
+                feedback=feedback)
+            # Apply weighting
+            qgsTreatments.applyRasterCalcMult(
+                baseFriction,reclassified,out_path,feedback=feedback)
         else:
             # Stacked mode
             # Retrieve base scenario friction

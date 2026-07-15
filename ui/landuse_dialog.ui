@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>292</width>
-    <height>319</height>
+    <width>277</width>
+    <height>301</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,7 +65,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="../resources.qrc">
        <normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</normaloff>:/plugins/MitiConnect/icons/mActionRefresh.svg</iconset>
      </property>
      <property name="autoRaise">
@@ -79,7 +79,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="../resources.qrc">
        <normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</normaloff>:/plugins/MitiConnect/icons/mActionDeleteSelected.svg</iconset>
      </property>
      <property name="autoRaise">
@@ -88,20 +88,76 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QToolButton" name="landuseDialogUp">
-     <property name="text">
-      <string>...</string>
+    <widget class="QFrame" name="frame">
+     <property name="maximumSize">
+      <size>
+       <width>23</width>
+       <height>16777215</height>
+      </size>
      </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icons/up-arrow.png</normaloff>../icons/up-arrow.png</iconset>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
-     <property name="autoRaise">
-      <bool>true</bool>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QToolButton" name="landuseDialogUp">
+        <property name="minimumSize">
+         <size>
+          <width>22</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../resources.qrc">
+          <normaloff>:/plugins/MitiConnect/icons/up-arrow.png</normaloff>:/plugins/MitiConnect/icons/up-arrow.png</iconset>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="landuseDialogDown">
+        <property name="minimumSize">
+         <size>
+          <width>22</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../resources.qrc">
+          <normaloff>:/plugins/MitiConnect/icons/down-arrow.png</normaloff>:/plugins/MitiConnect/icons/down-arrow.png</iconset>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="2" column="1" rowspan="2" colspan="3">
+   <item row="2" column="1" colspan="4">
     <widget class="QTableView" name="landuseDialogView">
      <property name="minimumSize">
       <size>
@@ -111,21 +167,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QToolButton" name="landuseDialogDown">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icons/down-arrow.png</normaloff>../icons/down-arrow.png</iconset>
-     </property>
-     <property name="autoRaise">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2" colspan="3">
+   <item row="3" column="2" colspan="3">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="maximumSize">
       <size>

@@ -30,10 +30,20 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsApplication
 # from qgis.utils import qgis_excepthook
 
+# from .python_deps import *
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .qgis_lib_mc import utils
+
+try:
+    import matplotlib
+    import defusedxlm
+except ModuleNotFoundError:
+    # open qpip window
+    # get qpip plugin and run check
+    pass
+
 from .miti_connect_dialog import MitiConnectDialog
 
 from .algs.miti_connect_provider import MitiConnectProvider

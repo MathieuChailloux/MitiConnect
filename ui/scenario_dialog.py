@@ -186,8 +186,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     def getLayer(self):
         return self.dict[self.LAYER]
     def getExtentFlag(self):
-        # if self.EXTENT_FLAG not in self.dict:
-        #     self.dict[self.EXTENT_FLAG] = True
+        if self.EXTENT_FLAG not in self.dict:
+            self.dict[self.EXTENT_FLAG] = True
         return self.dict[self.EXTENT_FLAG]
     def getMode(self):
         return self.dict[self.MODE]

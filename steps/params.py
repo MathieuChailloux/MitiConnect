@@ -41,7 +41,7 @@ paramsModel = None
 
 # Default CRS is set to epsg:2154 (France area, metric system)
 defaultCrs = QgsCoordinateReferenceSystem("EPSG:2154")
-        
+
 #class ParamsModel(abstract_model.AbstractGroupModel):
 class ParamsModel(abstract_model.NormalizingParamsModel):
 
@@ -61,10 +61,10 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
         # self.crs = defaultCrs
         # fields = ["workspace","extentLayer","resolution","projectFile","crs"]
         abstract_model.NormalizingParamsModel.__init__(self,feedback=parentModel.feedback)
-        
+
     # def setWorkspace(self,workspace,name):
         # super().setWorkspace(workspace)
-    
+
     def toXML(self,indent=""):
         xmlStr = indent + "<" + self.parser_name
         if self.workspace:
@@ -75,7 +75,7 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
             xmlStr += " extentLayer=\"" + str(self.extentLayer) + "\""
         xmlStr += "/>"
         return xmlStr
-        
+
     def setWorkspace(self,workspace):
         self.feedback.pushInfo("setWorkspace " + str(workspace))
         super().setWorkspace(workspace)
@@ -102,21 +102,21 @@ class ParamsModel(abstract_model.NormalizingParamsModel):
     def getGlobalMetricStr(self):
         names = GraphabPlugin.GraphabPlugin.GMETRICS
         return names[self.globalMetric]
-        
+
     def getGraphabParams(self):
         return (self.localMetric, self.globalMetric, self.distParam, self.probaParam)
-        
+
 
 class ParamsConnector:
 
     def __init__(self,dlg,paramsModel):
         self.dlg = dlg
         self.model = paramsModel
-        
+
     def initGui(self):
         self.dlg.paramsView.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.dlg.paramsCrs.setCrs(defaultCrs)
-        
+
     def connectComponents(self):
         self.dlg.paramsView.setModel(self.model)
         self.dlg.rasterResolution.valueChanged.connect(self.model.setResolution)
@@ -133,13 +133,13 @@ class ParamsConnector:
         # self.dlg.probaParam.currentIndexChanged.connect(self.model.setProbaParam)
         # self.dlg.distParam.valueChanged.connect(self.model.setDistParam)
         # self.dlg.distParam.setValue(1000)
-        header = self.dlg.paramsView.horizontalHeader()     
+        header = self.dlg.paramsView.horizontalHeader()
         # header.setSectionResizeMode(0, QHeaderView.Stretch)
         self.model.layoutChanged.emit()
-        
+
     def tr(self, message):
         return QCoreApplication.translate('MitiConnect', message)
-        
+
     def refreshProjectName(self):
         fname = self.model.projectFile
         basename = os.path.basename(fname)
@@ -147,7 +147,7 @@ class ParamsConnector:
             self.dlg.projectName.setText(self.tr("Projet MitiConnect : ") + basename)
         else:
             self.dlg.projectName.setText(self.tr("Pas de projet MitiConnect"))
-        
+
     def setProjectFile(self,fname):
         self.model.projectFile = fname
         self.refreshProjectName()

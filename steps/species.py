@@ -41,14 +41,14 @@ from ..qgis_lib_mc.qt_compatibility import *
         # self.updateFromDlgItem(dlg_item)
         # dict = dlg_item.dict if dlg_item else {}
         # DictItem.__init__(self,dlg_item.dict,fields=self.FIELDS,feedback=feedback)
-        
+
     # def updateFromDlgItem(self,dlg_item):
         # if dlg_item:
             # self.dict = { k : dlg_item.dict[k] for k in self.FIELDS if k in dlg_item.dict }
             # self.dlg_item = dlg_item
-            
+
     # def getName(self):
-        # return self.dict[self.ID]  
+        # return self.dict[self.ID]
 
 class SpeciesModel(DictModel):
 
@@ -59,7 +59,7 @@ class SpeciesModel(DictModel):
         super().__init__(itemClass,fields=SpeciesItem.FIELDS,
             display_fields=SpeciesItem.DISPLAY_FIELDS,feedback=pluginModel.feedback)
         self.pluginModel = pluginModel
-        
+
     def addItem(self,item):
         super().addItem(item)
         self.pluginModel.addSpecie(item)
@@ -68,7 +68,7 @@ class SpeciesModel(DictModel):
         super().removeItems(indices)
         for n in names:
             self.pluginModel.frictionModel.removeColFromName(n)
-                        
+
     # Returns absolute path of 'item' output layer
     def getItemOutPath(self,item):
         out_bname = item.getName() + ".tif"
@@ -101,10 +101,10 @@ class SpeciesModel(DictModel):
         return [i.getName() for i in self.items]
     def getImportNames(self):
         return [i.getBaseName() for i in self.items]
-        
+
     def flags(self, index):
         return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
-        
+
     def mkItemFromDict(self,dict,parent=None,feedback=None):
         return SpeciesItem.fromDict(dict)
 
@@ -127,15 +127,15 @@ class SpeciesConnector(TableToDialogConnector):
 
     def connectComponents(self):
         super().connectComponents()
-    
-    def openDialog(self,item): 
+
+    def openDialog(self,item):
         self.feedback.pushDebugInfo("item = " + str(item))
         # dlg_item = item.dlg_item if item else None
         species_dlg = SpeciesDialog(self.dlg,item,
             pluginModel=self.model.pluginModel,
             feedback=self.feedback)
-        return species_dlg 
-        
+        return species_dlg
+
     def preDlg(self,item):
         if item:
             if not item.isHabitatCodesMode():
@@ -144,7 +144,7 @@ class SpeciesConnector(TableToDialogConnector):
                 self.pathFieldToAbs(item,SpeciesItem.FRICTION_LAYER)
             if not item.getExtentMode():
                 self.pathFieldToAbs(item,SpeciesItem.EXTENT_VAL)
-            
+
     def postDlg(self,dlg_item):
         if dlg_item:
             if not dlg_item.isHabitatCodesMode():
@@ -155,8 +155,8 @@ class SpeciesConnector(TableToDialogConnector):
                 self.feedback.pushDebugInfo("Setting rel")
                 self.pathFieldToRel(dlg_item,SpeciesItem.EXTENT_VAL)
             self.feedback.pushDebugInfo("dlg_item = {}".format(dlg_item))
-        
-    
+
+
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()
         diffName = initName != newName
@@ -166,9 +166,9 @@ class SpeciesConnector(TableToDialogConnector):
             self.model.pluginModel.frictionModel.renameField(initName,newName)
         item.updateFromDlgItem(dlgItem)
         self.model.layoutChanged.emit()
-            
-    def mkItemFromDlgItem(self,dlgItem): 
-        return SpeciesItem(dlgItem,feedback=self.feedback)
-     
 
-        
+    def mkItemFromDlgItem(self,dlgItem):
+        return SpeciesItem(dlgItem,feedback=self.feedback)
+
+
+

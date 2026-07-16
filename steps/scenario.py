@@ -32,7 +32,6 @@ from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils, QgsMessage
 from ..qgis_lib_mc import utils
 from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
-# from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.scenario_dialog import ScenarioItem, ScenarioDialog, ScenarioInitialStateDialog
@@ -41,53 +40,8 @@ from ..ui.plot_window import PlotWindow
 from . import friction
 from ..qgis_lib_mc.qt_compatibility import *
 
-# class PondModel(DictModel):
-#     """Modèle table : intervalles [min, max] -> coefficient."""
-#     # HEADERS = ["Min", "Max", "Coefficient"]
-
-#     def __init__(self,feedback=None):
-#         QgsMessageLog.logMessage(
-#             "sys.modules {} ".format(sys.modules),
-#             "Extensions")
-#         # itemClass = getattr(sys.modules[__name__],
-#         #     PondItem.__name__)
-#         itemClass = PondItem.__class__
-#         super().__init__(itemClass=itemClass,
-#             fields=PondItem.FIELDS)
-#         self.feedback = feedback
-
-#     def addRow(self):
-#         self.beginInsertRows(QtCore.QModelIndex(),
-#             len(self.items), len(self.items))
-#         self.items.append(PondItem())
-#         self.endInsertRows()
-
-#     def removeSelectedRow(self, row):
-#         if 0 <= row < len(self.items):
-#             self.beginRemoveRows(QtCore.QModelIndex(),
-#                 row, row)
-#             del self.items[row]
-#             self.endRemoveRows()
-#             self.layoutChanged.emit()
-
-#     def getRows(self):
-#         return self.items
-
-#     def setRows(self, rows):
-#         self.beginResetModel()
-#         self.items = rows
-#         self.endResetModel()
-
-#     def toProcessingMatrix(self):
-#         m = []
-#         for i in self.items:
-#             m.append(i.dict[PondItem.MIN])
-#             m.append(i.dict[PondItem.MAX])
-#             m.append(i.dict[PondItem.COEFF])
-#         return m
-    
 # Scenario
-        
+
 class ScenarioModel(DictModel):
 
     IS_NAME = "INIT"
@@ -102,7 +56,7 @@ class ScenarioModel(DictModel):
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.pluginModel = pluginModel
         self.addInitialState()
-        
+
     def getScenarioNames(self):
         return [i.getName() for i in self.items]
     def getNames(self):
@@ -112,7 +66,7 @@ class ScenarioModel(DictModel):
             if i.getName() == name:
                 return i
         return None
-        
+
     def scExists(self,name):
         i = self.getItemFromName(name)
         return (i is not None)
@@ -193,7 +147,7 @@ class ScenarioModel(DictModel):
             self.addItem(item)
         else:
             self.feedback.pushInfo("Ignoring addInitialState as it already exists")
-            
+
     def addItem(self,item):
         for i in self.items:
             self.feedback.pushDebugInfo("i1 = " + str(i.getName()))
@@ -206,7 +160,7 @@ class ScenarioModel(DictModel):
             self.feedback.pushDebugInfo("i2 = " + str(i.getName()))
         if i.shortMode:
             self.addShortItem(i)
-            
+
     def addShortItem(self,item):
         self.feedback.pushDebugInfo("SHORT MODE")
         shortName = item.getName() + "LongTerm"
@@ -215,20 +169,20 @@ class ScenarioModel(DictModel):
         shortItem.shortMode = False
         self.addItem(shortItem)
         return shortItem
-            
+
     def addScenarioFromLayer(self,name,layer):
         self.feedback.pushDebugInfo("addScenarioFromLayer")
         item = ScenarioItem.fromValues(name,base=layer,
             feedback=self.feedback)
         self.addItem(item)
         self.layoutChanged.emit()
-        
+
     def removeItems(self,indexes):
         self.feedback.pushDebugInfo("removeItems {}".format(indexes))
         names = [self.items[ind.row()].getName() for ind in indexes]
         super().removeItems(indexes)
         self.pluginModel.removeImports(names)
-        
+
     def normalizeLayer(self,item,feedback=None):
         if feedback is None:
             feedback = self.feedback
@@ -297,12 +251,12 @@ class ScenarioModel(DictModel):
             extentLayerPath=extLayer,out_path=outPath,feedback=mf)
         mf.setCurrentStep(3)
         return outPath
-                                
+
     def updateFromXML(self,root,feedback=None):
         super().updateFromXML(root)
         if self.getInitialState() is None:
             self.addInitialState()
-                                
+
     def flags(self, index):
         return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
 
@@ -327,7 +281,7 @@ class ScenarioConnector(TableToDialogConnector):
         super().connectComponents()
         self.dlg.scenarioUp.clicked.connect(self.upgradeItem)
         self.dlg.scenarioDown.clicked.connect(self.downgradeItem)
-                
+
     def preDlg(self,item):
         self.feedback.pushDebugInfo("preDlg = " + str(item))
         if item is not None:
@@ -343,10 +297,10 @@ class ScenarioConnector(TableToDialogConnector):
         self.feedback.pushDebugInfo("postDlgNew = " + str(dlg_item))
         self.updateFrictionFromDlg(dlg_item)
 
-    def openDialog(self,item): 
+    def openDialog(self,item):
         self.feedback.pushDebugInfo("item = " + str(item))
         if (item is None):
-            # Specific openDialogLanduseNew otherwise 
+            # Specific openDialogLanduseNew otherwise
             luFlag = False
         else:
             luFlag = item.isLanduseMode()
@@ -377,7 +331,7 @@ class ScenarioConnector(TableToDialogConnector):
             self.feedback.internal_error("Unexpected scenario mode : "
                 + str(scItem.getMode()))
         return scenarioDlg
-                        
+
     def openDialogLanduseNew(self):
         dataNames = self.model.pluginModel.getDataNames()
         item_dlg = ScenarioLanduseDialog(self.dlg,None,
@@ -394,7 +348,7 @@ class ScenarioConnector(TableToDialogConnector):
                 newItem.setName(newName)
                 self.model.addItem(newItem)
             self.model.layoutChanged.emit()
-    
+
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()
         diffBurn = not (item.sameBurn(dlgItem))
@@ -414,10 +368,10 @@ class ScenarioConnector(TableToDialogConnector):
             si.computeValues()
             self.postDlg(si)
             self.updateFrictionFromDlg(si)
-            
-    # def mkItemFromDlgItem(self,dlg_item): 
+
+    # def mkItemFromDlgItem(self,dlg_item):
         # return ScenarioItem(dlg_item,feedback=self.feedback)
-        
+
     # Updates friction model on scenario item modification
     def updateFrictionFromDlg(self,item):
         self.feedback.pushDebugInfo("updateFrictionFromDlg")
@@ -427,7 +381,4 @@ class ScenarioConnector(TableToDialogConnector):
                 self.model.pluginModel.frictionModel.layoutChanged.emit()
         else:
             self.feedback.pushDebugInfo("Empty item")
-        
-     
 
-        

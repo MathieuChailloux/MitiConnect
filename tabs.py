@@ -34,7 +34,7 @@ class TabItem:
     def __init__(self,helpFile):
         self.descr = "TODO"
         self.helpFile = helpFile
-        
+
     def setDescr(self,descr):
         self.descr = descr
 
@@ -43,7 +43,7 @@ class TabItem:
         help_dir = os.path.join(plugin_dir,"help")
         helpFile = os.path.join(help_dir,self.helpFile + "-" + utils.curr_language + ".html")
         return helpFile
-        
+
 paramsTabItem = TabItem("paramsHelp")
 dataTabItem = TabItem("dataHelp")
 spTabItem = TabItem("speciesHelp")
@@ -51,9 +51,9 @@ frictionTabItem = TabItem("frictionHelp")
 scTabItem = TabItem("scenarioHelp")
 launchItem = TabItem("launchHelp")
 logTabItem = TabItem("logHelp")
-        
+
 class TabConnector:
-    
+
     def __init__(self,dlg):
         self.tabs = [paramsTabItem,
                      dataTabItem,
@@ -64,11 +64,11 @@ class TabConnector:
                      logTabItem]
         self.dlg = dlg
         self.curr_tab = 0
-        
+
     def initGui(self):
         self.dlg.textShortHelp.setOpenLinks(True)
         self.loadNTab(0)
-        
+
     def loadNTab(self,n):
         utils.debug("[loadNTab] " + str(n))
         nb_tabs = len(self.tabs)
@@ -87,9 +87,9 @@ class TabConnector:
         with open(helpFile) as f:
             msg = f.read()
         self.dlg.textShortHelp.setHtml(msg)
-        
 
-            
+
+
     def connectComponents(self):
         self.dlg.mTabWidget.currentChanged.connect(self.loadNTab)
-            
+

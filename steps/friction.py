@@ -37,24 +37,24 @@ class TestItemDelegate(QtWidgets.QItemDelegate):
 
     def __init__(self):
         super().__init__()
-        
+
     def createEditor(self, parent, option, index):
         lineedit=QtWidgets.QLineEdit(parent)
         return lineedit
-        
+
 # class CodesItemDelegate(QtWidgets.QItemDelegate):
 
     # def __init__(self,frictionModel):
         # super().__init__()
         # self.frictionModel = frictionModel
-        
+
     # def createEditor(self, parent, option, index):
         # combo=QtWidgets.QComboBox(parent)
         # elements = self.frictionModel.getCodesStrComplete()
         # combo.insertItems(0,elements)
         # combo.insertItem(0,NEW_VAL_STR)
         # return combo
-        
+
     # def setModelData(self, editor, model, index):
         # editorIndex=editor.currentIndex()
         # if editorIndex == 0:
@@ -62,15 +62,15 @@ class TestItemDelegate(QtWidgets.QItemDelegate):
         # else:
             # currIdx = editor.currentIndex()
             # currText = editor.currentText()
-            # newVal = 
+            # newVal =
         # model.setData(index, text,role=Qt.EditRole)
-        
+
 
 class FrictionModel(ExtensiveTableModel):
 
     IMPORT = 'import'
     IMPORT_VAL = 'initVal'
-    BASE_FIELDS = [ExtensiveTableModel.ROW_CODE, IMPORT, IMPORT_VAL, 
+    BASE_FIELDS = [ExtensiveTableModel.ROW_CODE, IMPORT, IMPORT_VAL,
         ExtensiveTableModel.ROW_DESCR]
 
     def __init__(self,parentModel):
@@ -78,16 +78,16 @@ class FrictionModel(ExtensiveTableModel):
         ExtensiveTableModel.__init__(self,parentModel,baseFields=self.BASE_FIELDS)
         self.feedback.pushInfo("FM1 " + str(self.__class__.__name__))
         self.feedback.pushInfo("FM2 " + str(self.itemClass.__class__.__name__))
-        
+
     # @classmethod
     # def fromDict(cls,dict,feedback=None):
         # return cls(dict,feedback=feedback)
-        
+
     # def mkItemFromXML(self,root,feedback=None):
         # d = dict(root.attrib)
         # d[ExtensiveTableModel.ROW_CODE] = int(d[ExtensiveTableModel.ROW_CODE])
         # return DictItem(d,feedback=feedback)
-        
+
     def getMatchingItem(self,item):
         for i in self.items:
             importEquals = str(self.getItemImport(i)) == str(self.getItemImport(item))
@@ -95,15 +95,15 @@ class FrictionModel(ExtensiveTableModel):
             if importEquals and importValEquals:
                 return i
         return None
-        
+
     def reload(self):
         colNames = self.parentModel.speciesModel.getNames()
-        
+
     def getItemImport(self,item):
         return item.dict[self.IMPORT]
     def getItemImportVal(self,item):
         return item.dict[self.IMPORT_VAL]
-        
+
     def getFreeVals(self,nbVals):
         codes = [ self.getItemValue(i) for i in self.items ]
         freeVals = utils.getIntValues(nbVals,exclude_values=codes)
@@ -134,7 +134,7 @@ class FrictionModel(ExtensiveTableModel):
                     s = self.getItemStr(i)
                     l.append(s)
         return l
-        
+
     def addRowFromClassItem(self,item):
         d = { self.ROW_CODE : int(item.getNewVal()),
             self.IMPORT : item.getOrigin(),
@@ -167,7 +167,7 @@ class FrictionModel(ExtensiveTableModel):
                     self.removeItemsFromRows([cpt])
                 return
         self.addRowFromClassItem(item)
-        
+
     def updateFromImports(self):
         codes = set(self.getCodes())
         self.feedback.pushDebugInfo("updateFromImports {}".format(codes))
@@ -192,10 +192,10 @@ class FrictionModel(ExtensiveTableModel):
         self.items = [i for i in self.items if self.getItemValue(i) not in toDelete]
         # Add values
         for i in toAdd:
-            self.addRowFromClassItem(i)            
+            self.addRowFromClassItem(i)
         self.layoutChanged.emit()
-            
-        
+
+
     # def addRowFromImport(self,values,name):
         # nbVals = len(values)
         # freeVals = self.getFreeVals(nbVals)
@@ -207,10 +207,10 @@ class FrictionModel(ExtensiveTableModel):
             # rowItem = self.createRowFromDict(d)
             # self.addRowItem(rowItem)
         # self.layoutChanged.emit()
-        
+
     def renameOrigin(self,oldName,newName):
         self.renameFieldValue(self.IMPORT,oldName,newName)
-        
+
     # def getReclassTable(self,importName):
         # table = []
         # for i in self.items:
@@ -227,13 +227,13 @@ class FrictionModel(ExtensiveTableModel):
                 # inVal = str(i.dict[self.IMPORT_VAL])
                 # table[inVal] = outVal
         # return table
-        
+
     def importExists(self,name):
         for i in self.items:
             if self.getItemImport(i) == name:
                 return True
         return False
-        
+
     def removeImports(self,importNames):
         self.feedback.pushDebugInfo("remmoveImports {}".format(self.items))
         self.items = [i for i in self.items if self.getItemImport(i) not in importNames]
@@ -246,7 +246,7 @@ class FrictionModel(ExtensiveTableModel):
         if species is not None:
             for i in self.items:
                pass
-        
+
     # Updates friction model from scenario with parameters scName initVals and codes
     # def updateFromScenario(self,scName,initVals,codes):
         # self.feedback.pushDebugInfo("updateScenario " + str(scName))
@@ -263,7 +263,7 @@ class FrictionModel(ExtensiveTableModel):
                 # valuesToAdd.append(initVal)
         # self.feedback.pushDebugInfo("valuesToAdd " + str(valuesToAdd))
         # self.addRowFromImport(valuesToAdd,scName)
-        
+
     def getHeaderString(self,col):
         if col < 4:
             h = [self.tr('New value'),
@@ -273,14 +273,14 @@ class FrictionModel(ExtensiveTableModel):
             return h[col]
         else:
             return self.fields[col]
-        
+
     def flags(self, index):
-        baseFlags = ITEM_IS_SELECTABLE | ITEM_IS_ENABLED 
+        baseFlags = ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
         if index.column() > 2:
             baseFlags = baseFlags | ITEM_IS_EDITABLE
         return baseFlags
-        
-        
+
+
     # used to init combo box in dialogs: find a best location for these functions ?
     # def initComboCodes(self,combo,val=None):
         # itemsStr = self.getCodesStrComplete(withNewVal=True)
@@ -291,7 +291,7 @@ class FrictionModel(ExtensiveTableModel):
             # codes = self.getCodes()
             # idx = codes.index(val)
             # combo.setCurrentIndex(idx+1)
-            
+
     # def getCodeFromCombo(self,combo):
         # idx = combo.currentIndex()
         # if idx == 0:
@@ -300,20 +300,20 @@ class FrictionModel(ExtensiveTableModel):
             # codes = self.getCodes()
             # code = codes[idx-1]
         # return code
-        
-        
-          
+
+
+
 class FrictionConnector(AbstractConnector):
-    
+
     def __init__(self,dlg,frictionModel):
         self.dlg = dlg
         self.feedback = frictionModel.feedback
         super().__init__(frictionModel,self.dlg.frictionView)
                          #selectionCheckbox=self.dlg.frictRunOnlySelection)
-        
+
     def initGui(self):
         pass
-            
+
     def connectComponents(self):
         super().connectComponents()
         self.dlg.frictionView.setItemDelegate(TestItemDelegate())
@@ -323,12 +323,12 @@ class FrictionConnector(AbstractConnector):
         # self.model.layoutChanged.connect(self.hideSpeciesColumn)
         self.dlg.frictionSave.clicked.connect(self.saveCSVAction)
         self.dlg.frictionLoad.clicked.connect(self.loadCSVAction)
-        
+
     # def hideSpeciesColumn(self):
         # nbCol = self.model.columnCount()
         # for n in range(4,nbCol):
             # self.dlg.classView.hideColumn(n)
-        
+
     # Return indexes currently selected in friction view
     def getSelectedIndexes(self):
         if self.onlySelection:
@@ -345,13 +345,13 @@ class FrictionConnector(AbstractConnector):
             if st_idx < 0 or st_idx >= nbCols:
                 self.feedback.user_error("Column " + str(idx) + " selected is not a specie")
         return indexes
-        
+
     # Updates model with items loaded from file 'fname'
     def loadCSV(self,fname):
         utils.checkFileExists(fname)
         self.model.fromCSVUpdateExisting(fname)
         self.feedback.pushInfo("Friction loaded from '" + str(fname))
-        
+
     # Opens file dialog and loads model from selected CSV file.
     def loadCSVAction(self):
         self.feedback.pushDebugInfo("loadCSVAction " + str(self))
@@ -360,10 +360,10 @@ class FrictionConnector(AbstractConnector):
                                       filter="*.csv")
         if fname:
             self.loadCSV(fname)
-            
+
     def saveCSV(self,fname):
         self.model.saveCSV(fname)
-     
+
     def saveCSVAction(self):
         self.feedback.pushDebugInfo("saveCSVAction")
         fname = qgsUtils.saveFileDialog(parent=self.dlg,
@@ -371,4 +371,3 @@ class FrictionConnector(AbstractConnector):
                                       filter="*.csv")
         if fname:
             self.saveCSV(fname)
-        

@@ -86,10 +86,10 @@ class GraphabPluginOverride(GraphabPlugin):
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
-        
+
         # all available styles for Graph circles
         self.stylesTabUnabled = ["Red","Blue"]
-        
+
         # csv prefix that is important to know because it's in imported fieldnames
         self.prefix = '_'
 
@@ -118,7 +118,7 @@ class GraphabPluginOverride(GraphabPlugin):
             # normFname = utils.normPath(filename)
             # print("loadPRoj 2 " + str(normFname))
             # super().loadProject(normFname)
-            
+
     def getProject(self, projectName):
         print("projectName = " + str(projectName))
         print("projects = " + str(self.projects))
@@ -176,15 +176,15 @@ class MitiConnect:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
-        
+
         # global sys.modules
         # if backup_modules is None:
             # sys.modules = backup_modules
-        
+
         self.graphabPlugin = GraphabPluginOverride(self.iface)
         self.provider = MitiConnectProvider(self)
         self.graphabProvider = self.provider
-        self.graphabPlugin.graphabProvider = self.provider 
+        self.graphabPlugin.graphabProvider = self.provider
         # self.provider.unload()
         # self.provider.loadAlgorithms()
 
@@ -325,13 +325,13 @@ class MitiConnect:
         from .miti_connect_dialog import MitiConnectDialog
         self.dlg = MitiConnectDialog(self.graphabPlugin)
         # print("reload modules = " + str(sys.modules))
-        
+
         self.dlg.initTabs()
         self.dlg.connectComponents()
         # show the dialog
         self.dlg.show()
         # Debug java paths
-        
+
         print("java homes = " + str(self.provider.getJavaHomesWin()))
         self.dlg.feedback.pushInfo("java homes = " + str(self.provider.getJavaHomesWin()))
         self.dlg.feedback.pushInfo("PATH = " + str(self.provider.getenv_system("PATH").split(os.pathsep)))

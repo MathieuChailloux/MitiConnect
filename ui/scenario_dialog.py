@@ -51,10 +51,10 @@ SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(
 
 
 # class PondItem(abstract_model.DictItem):
-    
+
 #     MIN, MAX, COEFF = "MIN", "MAX", "COEFF"
 #     FIELDS = [MIN,MAX,COEFF]
-    
+
 #     def __init__(self,dict=None,feedback=None):
 #         if not dict:
 #             dict = {self.MIN : 0, self.MAX : 0, self.COEFF : 1}
@@ -107,7 +107,7 @@ SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(
 #         return m
 
 class ScenarioItem(abstract_model.DictItemWithChild):
-    
+
     NAME = 'NAME'
     DESCR = 'DESCR'
     BASE = 'BASE'
@@ -122,7 +122,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     MODEL = 'MODEL'
     BURN_VAL = 'BURN_VAL'
     # DISPLAY_FIELDS = ['NAME','BASE']
-    
+
     LANDUSE_MODE = 0
     VECTOR_FIXED_MODE = 1
     VECTOR_FIELD_MODE = 2
@@ -133,13 +133,13 @@ class ScenarioItem(abstract_model.DictItemWithChild):
 
     SC_LANDUSE_MODE = 0
     SC_POND_MODE = 1
-    
+
     BASE_FIELDS = [ NAME, DESCR, BASE ]
     RECLASS_FIELDS = [ MODE, RECLASS_FIELD, BURN_VAL ]
     FIELDS = BASE_FIELDS + RECLASS_FIELDS
     # FIELDS = BASE_FIELDS + RECLASS_FIELDS + [SC_MODE]
     DISPLAY_FIELDS = BASE_FIELDS
-    
+
     def __init__(self,dict,feedback=None,child=None):
         # if self.SC_MODE not in dict:
         #     dict[self.SC_MODE] = 1
@@ -148,7 +148,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         super().__init__(dict,feedback=feedback,child=child)
         self.shortMode = False
         self.values = []
-    
+
 
     # @classmethod
     # def fromDict(cls,dict,feedback=None):
@@ -165,12 +165,12 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             cls.RECLASS_FIELD : reclassField,
             cls.BURN_VAL : burnVal }
         return cls(dict, feedback=feedback)
-        
+
     def __deepcopy__(self):
         item = ScenarioItem(copy.deepcopy(self.dict),
             feedback=self.feedback,child=self.child)
         return item
-        
+
     def getName(self):
         return self.dict[self.NAME]
     def setName(self,val):
@@ -220,12 +220,12 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         return self.getMode() in [self.RASTER_FIXED_MODE, self.RASTER_VALUES_MODE]
     def isPondMode(self):
         return self.getMode() in [self.PONDERATION_MODE]
-        
+
     def isLeaf(self):
         return self.getBase() == None
     def useExtent(self):
         return self.getExtentFlag()
-        
+
     def isVector(self):
         layerPath = self.getLayer()
         layer = qgsUtils.loadLayer(layerPath)
@@ -233,7 +233,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             return qgsUtils.isVectorLayer(layer)
         else:
             self.feedback.internal_error("Empty layer for scenario {}".format(self))
-        
+
     def sameBurn(self,other):
         mode1, mode2 = self.getMode(), other.getMode()
         if mode1 != mode2:
@@ -242,10 +242,10 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             return self.getBurnVal() == other.getBurnVal()
         else:
             return self.getBurnField() == other.getBurnField()
-        
+
     def updateFromDlgItem(self,dlgItem):
         self.updateFromOther(dlgItem)
-                
+
     # Mandatory to redefine it for import links reasons
     @classmethod
     def fromXML(cls,root,feedback=None):
@@ -260,7 +260,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
             o.setChild(childObj)
         utils.debug("fromXML result {}".format(o))
         return o
-    
+
     def computeValues(self,layer=None):
         if not layer:
             layerPath = self.getLayer()
@@ -275,7 +275,7 @@ class ScenarioItem(abstract_model.DictItemWithChild):
         else:
             self.values = []
         self.feedback.pushDebugInfo("computeValues {} = {}".format(self,self.values))
-        
+
     def preDlg(self,dlg_item):
         self.feedback.pushDebugInfo(
             "preDlg {}".format(dlg_item))
@@ -289,8 +289,8 @@ class ScenarioItem(abstract_model.DictItemWithChild):
     def postDlgNew(self,dlg_item):
         self.feedback.pushDebugInfo(
             "postDlgNew {}".format(dlg_item))
-            
-    
+
+
 
 class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
     def __init__(self, parent, dlgItem, model=None, feedback=None):
@@ -327,7 +327,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.reloadFlag = True
         self.values = []
         self.layer = None
-        
+
     def connectComponents(self):
         self.scLayerCombo.layerChanged.connect(self.changeLayer)
         self.scFieldMode.clicked.connect(self.switchFieldMode)
@@ -343,7 +343,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.pondAddRowButton.clicked.connect(self.pondModel.addRow)
         self.pondRemoveRowButton.clicked.connect(self.removeSelectedPondItems)
         self.scModel.layoutChanged.emit()
-        
+
     def switchScMode(self,modeIdx):
         self.stack.setCurrentIndex(modeIdx)
         if modeIdx == 1:
@@ -359,7 +359,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.switchBurnMode(True)
     def switchFixedMode(self):
         self.switchBurnMode(False)
-        
+
     def changeLayer(self,layer):
         self.scField.setLayer(layer)
         # self.layer = layer
@@ -373,7 +373,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
                 feedbacks.paramError("Field {} contains {} unique values, is it ok or too much ?".format(fieldname,nb_values))
         else:
             self.values = []
-        
+
     def errorDialog(self,msg):
         feedbacks.launchDialog(None,self.tr('Wrong parameter value'),msg)
 
@@ -382,7 +382,7 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         # assert(False)
         for index in sorted(indexes, key=lambda i: i.row(), reverse=True):
             self.pondModel.removeSelectedRow(index.row())
-        
+
     def showDialog(self):
         while self.exec():
             # Name
@@ -537,14 +537,14 @@ class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
         self.feedback = feedback
         self.setupUi(self)
         self.updateUi(dlgItem)
-                
+
     def updateUi(self,dlgItem):
         if dlgItem:
             self.scName.setText(dlgItem.getName())
             self.scDescr.setText(dlgItem.getDescr())
         else:
             assert(False)
-        
+
     def showDialog(self):
         while self.exec():
             name = self.scName.text()
@@ -556,4 +556,4 @@ class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
             dlgItem = ScenarioItem.fromValues(name=name,descr=descr,
                 mode=3,layer=None,feedback=self.feedback)
             return dlgItem
-        return None              
+        return None

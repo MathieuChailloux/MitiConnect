@@ -32,25 +32,25 @@ from ..qgis_lib_mc import abstract_model, feedbacks, utils
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'landuse_dialog.ui'))
-        
+
 class LanduseDialogItem(abstract_model.DictItem):
 
     NAME = 'NAME'
     FIELDS = [ NAME ]
-    
+
     def __init__(self, name, parent=None):
         dict = { self.NAME : name }
         super().__init__(dict, self.FIELDS)
-        
+
     def getName(self):
         return self.dict[self.NAME]
-        
+
 class LanduseDialogModel(abstract_model.DictModel):
 
     NAME = 'NAME'
     LIST = 'LIST'
     FIELDS = [ NAME ]
-    
+
     def __init__(self, name, string_list,pluginModel):
         #itemClass = utils.getModuleRelativePath(__name__,LanduseDialogItem.__name__)
         try:
@@ -63,7 +63,7 @@ class LanduseDialogModel(abstract_model.DictModel):
         except KeyError as e:
             self.feedback.pushDebugInfo("modules = {}".format(sys.modules[__name__]))
             raise e
-        
+
     def setItemsFromList(self,string_list):
         self.feedback.pushDebugInfo("string_list = " + str(string_list))
         self.items = []
@@ -71,16 +71,16 @@ class LanduseDialogModel(abstract_model.DictModel):
             self.feedback.pushDebugInfo("s = " + str(s))
             string_item = LanduseDialogItem(s)
             self.addItem(string_item)
-            
+
     def reloadNames(self):
         self.setItemsFromList(self.pluginModel.importModel.getImportNames())
         self.layoutChanged.emit()
-        
+
     def getName(self):
         return self.name
     def setName(self,name):
         self.name = name
-        
+
 
 class LanduseDialogConnector(abstract_model.AbstractConnector):
 
@@ -89,7 +89,7 @@ class LanduseDialogConnector(abstract_model.AbstractConnector):
         self.feedback = landuseDialogModel.feedback
         super().__init__(landuseDialogModel,self.dlg.landuseDialogView,
                         None,self.dlg.landuseDialogRemove)
-                        
+
     def connectComponents(self):
         super().connectComponents()
         self.dlg.landuseDialogReload.clicked.connect(self.model.reloadNames)
@@ -102,12 +102,12 @@ class LanduseItem(abstract_model.DictItem):
     NAME = 'NAME'
     IMPORTS = 'IMPORTS'
     FIELDS = [ NAME, IMPORTS ]
-    
+
     @classmethod
     def fromValues(cls,name=None, imports=None,feedback=None):
         dict = { cls.NAME : name, cls.IMPORTS : imports }
         return cls(dict,feedback=feedback)
-        
+
     def getName(self):
         return self.dict[self.NAME]
     def getImports(self):
@@ -135,11 +135,11 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
         self.connector = LanduseDialogConnector(self,self.model)
         self.connector.connectComponents()
         self.updateUi()
-        
+
     def updateUi(self):
         self.landuseDialogName.setText(self.model.getName())
         self.model.layoutChanged.emit()
-        
+
     def showDialog(self):
         self.feedback.pushDebugInfo("showDialog")
         while self.exec():
@@ -153,5 +153,5 @@ class LanduseDialog(QtWidgets.QDialog, FORM_CLASS):#, abstract_model.AbstractCon
             item = LanduseItem.fromValues(name=name,imports=imports_str,feedback=self.feedback)
             return item
         return None
-            
-            
+
+

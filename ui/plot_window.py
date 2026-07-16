@@ -29,7 +29,7 @@ class MplCanvas(FigureCanvasQTAgg):
 class PlotWindow(QtWidgets.QDialog):
 
     def __init__(self,values,cmpInit,percentFlag,metricName,feedback):
-        
+
         super().__init__()
         self.values = values
         self.cmpInit = cmpInit
@@ -54,13 +54,13 @@ class PlotWindow(QtWidgets.QDialog):
         # widget = QtWidgets.QWidget()
         self.setLayout(layout)
         # self.setCentralWidget(widget)
-        
+
     # def getValuesByScenario(self):
         # res = []
         # for sc, spDict in self.values.iteritems():
             # res.append(spDict.values())
         # return res
-        
+
     def initValues(self):
         self.scLabels = list(self.values.keys())
         self.nbSc = len(self.scLabels)
@@ -75,10 +75,10 @@ class PlotWindow(QtWidgets.QDialog):
         self.feedback.pushDebugInfo("scLabels = " + str(self.scLabels))
         self.feedback.pushDebugInfo("spLabels = " + str(self.spLabels))
         self.feedback.pushDebugInfo("spView = " + str(self.spView))
-        
+
     def get_cmap(self,n, name='hsv'):
         return plt.cm.get_cmap(name, n)
-        
+
     def getYLabel(self):
         if self.cmpInit:
             s = "\u0394 " + self.metricName + " with initial state"
@@ -87,7 +87,7 @@ class PlotWindow(QtWidgets.QDialog):
         else:
             s = self.metricName
         return s
-        
+
     def plotByScenario(self):
         toPlot = []
         self.feedback.pushDebugInfo("values = " + str(self.values))

@@ -53,7 +53,7 @@ class VectorDlgItem(abstract_model.DictItem):
 
     def __init__(self, dict, feedback=None):
         super().__init__(dict, self.FIELDS)
-        
+
     def getName(self):
         return self.dict[self.NAME]
     def getLayerPath(self):
@@ -79,17 +79,17 @@ class VectorDlgItem(abstract_model.DictItem):
         return self.dict[self.BUFFER_MODE]
     def getBufferExpr(self):
         return self.dict[self.BUFFER_EXPR]
-        
+
     def getValue(self):
         if self.isBurnFieldMode():
             val = self.getBurnField()
         else:
             val = self.getBurnVal()
         return val
-        
+
     def setBurnVal(self,burnVal):
         self.dict[self.BURN_VAL] = burnVal
-        
+
     # def getValues(self):
         # if self.isBurnFieldMode():
             # layer = self.getLayerPath()
@@ -109,7 +109,7 @@ class VectorDlgItem(abstract_model.DictItem):
         # codes = frModel.getCodes()
         # idx = codes.index(val)
         # combo.setCurrentIndex(idx+1)
-        
+
 # def getCodeFromCombo(frModel,combo):
     # idx = combo.currentIndex()
     # if idx == 0:
@@ -118,9 +118,9 @@ class VectorDlgItem(abstract_model.DictItem):
         # codes = frModel.getCodes()
         # code = codes[idx-1]
     # return code
-    
 
-# TODO : idée : génération automatique XML depuis QDialog 
+
+# TODO : idée : génération automatique XML depuis QDialog
 # en fonction des widgets ??
 class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, vector_data_item, parent, frictionModel):
@@ -142,7 +142,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.vectorLayerCombo,self.vectorLayerFile)
         self.layerComboDlg.setVectorMode()
         #self.vectorLayerFile.setFilter(qgsUtils.getVectorFilters())
-        
+
     def connectComponents(self):
         self.vectorLayerCombo.layerChanged.connect(self.setLayer)
         self.vectorDefaultSetting.currentIndexChanged.connect(
@@ -152,7 +152,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.keepValues.clicked.connect(self.setKeepValMode)
         self.vectorFixedMode.clicked.connect(self.setFixedMode)
         self.vectorBufferMode.clicked.connect(self.setBufferMode)
-        
+
     def updateUi(self):
         # print("update")
         if self.data_item:
@@ -167,7 +167,7 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.setBurnMode(burnMode)
             self.vectorFieldCombo.setField(self.data_item.getBurnField())
             self.keepValues.setChecked(self.data_item.keepValues())
-            burnVal = self.frictionModel.getFreeVal() if burnMode else self.data_item.getBurnVal() 
+            burnVal = self.frictionModel.getFreeVal() if burnMode else self.data_item.getBurnVal()
             self.vectorFixedValue.setValue(burnVal)
             # self.frictionModel.initComboCodes(self.vectorFixedCombo,burnVal)
             self.vectorAllTouch.setChecked(self.data_item.getAllTouch())
@@ -177,12 +177,12 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
             self.vectorBufferValue.setValue(self.data_item.getBufferExpr())
         else:
             self.vectorFixedValue.setValue(self.frictionModel.getFreeVal())
-            
-        
+
+
     def setLayer(self,layer):
         self.vectorSelectionExpression.setLayer(layer)
         self.vectorFieldCombo.setLayer(layer)
-        
+
     def setDefaultSetting(self,idx):
         if idx == 0:
             pass
@@ -196,24 +196,24 @@ class VectorDataDialog(QtWidgets.QDialog, FORM_CLASS):
         self.vectorFixedMode.setChecked(not is_field_mode)
         self.vectorFixedValue.setEnabled(not is_field_mode)
         # self.vectorFixedCombo.setEnabled(not is_field_mode)
-        
+
     def setFieldMode(self,checked):
         self.setBurnMode(checked)
-        
+
     def setKeepValMode(self,checked):
         if checked:
             self.vectorFieldCombo.setFilters(QgsFieldProxyModel.Numeric)
         else:
             self.vectorFieldCombo.setFilters(QgsFieldProxyModel.AllTypes)
-        
+
     # Useless function now : to delete (with calls)
     def setField(self,fieldname):
         pass
-        
+
     def setFixedMode(self,checked):
         self.setBurnMode(not checked)
         # self.values = [self.vectorFixedValue.value()]
-        
+
     def setBufferMode(self,checked):
         self.vectorBufferValue.setEnabled(checked)
 

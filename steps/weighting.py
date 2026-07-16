@@ -29,10 +29,10 @@ from qgis.core import QgsMessageLog
 from ..qgis_lib_mc import abstract_model
 
 class PondItem(abstract_model.DictItem):
-    
+
     MIN, MAX, COEFF = "MIN", "MAX", "COEFF"
     FIELDS = [MIN,MAX,COEFF]
-    
+
     def __init__(self,dict=None,feedback=None):
         if not dict:
             dict = {self.MIN : 0, self.MAX : 0, self.COEFF : 1}

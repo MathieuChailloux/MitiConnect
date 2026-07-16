@@ -35,9 +35,9 @@ class ClassItem(DictItem):
     NEW_VAL = 'NEW_VAL'
     ORIGIN = 'ORIGIN'
     DESCRIPTION = 'DESCRIPTION'
-    
+
     FIELDS = [ ORIGIN, INIT_VAL, NEW_VAL, DESCRIPTION ]
-    
+
     def __init__(self,dict,pluginModel=None,feedback=None):
         # castDict = {
             # self.INIT_VAL : str(dict[self.INIT_VAL]),
@@ -45,12 +45,12 @@ class ClassItem(DictItem):
             # self.ORIGIN : dict[self.ORIGIN],
             # self.DESCRIPTION : dict[self.DESCRIPTION] }
         # super().__init__(castDict,feedback=feedback)
-        super().__init__(dict,feedback=feedback)    
-        
+        super().__init__(dict,feedback=feedback)
+
     @classmethod
     def fromDict(cls,dict,feedback=None):
         return cls(dict,feedback=feedback)
-        
+
     def getInitVal(self):
         return self.dict[self.INIT_VAL]
     def getNewVal(self):
@@ -59,10 +59,10 @@ class ClassItem(DictItem):
         return self.dict[self.ORIGIN]
     def getDescription(self):
         return self.dict[self.DESCRIPTION]
-        
+
     def setNewVal(self,newVal):
         self.dict[self.NEW_VAL] = newVal
-        
+
     def equals(self,other):
         # self.feedback.pushDebugInfo("equals")
         res = ((self.getOrigin() == other.getOrigin()) and (self.getInitVal() == other.getInitVal()))
@@ -77,11 +77,11 @@ class ClassModel(DictModel):
         itemClass = getattr(sys.modules[__name__], ClassItem.__name__)
         super().__init__(itemClass,feedback=pluginModel.feedback)
         self.pluginModel = pluginModel
-        
+
     # @classmethod
     # def fromDict(cls,dict,feedback=None):
         # return cls(dict,feedback=feedback)
-        
+
     def addRow(self,origin,initVal,newVal,descr=""):
         d = { ClassItem.INIT_VAL : str(initVal),
               ClassItem.NEW_VAL : str(newVal),
@@ -91,13 +91,13 @@ class ClassModel(DictModel):
         self.addItem(item)
         self.pluginModel.frictionModel.addRowFromClassItem(item)
         self.layoutChanged.emit()
-        
+
     def addRowFromValues(self,origin,values):
         freeVals = self.pluginModel.frictionModel.getFreeVals(len(values))
         for initVal, newVal in zip(values,freeVals):
             self.addRow(origin,initVal,newVal)
         # self.layoutChanged.emit()
-        
+
     def getItemsFromOrigin(self,origin):
         items = [i for i in self.items if i.getOrigin() == origin]
         return items
@@ -116,21 +116,21 @@ class ClassModel(DictModel):
             if i.getOrigin() == origin and i.getInitVal() == initVal:
                 return i
         self.feedback.internal_error("No class item found matching origin {} and value {}".format(
-            origin,initVal))         
-            
+            origin,initVal))
+
     def getItemReclassVal(self,item):
         try:
             newVal = int(item.getNewVal())
         except ValueError:
             newVal = self.pluginModel.nodataVal
         return newVal
-    
+
     def removeItemsWithOrigin(self,origin):
         self.feedback.pushDebugInfo("removeItemsWithOrigin1 {}".format(len(self.items)))
         self.items = [ i for i in self.items if i.dict[ClassItem.ORIGIN] != origin ]
         self.feedback.pushDebugInfo("removeItemsWithOrigin2 {}".format(len(self.items)))
         self.layoutChanged.emit()
-        
+
     # Build table parameter for alg reclassifyByTable [min1, max1, val1, min2, ...]
     def getReclassTable(self,name):
         table = []
@@ -151,13 +151,13 @@ class ClassModel(DictModel):
                 newVal = self.getItemReclassVal(i)
                 table[inVal] = newVal
         return table
-        
+
     def renameOrigin(self,oldName,newName):
         self.renameFieldValue(ClassItem.ORIGIN,oldName,newName)
     def removeFromOrigin(self,origin):
         self.items = [i for i in self.items if i.getOrigin() != origin]
         self.layoutChanged.emit()
-        
+
     def updateFromScenario(self,scItem):
         scName = scItem.getName()
         self.feedback.pushDebugInfo("updateFromScenario1 " + str(scName))
@@ -181,14 +181,14 @@ class ClassModel(DictModel):
         self.layoutChanged.emit()
         self.feedback.pushDebugInfo("updateFromScenario5 " + str(len(self.items)))
         self.pluginModel.frictionModel.updateFromImports()
-        
+
     def flags(self, index):
         baseFlags = ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
         if index.column() in [2,3]:
             baseFlags = baseFlags | ITEM_IS_EDITABLE
         return baseFlags
-        
-        
+
+
     # FIELDS = [ INPUT, MODE, VALUE, STATUS ]
     def getHeaderString(self,col):
         h = [self.tr('Origin'),
@@ -196,24 +196,23 @@ class ClassModel(DictModel):
             self.tr('New value'),
             self.tr('Description')]
         return h[col]
-        
+
 class ClassConnector(AbstractConnector):
-    
+
     def __init__(self,dlg,classModel):
         self.dlg = dlg
         self.feedback = classModel.feedback
         super().__init__(classModel,self.dlg.classView)
-        
+
     def connectComponents(self):
         super().connectComponents()
         print("connectComponents")
         # self.model.layoutChanged.connect(self.model.pluginModel.frictionModel.updateFromImports)
         self.model.dataChanged.connect(self.onItemUpdated)
-        
+
     def onItemUpdated(self,index):
         rowIdx, colIdx = index.row(), index.column()
         self.feedback.pushDebugInfo("onItemUpdated {} {}".format(rowIdx,colIdx))
         classItem = self.model.getNItem(rowIdx)
         self.model.pluginModel.frictionModel.updateFromClassItem(classItem)
         self.model.pluginModel.importModel.updateFromClassItem(classItem)
-        

@@ -47,7 +47,7 @@ from .steps import (
     species,
     friction,
     scenario,
-    launches)#, species, friction, scenarios)
+    launches)
 from .ui import (
     miti_connect_dialog_base,
     new_project)
@@ -83,15 +83,15 @@ class MitiConnectModel(abstract_model.MainModel):
         self.scenarioModel = scenario.ScenarioModel(self)
         self.launchModel = launches.LaunchModel(self)
         self.models = [ self.paramsModel, self.importModel,
-            self.landuseModel, self.classModel, 
+            self.landuseModel, self.classModel,
             self.speciesModel, self.frictionModel,
             self.scenarioModel, self.launchModel ]
         self.baseType = Qgis.UInt16
         self.nodataVal = 0
-            
+
     def getLanduseNames(self):
         return self.landuseModel.getNames()
-            
+
     # def addImport(self,import_item):
         # self.frictionModel.addRowItem(import_item)
     def addSpecie(self,specie_item):
@@ -111,7 +111,7 @@ class MitiConnectModel(abstract_model.MainModel):
     def reloadFriction(self):
         import_names = [i.getName() for i in self.importModel.items]
         self.frictionModel.reloadFriction(imports=import_names)
-        
+
     def getSubDir(self,name,baseDir=None):
         if baseDir is None:
             baseDir = self.paramsModel.workspace
@@ -120,7 +120,7 @@ class MitiConnectModel(abstract_model.MainModel):
         return self.getSubDir("Imports")
     # def getScenarioDir(self,sc_name):
         # return utils.createSubdir(self.paramsModel.workspace,sc_name)
-        
+
     def getImportOutLayerFromName(self,name):
         layer = self.getOutLayerFromName(name,self.importModel)
         return layer
@@ -130,7 +130,7 @@ class MitiConnectModel(abstract_model.MainModel):
     def getScenarioOutLayerFromName(self,name):
         layer = self.getOutLayerFromName(name,self.landuseModel)
         return layer
-        
+
     # def applyRename(self,oldName,newName,model):
         # for item in model.items:
             # if item.getName() == oldName:
@@ -152,7 +152,7 @@ class MitiConnectModel(abstract_model.MainModel):
         for li in self.landuseModel.items:
             li.renameImport(oldName,newName)
         self.landuseModel.layoutChanged.emit()
-        
+
     def checkWorkspaceInit(self):
         self.paramsModel.checkWorkspaceInit()
     def normalizePath(self,path):
@@ -187,15 +187,15 @@ class MitiConnectModel(abstract_model.MainModel):
             else:
                 self.feedback.pushDebugInfo("No data item named '"
                     + str(name) + "'")
-        
+
     def loadProject(self, filename):
         if not utils.fileExists(filename):
             msg = self.tr("Graphab project does not exist, could not find file ")
             self.feedback.user_error(msg + str(filename))
         self.graphabPlugin.loadProject(filename)
-            
-            
-        
+
+
+
 
 class CreateProjectDialog(QtWidgets.QDialog,
     new_project.Ui_createProjetDialog):#,CREATE_PROJECT_CLASS):
@@ -204,7 +204,7 @@ class CreateProjectDialog(QtWidgets.QDialog,
         super(CreateProjectDialog, self).__init__(parent)
         self.setupUi(self)
         self.workspaceDir.setStorageMode(QgsFileWidget.GetDirectory)
-        
+
     def showDialog(self):
         while self.exec():
             d = self.workspaceDir.filePath()
@@ -222,7 +222,7 @@ class CreateProjectDialog(QtWidgets.QDialog,
             # return (d,n,joined)
             return (d,n)
         return None
-            
+
 
 class MitiConnectDialog(abstract_model.MainDialog,
         miti_connect_dialog_base.Ui_MitiConnectDialogBase):
@@ -237,7 +237,7 @@ class MitiConnectDialog(abstract_model.MainDialog,
         self.setupUi(self)
         self.pluginName = 'MitiConnect'
         self.graphabPlugin = graphabPlugin
-            
+
     def initTabs(self):
         self.feedback =  feedbacks.ProgressFeedback(self)
         # self.feedback.pushInfo("ERC1 OK")
@@ -265,11 +265,11 @@ class MitiConnectDialog(abstract_model.MainDialog,
             self.landuseConnector, self.classConnector, self.speciesConnector,
             self.frictionConnector, self.scenarioConnector,
             self.launchConnector, self.tabConnector ]
-            
+
     def connectComponents(self):
         super().connectComponents(saveAsFlag=True)
         self.initializeProject.clicked.connect(self.createNewProject)
-        
+
     def createNewProject(self):
         dlgObj = CreateProjectDialog(parent=self)
         createDlg = dlgObj.showDialog()
@@ -278,10 +278,10 @@ class MitiConnectDialog(abstract_model.MainDialog,
             workspace, name = createDlg
             if workspace:
                 self.initializeWorkspace(workspace,name)
-        
+
     # def getScenariosDir(self):
         # self.scDir = utils.joinPath(workspace,"Scenarios")
-        # return 
+        # return
     # def getScenarioDir(self,scDir):
         # return utils.joinPath(self.scDir,scDir)
     def initializeWorkspace(self,workspace,name):
@@ -292,7 +292,7 @@ class MitiConnectDialog(abstract_model.MainDialog,
         # utils.mkDir(self.scDir)
         projectFile = utils.joinPath(workspace, name + ".xml")
         self.saveModelAs(projectFile)
-                
+
     # Exception hook, i.e. function called when exception raised.
     # Displays traceback and error message in log tab.
     # Ignores CustomException : exception raised from MitiConnect and already displayed.
@@ -335,7 +335,7 @@ class MitiConnectDialog(abstract_model.MainDialog,
                 self.feedback.pushDebugInfo("msg21 = {}".format(msg2))
                 excMsg = msg2
                 prefix = self.tr("Graphab error")
-            elif str2 in excMsg: 
+            elif str2 in excMsg:
                 str2 = "Exception:"
                 msg1 = excMsg.split(str2)[-1]
                 self.feedback.pushDebugInfo("msg1 = {}".format(msg1))
@@ -352,8 +352,8 @@ class MitiConnectDialog(abstract_model.MainDialog,
         self.feedback.error_msg(excMsg,prefix=prefix)
         self.mTabWidget.setCurrentWidget(self.logTab)
         self.feedback.focusLogTab()
-        
-            
+
+
     # Override of loadModel (load model from XML file)
     # to ensure retro-compatibility for older configs without ClassModel
     def loadModel(self,fname):
@@ -392,4 +392,4 @@ class MitiConnectDialog(abstract_model.MainDialog,
                 clModel.layoutChanged.emit()
             # self.classConnector.connectComponents()
             # clModel.layoutChanged.emit()
-        
+

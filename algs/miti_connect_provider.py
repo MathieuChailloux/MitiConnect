@@ -22,10 +22,10 @@
  ***************************************************************************/
 """
 
-import os, sys
+import os, subprocess
 
 from qgis.PyQt.QtGui import QIcon
-from qgis.core import QgsApplication, QgsProcessingProvider, QgsMessageLog, Qgis
+from qgis.core import QgsMessageLog, Qgis
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 
 
@@ -49,24 +49,20 @@ class MitiConnectProvider(GraphabProvider):
             CreateGraph(self.plugin),
             CalculateLocalMetric(self.plugin),
             CalculateGlobalMetric(self.plugin)]
-        # for a in self.alglist:
-            # self.addAlgorithm(a)
-                
+
     def id(self):
         return "mitiConnect"
-        
+
     def name(self):
         return "MitiConnect"
-        
+
     def longName(self):
         return self.name()
-        
+
     def icon(self):
         icon_path = os.path.join(os.path.dirname(__file__), "..", "icons", "icon.png")
-        #icon_path = ':/plugins/FragScape/icons/icon.svg'
-        # print("icon_path = " + str(icon_path))
         return QIcon(icon_path)
-        
+
     def load(self):
         """In this method we add settings needed to configure our
         provider.
@@ -76,17 +72,16 @@ class MitiConnectProvider(GraphabProvider):
         ProcessingConfig.settingIcons[self.name()] = self.icon()
 
         ProcessingConfig.addSetting(Setting(self.name(), 'ACTIVATE_GRAPHAB',
-                                            self.plugin.translate('py', 'Activate'), True))
+            self.plugin.translate('py', 'Activate'), True))
         ProcessingConfig.addSetting(Setting(self.name(), 'GRAPHAB_VERSION',
-                                            self.plugin.translate('py', 'Graphab version'), self.DEFAULT_VERSION))
+            self.plugin.translate('py', 'Graphab version'), self.DEFAULT_VERSION))
         ProcessingConfig.addSetting(Setting(self.name(), 'MEMORY_GRAPHAB',
-                                            self.plugin.translate('py', 'Max memory for Java in Gb'), 0))
+            self.plugin.translate('py', 'Max memory for Java in Gb'), 0))
         ProcessingConfig.addSetting(Setting(self.name(), 'PROC_GRAPHAB',
-                                            self.plugin.translate('py', 'Processors/Cores used'), 0))
+            self.plugin.translate('py', 'Processors/Cores used'), 0))
         javacmd = self.getJavaCommand(False)
         ProcessingConfig.addSetting(Setting(self.name(), 'JAVA_GRAPHAB',
-                                            self.plugin.translate('py', 'Java path executable'), javacmd))
-        # self.loadAlgorithms()
+            self.plugin.translate('py', 'Java path executable'), javacmd))
         self.refreshAlgorithms()
         return True
 
@@ -106,28 +101,27 @@ class MitiConnectProvider(GraphabProvider):
         if ProcessingConfig.getSetting('JAVA_GRAPHAB'):
             ProcessingConfig.removeSetting('JAVA_GRAPHAB')
         # print("unload 2 sys.modules = " + str(sys.modules))
-        
-    def getJavaCommand(self, useConfig = True):
-        cmd = super().getJavaCommand(useConfig=False)
+
+    def getJavaCommand(self,useConfig=False):
+        cmd = super().getJavaCommand(useConfig=useConfig)
         print("getJavaCmd " + str(cmd))
         return cmd
-        
+
     def getJavaPath(self):
         path = super().getJavaPath()
         print("getJavaPath " + str(path))
         return path
-        
+
     def loadAlgorithms(self):
-        # super().load()
         print("loadAlgorithms")
-        # print("loadAlgorithms modules " + str(sys.modules))
         for a in self.alglist:
             self.addAlgorithm(a)
-            
+
     def checkJavaInstalled(self):
         javaExec = self.getJavaCommand()
         try:
-            ret = subprocess.run([javaExec, '-version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ret = subprocess.run([javaExec, '-version'],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.java = ret.returncode == 0
         except:
             self.java = False

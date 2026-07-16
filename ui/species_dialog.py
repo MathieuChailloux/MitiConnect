@@ -33,7 +33,7 @@ from ..qgis_lib_mc import utils, abstract_model, feedbacks
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'species_dialog.ui'))
-    
+
 
 # class TestModel(QgsCheckableItemModel):
 
@@ -42,13 +42,13 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
         # if not values:
             # values = range(5)
         # self.values = values
-        
+
     # def columnCount(self):
         # return 1
-        
+
     # def rowCount(self):
         # return len(self.values)
-        
+
     # def data(self,index,role):
         # if not index.isValid():
             # return QVariant()
@@ -60,7 +60,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
             # return(QVariant(item))
         # else:
             # return QVariant()
-    
+
 class SpeciesItem(abstract_model.DictItem):
 
     ID = 'ID'
@@ -78,12 +78,12 @@ class SpeciesItem(abstract_model.DictItem):
     EXTENT_VAL = 'EXTENT_VAL'
     FIELDS = [ ID, FULL_NAME, MAX_DISP, DISP_UNIT, MIN_AREA, LANDUSE, EXTENT_MODE, EXTENT_VAL ]
     DISPLAY_FIELDS = [ ID, FULL_NAME, MAX_DISP, MIN_AREA, LANDUSE ]
-    
+
     def __init__(self,dict,feedback=None):
         if self.HABITAT_MODE not in dict:
             dict[self.HABITAT_MODE] = True
         super().__init__(dict,feedback=feedback)
-    
+
     @classmethod
     def fromValues(cls,name,full_name,max_disp,disp_unit,min_patch,patch_unit,
                    landuse,habitatMode,habitatVal,patchConnexity,frictionMode,
@@ -104,7 +104,7 @@ class SpeciesItem(abstract_model.DictItem):
         return cls(dict,feedback=feedback)
     # def __init__(self,dict=dict,feedback=None):
         # super().__init__(dict=dict,feedback=feedback)
-        
+
     # getters
     def getName(self):
         return self.dict[self.ID]
@@ -137,7 +137,7 @@ class SpeciesItem(abstract_model.DictItem):
         return self.dict[self.EXTENT_MODE]
     def getExtentVal(self):
         return self.dict[self.EXTENT_VAL]
-        
+
     # getters wrappers
     def isHabitatCodesMode(self):
         return self.getHabitatMode() == True
@@ -168,7 +168,7 @@ class SpeciesItem(abstract_model.DictItem):
             return codes
         else:
             return []
-                
+
 
 class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent, dlg_item, pluginModel=None,feedback=None):
@@ -179,7 +179,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.updateUi(dlg_item)
         self.connectComponents()
-        
+
     def connectComponents(self):
         # super().connectComponents()
         self.frictionTabOpt.clicked.connect(self.switchFrictionTabMode)
@@ -195,7 +195,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         # assert(False)
         self.pluginModel.landuseModel.layoutChanged.emit()
         # self.pluginModel.frictionModel.layoutChanged.emit()
-        
+
     # Switch extent mode
     def switchExtentMode(self,buffer_mode):
         self.speciesBufferMode.setChecked(buffer_mode)
@@ -206,7 +206,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.switchExtentMode(True)
     def switchExtentLayerMode(self):
         self.switchExtentMode(False)
-        
+
     # Switch habitat mode
     def switchHabitatMode(self,extent_mode):
         self.habitatCodesMode.setChecked(extent_mode)
@@ -217,7 +217,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.switchHabitatMode(True)
     def switchHabitatLayerMode(self):
         self.switchHabitatMode(False)
-        
+
     # Switch connexity mode
     def switchConnexityMode(self,mode):
         self.connexity4.setChecked(mode)
@@ -226,8 +226,8 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.switchConnexityMode(True)
     def switchConnexity8Mode(self):
         self.switchConnexityMode(False)
-    
-        
+
+
     # Switch Friction mode
     def switchFrictionMode(self,mode):
         self.frictionTabOpt.setChecked(mode)
@@ -237,7 +237,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
         self.switchFrictionMode(True)
     def switchFrictionLayerMode(self):
         self.switchFrictionMode(False)
-        
+
     def showDialog(self):
         while self.exec():
             name = self.speciesID.text()
@@ -257,7 +257,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
             if habitat_mode:
                 checkedItems = self.habitatCodes.checkedItems()
                 codes = [int(s.split(" - ")[0]) for s in checkedItems]
-                habitat_val = codes               
+                habitat_val = codes
             else:
                 habitat_val = self.habitatLayer.filePath()
             # Connexity
@@ -279,7 +279,7 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                 extent_mode,extent_val,feedback=self.feedback)
             return item
         return None
-        
+
     def updateUi(self,dlg_item):
         l = self.pluginModel.frictionModel.getCodesStr()
         self.feedback.pushDebugInfo("l = " + str(l))
@@ -330,4 +330,3 @@ class SpeciesDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.speciesExtentBuffer.setValue(extent_val)
             else:
                 self.speciesExtentLayer.setFilePath(extent_val)
-            

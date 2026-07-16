@@ -41,18 +41,18 @@ from ..qgis_lib_mc.qt_compatibility import *
 
 
 class ImportItem(DictItemWithChild):
-            
+
     NAME = 'NAME'
     INPUT = 'INPUT'
     MODE = 'MODE'
     VALUE = 'VALUE'
     DISPLAY_FIELDS = [ NAME, INPUT, VALUE ]
     FIELDS = DISPLAY_FIELDS
-        
+
     @staticmethod
     def getItemClass(childTag):
-        return getattr(sys.modules[__name__], childTag)              
-        
+        return getattr(sys.modules[__name__], childTag)
+
     @staticmethod
     def childToDict(dlgItem):
         is_vector = type(dlgItem) is VectorDlgItem
@@ -64,8 +64,8 @@ class ImportItem(DictItemWithChild):
             ImportItem.INPUT : dlgItem.dict[ImportItem.INPUT],
             ImportItem.MODE : is_vector,
             ImportItem.VALUE : dlgItem.getValue() }
-        return dict 
-        
+        return dict
+
     def getName(self):
         return self.dict[ImportItem.NAME]
     def getInput(self):
@@ -76,17 +76,17 @@ class ImportItem(DictItemWithChild):
         return self.child.keepValues()
     def isVector(self):
         return self.dict[self.MODE]
-        
+
     def getValues(self):
         return self.child.getValues()
-        
+
     def equals(self,other):
         return self.getName() == other.getName()
-        
+
     def updateFromOther(self,other):
         for k in other.dict:
             self.dict[k] = other.dict[k]
-        
+
     def getBaseName(self):
         # print("dict = " +str(self.dict))
         layer_path = self.dict[self.INPUT]
@@ -106,11 +106,11 @@ class ImportModel(DictModel):
         self.feedback.pushInfo("IM OK")
         # self.itemClass = getattr(sys.modules[__name__], itemClassName)
         self.pluginModel = pluginModel
-        
+
     @staticmethod
     def getItemClass(childTag):
-        return getattr(sys.modules[__name__], childTag)      
-                          
+        return getattr(sys.modules[__name__], childTag)
+
     def getReclassTableFromUniqueAssoc(assoc_path,inField,outField):
         layer = qgsUtils.loadVectorLayer(assoc_path)
         table = []
@@ -118,14 +118,14 @@ class ImportModel(DictModel):
             inVal = f[inField]
             table.append([inVal,inVal,f[outField]])
         return table
-        
+
     def addItem(self,item,addValues=False):
         name = item.getName()
         super().addItem(item)
         self.feedback.pushDebugInfo("addItem {}".format(addValues))
         if addValues:
             self.addClassItems(item)
-        
+
     # def addClassFromValues(self,origin,values):
         # freeVals = self.pluginModel.frictionModel.getFreeVals(len(values))
         # for initVal, newVal in zip(values,freeVals):
@@ -169,7 +169,7 @@ class ImportModel(DictModel):
             else:
                 classModel.addRowFromValues(name,values)
         # self.pluginModel.frictionModel.updateFromImports()
-            
+
     # def updateItem(self,item,dlgItem):
         # diff_layer = item.getInput() != dlgItem.getLayerPath()
         # diff_field = item.getValue() != .getLayerPath()
@@ -179,15 +179,15 @@ class ImportModel(DictModel):
             # super().updateItem(item,dlgItem)
             # self.addValues(item)
         # assert(False)
-        
+
     def updateFromClassItem(self,classItem):
         for i in self.items:
             if i.isVector() and (not i.child.isBurnFieldMode()) and (i.getName() == classItem.getOrigin()):
                 i.dict[ImportItem.VALUE] = classItem.getNewVal()
                 self.layoutChanged.emit()
                 return
-        
-        
+
+
     def applyItemWithContext(self,item,context,feedback):
         # Retrieve parameters
         name = item.getName()
@@ -256,7 +256,7 @@ class ImportModel(DictModel):
                     qgsTreatments.applyRasterization(unique_path,raster_path,
                         extent,resolution,field=outField,out_type=min_type,
                         nodata_val=nodata_val_rasterization,all_touch=all_touch,
-                        context=context,feedback=feedback)                    
+                        context=context,feedback=feedback)
                     # Reclassify
                     assoc_layer = qgsUtils.loadVectorLayer(assoc_path)
                     reclassDict = self.pluginModel.classModel.getReclassDict(name)
@@ -295,7 +295,7 @@ class ImportModel(DictModel):
             keepValues = item.keepValues()
             if keepValues:
                 to_norm_path = input_path
-            else:           
+            else:
                 table = self.pluginModel.classModel.getReclassTable(name)
                 # min_type, nodata_val = Qgis.UInt16, 0
                 qgsTreatments.applyReclassifyByTable(input_path,table,
@@ -309,7 +309,7 @@ class ImportModel(DictModel):
                 context=context,
                 feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
-                
+
     # Returns absolute path of 'item' output layer
     def getItemOutPath(self,item):
         out_bname = item.getName() + ".tif"
@@ -320,13 +320,13 @@ class ImportModel(DictModel):
             # if i.getName() == name:
                 # return i
         # return None
-        
+
     def getImportNames(self):
         return [i.getName() for i in self.items]
         # return [i.getBaseName() for i in self.items]
     def getImportNamesAsStr(self):
         return ",".join(self.getImportNames())
-        
+
     def removeItems(self,indexes):
         names = [self.items[ind.row()].getName() for ind in indexes]
         super().removeItems(indexes)
@@ -335,17 +335,17 @@ class ImportModel(DictModel):
         self.items = [i for i in self.items if i.getName() != name]
         self.layoutChanged.emit()
         self.pluginModel.removeImports(name)
-        
+
     def flags(self, index):
         return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
-        
+
     # FIELDS = [ INPUT, MODE, VALUE, STATUS ]
     def getHeaderString(self,col):
         h = [self.tr('Name'),
             self.tr('Input layer'),
             self.tr('Value')]
         return h[col]
-        
+
     # def mkItemFromDict(self,dict,parent=None,feedback=None):
         # item = ImportItem.fromDict(dict=dict,feedback=self.feedback)
         # item.recompute()
@@ -369,12 +369,12 @@ class ImportConnector(TableToDialogConnector):
         # self.dlg.importView.doubleClicked.connect(self.openImport)
         self.dlg.importVector.clicked.connect(self.openImportVectorNew)
         self.dlg.importRaster.clicked.connect(self.openImportRasterNew)
-        
+
     def applyItems(self):
         self.feedback.beginSection("Computing imports")
         super().applyItems()
         self.feedback.endSection()
-    
+
     # def openImport(self,index):
         # row = index.row()
         # item = self.model.getNItem(row)
@@ -386,7 +386,7 @@ class ImportConnector(TableToDialogConnector):
         # if dlgItem:
             # item.updateFromDlgItem(dlgItem)
             # self.model.layoutChanged.emit()
-            
+
     def preDlg(self,item):
         if item:
             dlg_item = item.getChild()
@@ -397,7 +397,7 @@ class ImportConnector(TableToDialogConnector):
         if isinstance(dlg_item,ImportItem):
             dlg_item = dlg_item.child
         self.pathFieldToRel(dlg_item,VectorDlgItem.INPUT)
-      
+
     def openDialog(self,item):
         self.feedback.pushDebugInfo("openDialog " + str(item))
         dlgItem = item.getChild()
@@ -417,28 +417,28 @@ class ImportConnector(TableToDialogConnector):
         return item_dlg
         # dlgItem = item_dlg.showDialog()
         # return dlgItem
-        
+
     def openImportVectorNew(self,checked):
         item_dlg = VectorDataDialog(None,self.dlg,self.model.pluginModel.frictionModel)
         dlgItem = item_dlg.showDialog()
         self.addDlgItem(dlgItem,True)
-        
+
     # def openImportVector(self,dlgItem):
         # vector_data_dlg = VectorDataDialog(dlgItem,self.dlg)
         # dlgItem = vector_data_dlg.showDialog()
         # return dlgItem
-        
+
     def openImportRasterNew(self,checked):
         item_dlg = RasterDataDialog(None,self.dlg,
             class_model=self.model.pluginModel.frictionModel)
         dlgItem = item_dlg.showDialog()
         self.addDlgItem(dlgItem,False)
-            
+
     # def openImportRaster(self,dlgItem):
         # raster_data_dlg = RasterDataDialog(dlgItem,self.dlg,class_model=self.model.frictionModel)
         # dlgItem = raster_data_dlg.showDialog()
         # return dlgItem
-                
+
     def addDlgItem(self,dlgItem,is_vector):
         if dlgItem:
             self.pathFieldToRel(dlgItem,VectorDlgItem.INPUT)
@@ -455,10 +455,10 @@ class ImportConnector(TableToDialogConnector):
                     # basename = item.getBaseName()
                     # self.model.pluginModel.frictionModel.addRowFromCode(
                         # code,descr=basename)
-                    
+
         else:
             self.feedback.pushDebugInfo("No dlgItem given")
-        
+
     def updateFromDlgItem(self,item,dlgItem):
         # Check name
         oldName, newName = item.getName(), dlgItem.getName()
@@ -490,11 +490,11 @@ class ImportConnector(TableToDialogConnector):
             self.model.removeFromName(oldName)
             self.addDlgItem(dlgItem,isVector)
         elif diffName:
-            # Update name 
+            # Update name
             item.updateFromDlgItem(dlgItem)
             self.model.pluginModel.renameImport(oldName,newName)
-        
-        
+
+
 class LanduseModel(DictModel):
 
     def __init__(self, pluginModel):
@@ -502,18 +502,18 @@ class LanduseModel(DictModel):
         super().__init__(itemClass,feedback=pluginModel.feedback)
         self.pluginModel = pluginModel
         self.currImportNames = []
-                    
+
     def updateImportName(self):
         pass
-        
+
     def getItemOutPath(self,item):
         out_bname = item.getName() + ".tif"
         out_dir = self.pluginModel.getImportsDir()
         return utils.joinPath(out_dir,out_bname)
-        
+
     def getNames(self,item):
         return [i.getName() for i in self.items]
-                                    
+
     def applyItemWithContext(self,item,context,feedback,indexes=None):
         names = item.getImportsAsList()
         names.reverse()
@@ -534,10 +534,10 @@ class LanduseModel(DictModel):
         qgsTreatments.applyMergeRaster(paths,out_path,out_type=min_type,
             nodata_val=nodata_val,context=context,feedback=feedback)
         qgsUtils.loadRasterLayer(out_path,loadProject=True)
-        
+
     def mkItemFromDict(self,dict,feedback=None):
         return LanduseItem(dict)
-        
+
     def getHeaderString(self,col):
         h = [self.tr('Name'),
             self.tr('Imports')]
@@ -554,17 +554,17 @@ class LanduseConnector(TableToDialogConnector):
                         runButton=self.dlg.mergeRun,
                         selectionCheckbox=self.dlg.landuseSelection)
         self.onlySelection = False
-    
+
     # def connectComponents(self):
         # super().connectComponents()
         # self.dlg.mergeView.doubleClicked.connect(self.openLanduse)
         # self.dlg.mergeNew.clicked.connect(self.openLanduseNew)
-        
+
     def applyItems(self):
         self.feedback.beginSection("Computing merge")
         super().applyItems()
         self.feedback.endSection()
-        
+
     def openDialog(self,item):
         self.feedback.pushDebugInfo("openDialog item = " +str(item))
         if item:
@@ -577,11 +577,11 @@ class LanduseConnector(TableToDialogConnector):
             landuse_dlg = LanduseDialog(self.dlg,self.model.pluginModel,
                 string_list=import_names)
         return landuse_dlg
-        
+
     def postDlgNew(self,item):
         self.model.addItem(item)
         self.model.layoutChanged.emit()
-    
+
     # def openLanduseNew(self,checked):
         # self.feedback.pushDebugInfo("checked = " + str(checked))
         # import_names = self.model.pluginModel.importModel.getImportNames()
@@ -599,7 +599,7 @@ class LanduseConnector(TableToDialogConnector):
             # self.model.layoutChanged.emit()
         # else:
             # self.feedback.user_error("No name given to landuse layers ranking")
-        
+
     # def openLanduse(self,index):
         # row = index.row()
         # item = self.model.getNItem(row)
@@ -620,7 +620,7 @@ class LanduseConnector(TableToDialogConnector):
             # self.model.layoutChanged.emit()
         # else:
             # self.feedback.user_error("No name given to landuse layers ranking")
-            
+
     def updateFromDlgItem(self,item,dlgItem):
         initName, newName = item.getName(), dlgItem.getName()
         self.feedback.pushDebugInfo("updateFromDlgItem {} {}".format(initName,newName))

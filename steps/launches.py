@@ -37,7 +37,6 @@ from qgis.core import (
 from ..qgis_lib_mc import utils
 from ..qgis_lib_mc.utils import CustomException, joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
-# from ..algs.erc_tvb_algs_provider import ErcTvbAlgorithmsProvider
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
 from ..ui.plot_window import PlotWindow
@@ -66,7 +65,7 @@ def getGraph(gProj,graphName):
         if graph.name == graphName:
             return graph
     return None
-    
+
 PROVIDER = 'mitiConnect'
 # TODO : grapha wrappers in erc_tvb_algs_provider ?
 def createGraphabProject(landuse,codes,out_dir,project_name,
@@ -116,7 +115,7 @@ def computeGlobalMetric(project,graphName,metricName=0,unit=0,
         d=1000,p=0,feedback=None):
     return computeMetric(project,graphName,metricName=metricName,unit=unit,
         d=d,p=p,localMetric=False,feedback=feedback)
-        
+
 def getRegression(layer):
     distArr = [f["Dist"] for f in layer.getFeatures()]
     distMArr = [f["DistM"] for f in layer.getFeatures()]
@@ -133,15 +132,15 @@ class LaunchItem(DictItem):
     SPECIE = 'SPECIE'
     EXTENT = 'EXTENT'
     MAX_DISP = 'MAX_DISP'
-    
+
     BASE_FIELDS = [ SCENARIO, SPECIE, EXTENT, MAX_DISP ]
     # DISPLAY_FIELDS = FIELDS
-    
+
     def __init__(self,dict,pluginModel=None,feedback=None):
         super().__init__(dict,feedback=feedback)
         self.pluginModel = pluginModel
         self.paramRegr = None
-        
+
     @classmethod
     def fromValues(cls,scName,spName,extent,maxDisp=None,pluginModel=None,
             fields=[],feedback=None):
@@ -179,7 +178,7 @@ class LaunchItem(DictItem):
         return (self.getScName(), self.getSpName())
     def getNames(self):
         return (self.getScName(), self.getSpName(), self.getExtName())
-        
+
     def equals(self,other):
         if other is None:
             return False
@@ -190,7 +189,7 @@ class LaunchItem(DictItem):
         return self.equals(other)
 
 # Scenario
-        
+
 class LaunchModel(DictModel):
 
     def __init__(self, pluginModel):
@@ -202,7 +201,7 @@ class LaunchModel(DictModel):
         # super().__init__(self,itemClass,feedback=pluginModel.feedback,
             # display_fields=ScenarioItem.DISPLAY_FIELDS)
         self.pluginModel = pluginModel
-        
+
     # Add metric field if needed
     def addItem(self,item):
         for f in item.dict.keys():
@@ -215,7 +214,7 @@ class LaunchModel(DictModel):
             if f not in self.fields:
                 self.addField(f)
         return self.itemClass.fromDict(dict,feedback=feedback)
-        
+
     # Item getters
     def getScenarioNames(self):
         return [i.getName() for i in self.items]
@@ -244,7 +243,7 @@ class LaunchModel(DictModel):
     def scExists(self,name):
         i = self.getItemFromName(name)
         return (i is not None)
-                 
+
     # Item base path getters
     def normPath(self,fname):
         return os.path.normcase(fname)
@@ -279,7 +278,7 @@ class LaunchModel(DictModel):
         return self.normPath(joinPath(spDir,out_bname))
     def getSpBaseLanduse(self,spItem):
         return self.pluginModel.speciesModel.getItemLandusePath(spItem)
-        
+
     # Extent computing
     def computeItemExtent(self,item,eraseFlag=True,feedback=None):
         if feedback is None:
@@ -341,7 +340,7 @@ class LaunchModel(DictModel):
             self.feedback.internal_error("Unexpected specie mode " + str(spItem))
         mf.setCurrentStep(2)
         return out_path
-        
+
     # Item getters for each step
     def getItemLanduse(self,item):
         return self.getItemOutBase(item,suffix="landuse")
@@ -369,11 +368,11 @@ class LaunchModel(DictModel):
         return self.normPath(joinPath(baseDir,outBname))
     def getItemStartFile(self,item):
         return self.getItemOutBase(item,suffix="start")
-        
+
     # Table flags
     def flags(self, index):
         return ITEM_IS_SELECTABLE | ITEM_IS_ENABLED
-        
+
     def reload(self,eraseFlag=False):
         scModel = self.pluginModel.scenarioModel
         if eraseFlag:
@@ -407,7 +406,7 @@ class LaunchModel(DictModel):
         self.layoutChanged.emit()
     def reloadErase(self):
         self.reload(eraseFlag=True)
-        
+
     def getItemRegression(self,item):
         linksetName = self.getItemLinksetName(item)
         layer = qgsUtils.getLoadedLayerByName(linksetName)
@@ -457,8 +456,8 @@ class LaunchModel(DictModel):
         if maxDispCost is None or not spItem.dispUnitIsMeters():
             maxDispCost = self.computeMaxDispCost(item,feedback)
         return maxDispCost
-        
-        
+
+
     def clearFile(self,filename):
         self.feedback.pushDebugInfo("clearFile " + str(filename))
         if utils.fileExists(filename):
@@ -521,8 +520,8 @@ class LaunchModel(DictModel):
             self.clearFile(luPath)
 
 
-        
-        
+
+
     def applyItemLanduse(self,item,feedback=None,eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
@@ -567,7 +566,7 @@ class LaunchModel(DictModel):
                 scLayers.append(scLayer)
                 mff.setCurrentStep(cpt)
             # luPath = qgsUtils.mkTmpPath("%s_%s_%s_reclass.tif"%(scName,spName,extName))
-            # Merge       
+            # Merge
             luPath = qgsUtils.mkTmpPath(spName + "_landuse.tif")
             # qgsUtils.removeLayerFromPath(luPath)
             # qgsUtils.removeRaster(luPath)
@@ -585,7 +584,7 @@ class LaunchModel(DictModel):
             feedback=mf)
         mf.setCurrentStep(3)
         return out_path
-        
+
     def getMatrixFromSpName(self,spName):
         frictionModel = self.pluginModel.frictionModel
         matrixes = frictionModel.getReclassifyMatrixes([spName])
@@ -605,7 +604,7 @@ class LaunchModel(DictModel):
         naVals = [inV for inV, outV in zip(mInVals,mOutVals) if inV in inVals and outV == 0]
         self.feedback.pushWarning(self.tr("No friction value assigned to classes ") + str(naVals))
         return matrix
-        
+
     def applyItemFriction(self,item,feedback=None,eraseFlag=False):
         if feedback is None:
             feedback = self.feedback
@@ -693,7 +692,7 @@ class LaunchModel(DictModel):
                 qgsTreatments.applyMergeRaster(frictionLayers,out_path,
                     out_type=baseType,nodata_val=nodataVal,feedback=mf)
                 mf.setCurrentStep(nbSc * 2 + 1)
-            
+
     #{ 'DIRPATH' : 'TEMPORARY_OUTPUT', 'INPUT' : 'D:/IRSTEA/ERC/tests/BousquetOrbExtended/Source/CorineLandCover/CLC12_BOUSQUET_ORB.tif', 'LANDCODE' : '241', 'NAMEPROJECT' : 'Project1', 'NODATA' : None, 'SIZEPATCHES' : 0 }
     def applyItemGraphabProject(self,item,feedback=None):
         if feedback is None:
@@ -773,8 +772,8 @@ class LaunchModel(DictModel):
         self.computeMaxDispCost(item,mf)
         mf.setCurrentStep(2)
         feedback.pushDebugInfo("Max disp cost of %s set to %s"%(item.getNames(),item.getMaxDisp()))
-            
-            
+
+
     def applyItemGraphabGraph(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
@@ -816,8 +815,8 @@ class LaunchModel(DictModel):
             feedback.user_error("Incorrect dispersal distance {} (null or negative) for specie {}".format(maxDispCost,spName))
         # Build graph
         createGraphabGraph(project,linksetName,
-            unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)        
-            
+            unit=1,dist=maxDispCost,graphName=graphName,feedback=feedback)
+
     def checkGraph(self,proj,graphName):
         if proj is None:
             msg = self.tr("Could not find Graphab project for graph {}".format(graphName))
@@ -829,7 +828,7 @@ class LaunchModel(DictModel):
         msg += graphName
         msg += self.tr(", please ensure step 5 has been launched before")
         self.feedback.user_error(msg)
-            
+
     def computeDispersal(self,item,eraseFlag=False,feedback=None):
         if eraseFlag:
             self.clearStep(item,6)
@@ -852,7 +851,7 @@ class LaunchModel(DictModel):
         if not qgsUtils.isLayerLoaded(outPath):
             outLayer = qgsUtils.loadRasterLayer(outPath,loadProject=True)
             styles.setRandomColorRasterRenderer(outLayer)
-                
+
     def computeLocalMetric(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
@@ -894,7 +893,7 @@ class LaunchModel(DictModel):
         # csv_layer.reload()
         # patch_layer.triggerRepaint()
         return val
-                
+
     def computeGlobalMetric(self,item,eraseFlag=False,feedback=None):
         if feedback is None:
             feedback = self.feedback
@@ -936,16 +935,16 @@ class LaunchModel(DictModel):
         item.dict[metricStr] = val
         self.layoutChanged.emit()
         return val
-        
+
     def removeItems(self,indexes):
         names = [self.items[ind.row()].getName() for ind in indexes]
         super().removeItems(indexes)
         self.pluginModel.removeImports(names)
-        
+
     def updateFromXML(self,root,feedback=None):
         self.items = []
         super().updateFromXML(root,feedback=feedback)
-        
+
     def clearModel(self):
         self.items = []
         self.fields = list(LaunchItem.BASE_FIELDS)
@@ -971,12 +970,12 @@ class LaunchConnector(TableToDialogConnector):
         super().__init__(model,self.dlg.launchesView)
         self.refreshScenarios()
 
-    def refreshSpecies(self):   
+    def refreshSpecies(self):
         names = self.model.pluginModel.speciesModel.getNames()
         self.dlg.speciesSelection.clear()
         self.dlg.speciesSelection.insertItems(0,names)
 
-    def refreshScenarios(self):   
+    def refreshScenarios(self):
         names = self.model.pluginModel.scenarioModel.getNames()
         self.dlg.scenariosSelection.clear()
         self.dlg.scenariosSelection.insertItems(0,names)
@@ -998,12 +997,12 @@ class LaunchConnector(TableToDialogConnector):
         self.dlg.reloadButton.clicked.connect(self.model.reloadErase)
         # self.model.pluginModel.speciesModel.layoutChanged.connect(self.reload)
         # self.model.pluginModel.scenarioModel.layoutChanged.connect(self.reload)
-        
+
     # def reload(self):
         # self.items = []
         # self.model.reload()
         # self.model.layoutChanged.emit()
-        
+
     def getSelectedScenarios(self):
         scNames = self.dlg.scenariosSelection.checkedItems()
         self.feedback.pushDebugInfo("scNames = " + str(scNames))
@@ -1019,7 +1018,7 @@ class LaunchConnector(TableToDialogConnector):
         # rows = list(set([i.row() for i in indexes]))
         # res = [self.model.items[i] for i in rows]
         # return res
-        
+
     def getSelectedSpecies(self):
         speciesNames = self.dlg.speciesSelection.checkedItems()
         self.feedback.pushDebugInfo("spNames = " + str(speciesNames))
@@ -1027,7 +1026,7 @@ class LaunchConnector(TableToDialogConnector):
             self.feedback.user_error("No specie selected")
         items = [self.model.pluginModel.speciesModel.getItemFromName(s) for s in speciesNames]
         return items
-        
+
     def iterateRun(self,func):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
@@ -1041,7 +1040,7 @@ class LaunchConnector(TableToDialogConnector):
                 func(sc,sp,feedback=step_feedback)
                 cpt+=1
                 step_feedback.setCurrentStep(cpt)
-                
+
     def groupByExtent(self,scenarios):
         scModel = self.model.pluginModel.scenarioModel
         isSc = scModel.getInitialState()
@@ -1067,7 +1066,7 @@ class LaunchConnector(TableToDialogConnector):
                 cpt += 1
             # scMap[baseSc] = scenariosOrdered
         return (scMap, cpt)
-        
+
     def iterateRunExtent(self,func):
         scenarios = self.getSelectedScenarios()
         species = self.getSelectedSpecies()
@@ -1098,7 +1097,7 @@ class LaunchConnector(TableToDialogConnector):
                     step_feedback.pushDebugInfo("Setting {} / {} step".format(cpt,nb_steps))
                     # step_feedback.pushDebugInfo("Nb steps = {}".format(step_feedback.mChildSteps))
                     step_feedback.setCurrentStep(cpt)
-    
+
     def landuseItemRun(self,item,feedback=None,eraseFlag=None):
         out_path = self.model.getItemLanduse(item)
         loadResults = self.dlg.loadResults.isChecked()
@@ -1118,7 +1117,7 @@ class LaunchConnector(TableToDialogConnector):
         # self.iterateRunExtent(self.model.applyItemLanduse)
         self.iterateRunExtent(self.landuseItemRun)
         self.feedback.endSection()
-        
+
     def checkJavaInstalled(self):
         provider = QgsApplication.processingRegistry().providerById('mitiConnect')
         java_cmd = provider.getJavaCommand()
@@ -1130,7 +1129,7 @@ class LaunchConnector(TableToDialogConnector):
             msg += self.tr(" does not exist, please install Java first")
             msg += " (https://www.java.com/en/download/)"
             raise utils.UserError(msg)
-        
+
     def frictionItemRun(self,item,eraseFlag=None,feedback=None):
         out_path = self.model.getItemFriction(item)
         loadResults = self.dlg.loadResults.isChecked()

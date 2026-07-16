@@ -57,9 +57,14 @@ for f in [
     "README.md",
     "LICENSE",
     "pylintrc",
-    "metadata.txt"
+    "metadata.txt",
 ]:
     remove(ARCHIVE_DIR / GRAPHAB_NAME / f)
+
+remove(ARCHIVE_DIR / GRAPHAB_NAME / "i18n" / "lupdate.sh")
+remove(ARCHIVE_DIR / GRAPHAB_NAME / "scripts" / "get-plugin-version.sh")
+remove(ARCHIVE_DIR / GRAPHAB_NAME / "scripts" / "get-release-notes.sh")
+remove(ARCHIVE_DIR / GRAPHAB_NAME / "help" / "make.bat")
 
 remove(ARCHIVE_DIR / GRAPHAB_NAME / "processing" / "graphab-2.8.0.jar")
 

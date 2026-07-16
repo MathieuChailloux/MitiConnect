@@ -27,7 +27,7 @@ import os, sys, shutil
 import qgis
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtCore import Qt
-from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils
+from qgis.core import Qgis, QgsProcessingContext, QgsProcessingUtils, QgsMessageLog
 
 from ..qgis_lib_mc import utils
 from ..qgis_lib_mc.utils import CustomException, joinPath
@@ -41,6 +41,51 @@ from ..ui.plot_window import PlotWindow
 from . import friction
 from ..qgis_lib_mc.qt_compatibility import *
 
+# class PondModel(DictModel):
+#     """Modèle table : intervalles [min, max] -> coefficient."""
+#     # HEADERS = ["Min", "Max", "Coefficient"]
+
+#     def __init__(self,feedback=None):
+#         QgsMessageLog.logMessage(
+#             "sys.modules {} ".format(sys.modules),
+#             "Extensions")
+#         # itemClass = getattr(sys.modules[__name__],
+#         #     PondItem.__name__)
+#         itemClass = PondItem.__class__
+#         super().__init__(itemClass=itemClass,
+#             fields=PondItem.FIELDS)
+#         self.feedback = feedback
+
+#     def addRow(self):
+#         self.beginInsertRows(QtCore.QModelIndex(),
+#             len(self.items), len(self.items))
+#         self.items.append(PondItem())
+#         self.endInsertRows()
+
+#     def removeSelectedRow(self, row):
+#         if 0 <= row < len(self.items):
+#             self.beginRemoveRows(QtCore.QModelIndex(),
+#                 row, row)
+#             del self.items[row]
+#             self.endRemoveRows()
+#             self.layoutChanged.emit()
+
+#     def getRows(self):
+#         return self.items
+
+#     def setRows(self, rows):
+#         self.beginResetModel()
+#         self.items = rows
+#         self.endResetModel()
+
+#     def toProcessingMatrix(self):
+#         m = []
+#         for i in self.items:
+#             m.append(i.dict[PondItem.MIN])
+#             m.append(i.dict[PondItem.MAX])
+#             m.append(i.dict[PondItem.COEFF])
+#         return m
+    
 # Scenario
         
 class ScenarioModel(DictModel):
@@ -315,7 +360,11 @@ class ScenarioConnector(TableToDialogConnector):
                 self.model.addInitialState()
             self.feedback.pushDebugInfo(
                 "openD item {}".format(item))
-            item_copy = item.__deepcopy__() if item else None
+            # Prepare copy
+            if item is None:
+                item_copy = ScenarioItem.fromValues("",feedback=self.feedback)
+            else:
+                item_copy = item.__deepcopy__()
             self.feedback.pushDebugInfo(
                 "openD item {}".format(item_copy))
             scenarioDlg = ScenarioDialog(self.dlg,item_copy,

@@ -354,8 +354,8 @@ class MitiConnectDialog(abstract_model.MainDialog,
                 prefix = self.tr("Unexpected error")
         else:
             prefix = self.tr("Unexpected error")
-        # QgsMessageLog.logMessage(tbinfo,"Extensions")
-        # QgsMessageLog.logMessage(msg,"Extensions")
+        QgsMessageLog.logMessage(tbinfo,"Extensions")
+        QgsMessageLog.logMessage(msg,"Extensions")
         self.feedback.error_msg(excMsg,prefix=prefix)
         self.mTabWidget.setCurrentWidget(self.logTab)
         self.feedback.focusLogTab()

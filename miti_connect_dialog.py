@@ -86,7 +86,7 @@ class MitiConnectModel(abstract_model.MainModel):
             self.landuseModel, self.classModel,
             self.speciesModel, self.frictionModel,
             self.scenarioModel, self.launchModel ]
-        self.baseType = Qgis.UInt16
+        self.baseType = Qgis.DataType.UInt16
         self.nodataVal = 0
 
     def getLanduseNames(self):

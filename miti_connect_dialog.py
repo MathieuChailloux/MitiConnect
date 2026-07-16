@@ -22,11 +22,8 @@
  ***************************************************************************/
 """
 
-import os, sys
-from builtins import IOError, OSError
-import xml.etree.ElementTree as ET
+import os
 
-from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.gui import QgsFileWidget
 from qgis.core import (
@@ -41,8 +38,6 @@ from io import StringIO
 from .qgis_lib_mc import (
     utils,
     feedbacks,
-    log,
-    qgsUtils,
     abstract_model,
     qgsTreatments)
 from .steps import (
@@ -54,11 +49,8 @@ from .steps import (
     scenario,
     launches)#, species, friction, scenarios)
 from .ui import (
-    vector_data_dialog,
-    raster_data_dialog,
-    landuse_dialog,
-    scenario_dialog,
-    miti_connect_dialog_base)
+    miti_connect_dialog_base,
+    new_project)
 from . import tabs
 
 from .graphab4qgis.processing import GraphabAlgoProcessing
@@ -70,8 +62,8 @@ UI_DIR = os.path.join(PLUGIN_DIR,'ui')
 STEPS_DIR = os.path.join(PLUGIN_DIR,'steps')
 # FORM_CLASS, _ = uic.loadUiType(os.path.join(
 #     UI_DIR, 'miti_connect_dialog_base.ui'))
-CREATE_PROJECT_CLASS, _ = uic.loadUiType(os.path.join(
-    UI_DIR, 'new_project.ui'))
+# CREATE_PROJECT_CLASS, _ = uic.loadUiType(os.path.join(
+#     UI_DIR, 'new_project.ui'))
 
 
 class MitiConnectModel(abstract_model.MainModel):
@@ -205,7 +197,8 @@ class MitiConnectModel(abstract_model.MainModel):
             
         
 
-class CreateProjectDialog(QtWidgets.QDialog):#,CREATE_PROJECT_CLASS):
+class CreateProjectDialog(QtWidgets.QDialog,
+    new_project.Ui_createProjetDialog):#,CREATE_PROJECT_CLASS):
 
     def __init__(self, parent=None):
         super(CreateProjectDialog, self).__init__(parent)

@@ -48,6 +48,11 @@ for d in TO_COPY_DIRS:
 shutil.copytree(LIB_DIR, ARCHIVE_DIR / LIB_NAME)
 shutil.copytree(GRAPHAB_DIR, ARCHIVE_DIR / GRAPHAB_NAME)
 
+# Suppression des fichiers __pycache__
+for f in ARCHIVE_DIR.rglob("__pycache__"):
+    print("pycache {}".format(f))
+    remove(ARCHIVE_DIR / f)
+    
 # Suppression des fichiers inutiles
 for folder in [LIB_NAME, GRAPHAB_NAME]:
     remove(ARCHIVE_DIR / folder / ".git")
@@ -58,6 +63,8 @@ for f in [
     "LICENSE",
     "pylintrc",
     "metadata.txt",
+    ".coveragerc",
+    ".gitlab-ci"
 ]:
     remove(ARCHIVE_DIR / GRAPHAB_NAME / f)
 

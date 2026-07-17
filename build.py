@@ -53,11 +53,12 @@ for f in ARCHIVE_DIR.rglob("__pycache__"):
     print("pycache {}".format(f))
     remove(ARCHIVE_DIR / f)
     
-# Suppression des fichiers inutiles
+# Suppression des fichiers git
 for folder in [LIB_NAME, GRAPHAB_NAME]:
     remove(ARCHIVE_DIR / folder / ".git")
     remove(ARCHIVE_DIR / folder / ".gitignore")
 
+# Suppression des fichiers inutiles dans graphab4qgis
 for f in [
     "README.md",
     "LICENSE",
@@ -68,11 +69,13 @@ for f in [
 ]:
     remove(ARCHIVE_DIR / GRAPHAB_NAME / f)
 
+# Suppression des fichiers inutiles dans 
+remove(ARCHIVE_DIR / "qgis_lib_mc" / "pyqt5_to_pyqt6.py")
+remove(ARCHIVE_DIR / "qgis_lib_mc" / "pyqt5_to_pyqt6_exeQgisEnv.py")
 remove(ARCHIVE_DIR / GRAPHAB_NAME / "i18n" / "lupdate.sh")
 remove(ARCHIVE_DIR / GRAPHAB_NAME / "scripts" / "get-plugin-version.sh")
 remove(ARCHIVE_DIR / GRAPHAB_NAME / "scripts" / "get-release-notes.sh")
 remove(ARCHIVE_DIR / GRAPHAB_NAME / "help" / "make.bat")
-
 remove(ARCHIVE_DIR / GRAPHAB_NAME / "processing" / "graphab-2.8.0.jar")
 
 # Copie des fichiers racine

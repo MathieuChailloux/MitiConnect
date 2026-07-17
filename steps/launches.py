@@ -22,20 +22,13 @@
  ***************************************************************************/
 """
 
-import os, sys, shutil, time, numpy
+import os, sys, shutil, numpy
 
-import qgis
-from qgis.PyQt import uic, QtWidgets
-from qgis.PyQt.QtCore import Qt
 from qgis.core import (
-    Qgis,
-    QgsProcessingContext,
-    QgsProcessingUtils,
-    QgsProcessingAlgRunnerTask,
     QgsApplication)
 
 from ..qgis_lib_mc import utils
-from ..qgis_lib_mc.utils import CustomException, joinPath
+from ..qgis_lib_mc.utils import joinPath
 from ..qgis_lib_mc.abstract_model import DictItem, DictModel, TableToDialogConnector
 from ..qgis_lib_mc.qgsTreatments import applyProcessingAlg
 from ..qgis_lib_mc import qgsTreatments, qgsUtils, feedbacks, styles
@@ -795,14 +788,7 @@ class LaunchModel(DictModel):
             graph = getGraph(gProj,graphName)
             if graph:
                 feedback.pushDebugInfo("graph")
-                if eraseFlag:
-                    pass
-                    #self.clearStep(item,5)
-                    # feedback.pushDebugInfo("erase")
-                    # qgsUtils.removeGroups(graphName)
-                    # gProj.removeGraph(graphName)
-                    # assert(False)
-                else:
+                if not eraseFlag:
                     graphsGroup = gProj.getGraphGroup()
                     graphsGroup.setItemVisibilityChecked(True)
                     for graphGroup in graphsGroup.children():
@@ -1222,7 +1208,7 @@ class LaunchConnector(TableToDialogConnector):
                     if sc.isInitialState():
                         initVal = val
                     elif initVal == -1:
-                        assert(False)
+                        raise AssertionError
                     elif initVal == 0:
                         self.feedback.internal_error("Empty value for global metric of initial state")
                     else:

@@ -304,15 +304,10 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
         self.newFlag = dlgItem is None
         self.reloadFlag = False
         self.feedback = feedback
-        # if model is None:
-        #     assert(False)
         self.scModel = model.scenarioModel
         self.frictionModel = model.frictionModel
         self.classModel = model.classModel
         self.setupUi(self)
-        # if self.newFlag:
-        #     self.pondModel = model.scenarioModel.itemClass.__init__(feedback=feedback)
-        # else:
         self.pondModel = dlgItem.child
         self.pondTable.setModel(self.pondModel)
         if hasattr(self, "pondLayerCombo"):
@@ -379,7 +374,6 @@ class ScenarioDialog(QtWidgets.QDialog, SC_DIALOG):
 
     def removeSelectedPondItems(self):
         indexes = self.pondTable.selectedIndexes()
-        # assert(False)
         for index in sorted(indexes, key=lambda i: i.row(), reverse=True):
             self.pondModel.removeSelectedRow(index.row())
 
@@ -543,7 +537,7 @@ class ScenarioInitialStateDialog(QtWidgets.QDialog, SC_IS_DIALOG):
             self.scName.setText(dlgItem.getName())
             self.scDescr.setText(dlgItem.getDescr())
         else:
-            assert(False)
+            raise AssertionError
 
     def showDialog(self):
         while self.exec():

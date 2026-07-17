@@ -24,6 +24,7 @@
 
 import sys
 
+from qgis.PyQt import QtCore
 from qgis.core import QgsMessageLog
 
 from ..qgis_lib_mc import abstract_model

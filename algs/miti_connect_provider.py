@@ -117,27 +117,27 @@ class MitiConnectProvider(GraphabProvider):
         for a in self.alglist:
             self.addAlgorithm(a)
 
-def checkJavaInstalled(self):
-    javaExec = self.getJavaCommand()
-    if not (os.path.isfile(javaExec) or shutil.which(javaExec)):
-        self.java = False
-        QgsMessageLog.logMessage(
-            "Java not found for Graphab plugin.\n" + javaExec + "\n",
-            'Extensions', Qgis.Warning
-        )
-        return
-    try:
-        ret = subprocess.run(
-            [javaExec, '-version'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            shell=False,  # explicite, même si c'est déjà le défaut
-        )  # nosec B603 - javaExec est résolu via JAVA_HOME, chemins connus, ou shutil.which; jamais une entrée utilisateur libre
-        self.java = ret.returncode == 0
-    except (OSError, subprocess.SubprocessError):
-        self.java = False
-    if not self.java:
-        QgsMessageLog.logMessage(
-            "Java not found for Graphab plugin.\n" + javaExec + "\n",
-            'Extensions', Qgis.Warning
-        )
+    def checkJavaInstalled(self):
+        javaExec = self.getJavaCommand()
+        if not (os.path.isfile(javaExec) or shutil.which(javaExec)):
+            self.java = False
+            QgsMessageLog.logMessage(
+                "Java not found for Graphab plugin.\n" + javaExec + "\n",
+                'Extensions', Qgis.Warning
+            )
+            return
+        try:
+            ret = subprocess.run(
+                [javaExec, '-version'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                shell=False,  # explicite, même si c'est déjà le défaut
+            )  # nosec B603 - javaExec est résolu via JAVA_HOME, chemins connus, ou shutil.which; jamais une entrée utilisateur libre
+            self.java = ret.returncode == 0
+        except (OSError, subprocess.SubprocessError):
+            self.java = False
+        if not self.java:
+            QgsMessageLog.logMessage(
+                "Java not found for Graphab plugin.\n" + javaExec + "\n",
+                'Extensions', Qgis.Warning
+            )

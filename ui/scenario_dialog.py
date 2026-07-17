@@ -22,12 +22,11 @@
  ***************************************************************************/
 """
 
-import os, sys, copy
+import os, copy
 
-from qgis.PyQt import uic, QtWidgets, QtCore
+from qgis.PyQt import uic, QtWidgets
 from qgis.core import (
-    QgsFieldProxyModel ,
-    QgsMessageLog)
+    QgsFieldProxyModel)
 
 from ..qgis_lib_mc import (
     utils,
@@ -36,7 +35,6 @@ from ..qgis_lib_mc import (
     feedbacks,
     qgsTreatments,
     qt_compatibility)
-from ..steps import friction
 from ..steps.weighting import PondModel
 from . import scenario_dialog_ui
 
@@ -49,62 +47,6 @@ SC_LANDUSE_DIALOG, _ = uic.loadUiType(os.path.join(
 SC_IS_DIALOG, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'scenario_initialState_dialog.ui'))
 
-
-# class PondItem(abstract_model.DictItem):
-
-#     MIN, MAX, COEFF = "MIN", "MAX", "COEFF"
-#     FIELDS = [MIN,MAX,COEFF]
-
-#     def __init__(self,dict=None,feedback=None):
-#         if not dict:
-#             dict = {self.MIN : 0, self.MAX : 0, self.COEFF : 1}
-#         super().__init__(dict)
-
-
-# class PondModel(abstract_model.DictModel):
-#     """Modèle table : intervalles [min, max] -> coefficient."""
-#     # HEADERS = ["Min", "Max", "Coefficient"]
-
-#     def __init__(self,feedback=None):
-#         QgsMessageLog.logMessage(
-#             "sys.modules {} ".format(sys.modules),
-#             "Extensions")
-#         # itemClass = getattr(sys.modules[__name__],
-#         #     PondItem.__name__)
-#         itemClass = PondItem.__class__
-#         super().__init__(itemClass=itemClass,
-#             fields=PondItem.FIELDS)
-#         self.feedback = feedback
-
-#     def addRow(self):
-#         self.beginInsertRows(QtCore.QModelIndex(),
-#             len(self.items), len(self.items))
-#         self.items.append(PondItem())
-#         self.endInsertRows()
-
-#     def removeSelectedRow(self, row):
-#         if 0 <= row < len(self.items):
-#             self.beginRemoveRows(QtCore.QModelIndex(),
-#                 row, row)
-#             del self.items[row]
-#             self.endRemoveRows()
-#             self.layoutChanged.emit()
-
-#     def getRows(self):
-#         return self.items
-
-#     def setRows(self, rows):
-#         self.beginResetModel()
-#         self.items = rows
-#         self.endResetModel()
-
-#     def toProcessingMatrix(self):
-#         m = []
-#         for i in self.items:
-#             m.append(i.dict[PondItem.MIN])
-#             m.append(i.dict[PondItem.MAX])
-#             m.append(i.dict[PondItem.COEFF])
-#         return m
 
 class ScenarioItem(abstract_model.DictItemWithChild):
 

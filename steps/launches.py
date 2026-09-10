@@ -650,7 +650,10 @@ class LaunchModel(DictModel):
                 feedback=feedback)
             # Apply weighting
             qgsTreatments.applyRasterCalcMult(
-                baseFriction,reclassified,out_path,feedback=feedback)
+                baseFriction,reclassified,out_path,
+                nodata_val=65535,
+                out_type=Qgis.DataType.UInt16,
+                feedback=feedback)
         else:
             # Stacked mode
             # Retrieve base scenario friction

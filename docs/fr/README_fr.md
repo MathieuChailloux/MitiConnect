@@ -18,7 +18,9 @@ Les étapes de *MitiConnect* :
  2. Import et uniformisation des données
  3. Définition des espèces cibles
  4. Définition des coefficients de friction
- 5. Définition des scenarios
+ 5. Définition des scenarios, 2 modes possibles
+	- changement d'occupation des sols pour modéliser un améngaement
+	- pondération des coefficients de friction pour prendre en compte une variable environnementale comme la pollution lumineuse
  6. Gestion des lancements
 	1. Occupation du sol
 	2. Couche de friction

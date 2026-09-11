@@ -17,7 +17,9 @@ Parameters settings can be saved to and loaded from a configuration file.
  2. Data import
  3. Species definition
  4. Resistance values definition
- 5. Mitigation scenarios definition
+ 5. Mitigation scenarios definition, 2 possible modes
+	- landuse change to model a project
+	- resistance weighting to integrate environmental variable such as light pollution
  6. Launches manager
     1. Land use layer
     2. Resitance surfaces

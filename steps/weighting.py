@@ -36,7 +36,10 @@ class PondItem(abstract_model.DictItem):
 
     def __init__(self,dict=None,feedback=None):
         if not dict:
-            dict = {self.MIN : 0, self.MAX : 0, self.COEFF : 1}
+            dict = {
+                self.MIN : 0.0,
+                self.MAX : 0.0,
+                self.COEFF : 1.0}
         super().__init__(dict)
 
 class PondModel(abstract_model.DictModel):

@@ -47,9 +47,9 @@ class PondModel(abstract_model.DictModel):
     # HEADERS = ["Min", "Max", "Coefficient"]
 
     def __init__(self,feedback=None):
-        QgsMessageLog.logMessage(
-            "sys.modules {} ".format(sys.modules),
-            "Extensions")
+        # QgsMessageLog.logMessage(
+        #     "sys.modules {} ".format(sys.modules),
+        #     "Extensions")
         # itemClass = getattr(sys.modules[__name__],
         #     PondItem.__name__)
         # itemClass = PondItem.__class__

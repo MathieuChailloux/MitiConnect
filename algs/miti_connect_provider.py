@@ -37,6 +37,15 @@ from ..graphab4qgis.processing.CalculateLocalMetric import CalculateLocalMetric
 from ..graphab4qgis.processing.CalculateGlobalMetric import CalculateGlobalMetric
 from ..graphab4qgis.processing.GraphabProvider import GraphabProvider
 
+from .sliding_window.sliding_window_core import SCIPY_IMPORT_OK
+from .sliding_window.sliding_window_algs import (
+    NeighboursCount,
+    QuantileDistance,
+    PatchAreaWindow,
+    PatchSizeWindowRedistrib,
+    ConnectivityIndex,
+    ConnectivityIndexHabPatch
+)
 
 class MitiConnectProvider(GraphabProvider):
 
@@ -49,6 +58,19 @@ class MitiConnectProvider(GraphabProvider):
             CreateGraph(self.plugin),
             CalculateLocalMetric(self.plugin),
             CalculateGlobalMetric(self.plugin)]
+        if SCIPY_IMPORT_OK:
+            self.alglist += [
+                NeighboursCount(),
+                QuantileDistance(),
+                PatchAreaWindow(),
+                PatchSizeWindowRedistrib(),
+                ConnectivityIndex(),
+                ConnectivityIndexHabPatch()]
+        else:
+            QgsMessageLog.logMessage(
+                "Scipy library not found for connectivity indices algorithms",
+                'MitiConnect', Qgis.Warning
+            )
 
     def id(self):
         return "mitiConnect"
